@@ -161,9 +161,8 @@ public class TrinketsGUI {
                 onClickAction.accept(player);
             }
         };
-        if (enabled) {
-            button.enable();
-        }
+        
+        button.setVisibility(enabled);
         buttonMap.put(slot, button);
     }
 
