@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 
 import java.util.Map;
 
@@ -12,6 +13,13 @@ public class TrinketsListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         final Player eventPlayer = (Player) event.getWhoClicked();
+
+        Inventory clickedInv = event.getClickedInventory();
+        Inventory playerTopInv = eventPlayer.getOpenInventory().getTopInventory();
+
+        if (!clickedInv.equals(playerTopInv)) {
+            return;
+        }
 
         if (eventPlayer.hasMetadata("TrinketsGUI")) {
             final TrinketsGUI menu = (TrinketsGUI) eventPlayer.getMetadata("TrinketsGUI").get(0).value();
@@ -30,7 +38,7 @@ public class TrinketsListener implements Listener {
                 }
             }
 
-            menu.updateGUI();
+            menu.updateGUI(eventPlayer);
         }
     }
 }

@@ -83,8 +83,8 @@ public class TrinketsGUI {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         createBackgroundTiles(); // Create the background tiles
         createSlotButtons(); // Create the slot buttons
-        updateGUI(); // Update the GUI with items
-        createPlayerSkullIcon(player); // Create and set the player's skull icon
+        updateGUI(player); // Update the GUI with items
+
 
 
         // Ensure no leftover metadata interferes
@@ -100,7 +100,7 @@ public class TrinketsGUI {
     /**
      * Updates the GUI by setting items for buttons and background tiles.
      */
-    public void updateGUI() {
+    public void updateGUI(Player player) {
         // Set items for background tiles
         for (Background background : backgroundList) {
             inventory.setItem(background.getSlot(), background.getItem());
@@ -110,6 +110,8 @@ public class TrinketsGUI {
             Button button = entry.getValue();
             inventory.setItem(button.getSlot(), button.getItem());
         }
+
+        createPlayerSkullIcon(player); // Create and set the player's skull icon
     }
 
     /**
