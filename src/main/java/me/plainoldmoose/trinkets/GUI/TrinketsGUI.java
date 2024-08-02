@@ -1,5 +1,6 @@
 package me.plainoldmoose.trinkets.GUI;
 
+import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Trinkets;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
@@ -25,8 +26,31 @@ public class TrinketsGUI {
     final HashMap<Integer, Button> buttonMap = new HashMap<Integer, Button>(); // List of buttons in the GUI
     final List<Background> backgroundList = new ArrayList<>(); // List of background tiles in the GUI
     private static Chat chat = null; // Vault chat instance for prefix handling
+    private Inventory inventory; // Inventory instance for the GUI
 
-    Inventory inventory; // Inventory instance for the GUI
+    private int HEAD_TRINKET_SLOT;
+    private ItemStack HEAD_TRINKET_BACKGROUND;
+    private boolean HEAD_TRINKET_ENABLED;
+
+    private static int NECK_TRINKET_SLOT = 22;
+    private static Material NECKLACE_TRINKET_BACKGROUND = Material.ORANGE_STAINED_GLASS_PANE;
+    private static String NECKLACE_TRINKET_NAME = "Necklace Slot";
+
+    private static int LEFT_ARM_TRINKET_SLOT = 21;
+    private static Material LEFT_ARM_TRINKET_BACKGROUND = Material.GREEN_STAINED_GLASS_PANE;
+    private static String LEFT_ARM_TRINKET_NAME = "Left Arm Slot";
+
+    private static int RIGHT_ARM_TRINKET_SLOT = 23;
+    private static Material RIGHT_ARM_TRINKET_BACKGROUND = Material.CYAN_STAINED_GLASS_PANE;
+    private static String RIGHT_ARM_TRINKET_NAME = "Right Arm Slot";
+
+    private static int LEG_TRINKET_SLOT = 31;
+    private static Material LEG_TRINKET_BACKGROUND = Material.PINK_STAINED_GLASS_PANE;
+    private static String LEG_TRINKET_NAME = "Leg Slot";
+
+    private static  int FEET_TRINKET_SLOT = 40;
+    private static  Material FEET_TRINKET_BACKGROUND = Material.YELLOW_STAINED_GLASS_PANE;
+    private static  String FEET_TRINKET_NAME = "Feet Slot";
 
     /**
      * Sets up Vault chat for handling player prefixes.
@@ -56,36 +80,20 @@ public class TrinketsGUI {
     }
 
     /**
-     * Gets the list of buttons in the GUI.
-     *
-     * @return List of Button objects.
-     */
-    public final HashMap<Integer, Button> getButtonMap() {
-        return buttonMap;
-    }
-
-    /**
-     * Gets the list of background tiles in the GUI.
-     *
-     * @return List of Background objects.
-     */
-    public final List<Background> getBackgrounds() {
-        return backgroundList;
-    }
-
-    /**
      * Displays the Trinkets GUI to the specified player.
      *
      * @param player Player to display the GUI to.
      */
     public void displayTo(Player player) {
-        setupChat(); // Ensure chat is set up for prefix handling
+        loadTrinketSlotConfig();
+
+        if (!setupChat()) {
+            return; // Cannot proceed without chat setup failed
+        }
         inventory = Bukkit.createInventory(player, this.size, this.title);
         createBackgroundTiles(); // Create the background tiles
         createSlotButtons(); // Create the slot buttons
         updateGUI(player); // Update the GUI with items
-
-
 
         // Ensure no leftover metadata interferes
         if (player.hasMetadata("TrinketsGUI")) {
@@ -108,7 +116,9 @@ public class TrinketsGUI {
 
         for (Map.Entry<Integer, Button> entry : buttonMap.entrySet()) {
             Button button = entry.getValue();
-            inventory.setItem(button.getSlot(), button.getItem());
+            if (button.isEnabled()) {
+                inventory.setItem(button.getSlot(), button.getItem());
+            }
         }
 
         createPlayerSkullIcon(player); // Create and set the player's skull icon
@@ -128,29 +138,32 @@ public class TrinketsGUI {
      * Creates the slot buttons for the GUI.
      */
     public void createSlotButtons() {
-        createButton(13, Material.RED_STAINED_GLASS_PANE, "Head Slot", this::headSlotAction);
-        createButton(22, Material.ORANGE_STAINED_GLASS_PANE, "Necklace Slot", player -> player.sendMessage("Neckslot"));
-        createButton(21, Material.GREEN_STAINED_GLASS_PANE, "Left arm Slot", player -> player.sendMessage("Left slot"));
-        createButton(23, Material.CYAN_STAINED_GLASS_PANE, "Right arm slot", player -> player.sendMessage("Right arm Slot"));
-        createButton(31, Material.PINK_STAINED_GLASS_PANE, "Leg slot", player -> player.sendMessage("Leg Slot"));
-        createButton(40, Material.YELLOW_STAINED_GLASS_PANE, "Feet slot", player -> player.sendMessage("Feet Slot"));
+        System.out.println(TrinketsData.getInstance().getTrinketSlotMap().get("HEAD_SLOT").getItemMeta().getDisplayName());
+        createButton(HEAD_TRINKET_SLOT, HEAD_TRINKET_BACKGROUND, this::headSlotAction, HEAD_TRINKET_ENABLED);
+//        createButton(NECK_TRINKET_SLOT, NECKLACE_TRINKET_BACKGROUND, "Necklace Slot", player -> player.sendMessage("Neckslot"));
+//        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, "Left arm Slot", player -> player.sendMessage("Left slot"));
+//        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, "Right arm slot", player -> player.sendMessage("Right arm Slot"));
+//        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, "Leg slot", player -> player.sendMessage("Leg Slot"));
+//        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, "Feet slot", player -> player.sendMessage("Feet Slot"));
     }
 
     /**
      * Creates a button and adds it to the button list.
      *
      * @param slot          Slot number for the button.
-     * @param material      Material of the button.
-     * @param displayName   Display name of the button.
+     * @param item          Item for the button.
      * @param onClickAction Action to be performed when the button is clicked.
      */
-    private void createButton(int slot, Material material, String displayName, Consumer<Player> onClickAction) {
-        Button button = new Button(slot, createItemStack(material, displayName)) {
+    private void createButton(int slot, ItemStack item, Consumer<Player> onClickAction, boolean enabled) {
+        Button button = new Button(slot, item) {
             @Override
             public void onClick(Player player) {
                 onClickAction.accept(player);
             }
         };
+        if (enabled) {
+            button.enable();
+        }
         buttonMap.put(slot, button);
     }
 
@@ -160,15 +173,65 @@ public class TrinketsGUI {
      * @param player Player who clicked the button.
      */
     private void headSlotAction(Player player) {
-        player.sendMessage("Headslot");
+        Button button = buttonMap.get(HEAD_TRINKET_SLOT);
+
+        ItemStack itemOnCursor = player.getItemOnCursor();
+        ItemStack buttonItem = button.getItem();
+
+        if (buttonItem == HEAD_TRINKET_BACKGROUND && itemOnCursor.getType() == Material.AIR) {
+            return;
+        }
+
+        if (itemOnCursor.getType() == Material.AIR) {
+            ItemStack buttonItemStack = button.getItem();
+            player.setItemOnCursor(buttonItemStack);
+            button.setItemStack(HEAD_TRINKET_BACKGROUND);
+
+            return;
+        }
+
+        button.setItemStack(itemOnCursor);
+        player.setItemOnCursor(new ItemStack(Material.AIR));
     }
 
-//    private void checkCursorItemType(ItemStack item, Trinket trinketSlot) {
-//        if
-//    }
+    // TODO - replace this with data loading, i.e. should have default in config.yml or if config provided load from there instead
+    private static ItemStack createDefaultBackground(Material material) {
+        ItemStack background = new ItemStack(material);
+        ItemMeta meta = background.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(" "); // Set to a blank space
+            background.setItemMeta(meta);
+        }
+        return background;
+    }
 
-    private void insertItemIntoSlot(ItemStack item, Button button) {
-        inventory.setItem(button.getSlot(), item);
+    /**
+     * Gets the list of buttons in the GUI.
+     *
+     * @return List of Button objects.
+     */
+    public final HashMap<Integer, Button> getButtonMap() {
+        return buttonMap;
+    }
+
+    /**
+     * Gets the list of background tiles in the GUI.
+     *
+     * @return List of Background objects.
+     */
+    public final List<Background> getBackgrounds() {
+        return backgroundList;
+    }
+
+    // TODO - Set this up to load all slots
+    public void loadTrinketSlotConfig() {
+        HEAD_TRINKET_SLOT = 13;
+        HEAD_TRINKET_BACKGROUND = TrinketsData.getInstance().getTrinketSlotMap().get("HEAD_SLOT");
+        if (HEAD_TRINKET_BACKGROUND.getItemMeta().getDisplayName().equalsIgnoreCase("disabled")) {
+            HEAD_TRINKET_ENABLED = false;
+            return;
+        }
+        HEAD_TRINKET_ENABLED = true;
     }
 
     /**

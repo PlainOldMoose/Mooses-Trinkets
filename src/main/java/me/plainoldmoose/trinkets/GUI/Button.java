@@ -11,6 +11,7 @@ public abstract class Button {
 
     private ItemStack item;
     private final int slot;
+    private boolean enabled;
 
     /**
      * Constructor to create a Button at a specified slot.
@@ -21,7 +22,7 @@ public abstract class Button {
     public Button(int slot, ItemStack itemStack) {
         this.slot = slot;
         this.item = itemStack;
-
+        this.enabled = false;
     }
 
     /**
@@ -43,7 +44,20 @@ public abstract class Button {
         return this.item;
     }
 
-    public void SetItemStack(ItemStack item) {
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public void enable() {
+        this.enabled = true;
+    }
+
+    public void disable() {
+        this.enabled = false;
+    }
+
+    public void setItemStack(ItemStack item) {
         this.item = item;
     }
 

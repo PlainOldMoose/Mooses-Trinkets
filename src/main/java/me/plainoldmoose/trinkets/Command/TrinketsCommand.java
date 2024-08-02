@@ -1,8 +1,8 @@
 package me.plainoldmoose.trinkets.Command;
 
-
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
+import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.GUI.TrinketsGUI;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.command.Command;
@@ -20,71 +20,116 @@ import java.util.List;
  * or opening the trinkets GUI.
  */
 public class TrinketsCommand implements CommandExecutor {
+    private static final TrinketsCommand instance = new TrinketsCommand();
+
+    private String ONLY_PLAYERS_MESSAGE;
+    private String INVALID_TRINKET_ID_MESSAGE;
+    private String TRINKET_NOT_FOUND_MESSAGE;
+    private String UNKNOWN_COMMAND_MESSAGE;
+    private String RELOADED_MESSAGE;
+    private String NO_TRINKETS_MESSAGE;
+    private String PREFIX;
+
+    /**
+     * Updates the command messages from the configuration.
+     */
+    public void update() {
+        PREFIX = TrinketsData.getInstance().getMessagesMap().get("prefix");
+        ONLY_PLAYERS_MESSAGE = "Only players can use this command!";
+        INVALID_TRINKET_ID_MESSAGE = "Enter a valid trinket ID!";
+        TRINKET_NOT_FOUND_MESSAGE = "This trinket does not exist!";
+        UNKNOWN_COMMAND_MESSAGE = "Unknown command!";
+        RELOADED_MESSAGE = "Reloaded!";
+        NO_TRINKETS_MESSAGE = "There are no trinkets!";
+    }
 
     /**
      * Executes the given command.
      *
      * @param sender  The source of the command
      * @param command The command that was executed
-     * @param s       The alias of the command which was used
+     * @param label   The alias of the command which was used
      * @param args    The arguments passed with the command
      * @return true if the command was successfully executed, false otherwise
      */
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        // Check if the sender is a player
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Only players can use this command!"); // Inform that only players can use the command
+            sender.sendMessage(ONLY_PLAYERS_MESSAGE);
             return true;
         }
 
-        Player player = (Player) sender; // Cast the sender to a player
+        Player player = (Player) sender;
 
-        // No arguments, display the Trinkets GUI
         if (args.length == 0) {
             new TrinketsGUI().displayTo(player);
             return true;
         }
 
-        // List trinkets
-        if (args[0].equalsIgnoreCase("list")) {
-            List<Trinket> trinketList = Trinkets.getInstance().getManager().getTrinketList();
-            if (trinketList.isEmpty()) {
-                player.sendMessage("There are no trinkets!");
+        switch (args[0].toLowerCase()) {
+            case "reload":
+                handleReload(player);
                 return true;
-            }
+            case "list":
+                handleList(player);
+                return true;
+            case "give":
+                handleGive(player, args);
+                return true;
+            default:
+                player.sendMessage(PREFIX + UNKNOWN_COMMAND_MESSAGE);
+                return true;
+        }
+    }
 
-            // Send each trinket's information to the player
-            for (Trinket t : trinketList) {
-                player.sendMessage(t.getTrinketItem().toString());
-            }
-            return true;
+    /**
+     * Handles the /trinkets reload command.
+     *
+     * @param player The player executing the command
+     */
+    private void handleReload(Player player) {
+        TrinketsData.getInstance().reloadConfig();
+        player.sendMessage(PREFIX + RELOADED_MESSAGE);
+    }
+
+    /**
+     * Handles the /trinkets list command.
+     *
+     * @param player The player executing the command
+     */
+    private void handleList(Player player) {
+        List<Trinket> trinketList = Trinkets.getInstance().getManager().getTrinketList();
+        if (trinketList.isEmpty()) {
+            player.sendMessage(PREFIX + NO_TRINKETS_MESSAGE);
+            return;
         }
 
-        // Give a specific trinket to the player
-        if (args[0].equalsIgnoreCase("give")) {
-            if (args.length < 2 || !isInteger(args[1])) {
-                player.sendMessage("Enter a valid trinket ID!");
-                return true;
-            }
+        trinketList.forEach(trinket -> player.sendMessage(trinket.getTrinketItem().toString()));
+    }
 
-           TrinketManager manager = Trinkets.getInstance().getManager();
-
-            int trinketID = Integer.parseInt(args[1]);
-            ItemStack trinket = manager.getTrinketByID(trinketID);
-
-            if (trinket == null) {
-                player.sendMessage("This trinket does not exist!");
-                return true;
-            }
-
-            player.getInventory().addItem(trinket);
-            return true;
+    /**
+     * Handles the /trinkets give command.
+     *
+     * @param player The player executing the command
+     * @param args   The arguments passed with the command
+     */
+    private void handleGive(Player player, String[] args) {
+        if (args.length < 2 || !isInteger(args[1])) {
+            player.sendMessage(PREFIX + INVALID_TRINKET_ID_MESSAGE);
+            return;
         }
 
-        // If command not recognized
-        player.sendMessage("Unknown command!");
-        return true;
+        TrinketManager manager = Trinkets.getInstance().getManager();
+
+        int trinketID = Integer.parseInt(args[1]);
+        ItemStack trinket = manager.getTrinketByID(trinketID);
+
+        if (trinket == null) {
+            player.sendMessage(PREFIX + TRINKET_NOT_FOUND_MESSAGE);
+            return;
+        }
+
+        player.getInventory().addItem(trinket);
     }
 
     /**
@@ -103,5 +148,14 @@ public class TrinketsCommand implements CommandExecutor {
             }
         }
         return true;
+    }
+
+    /**
+     * Gets the singleton instance of the TrinketsCommand class.
+     *
+     * @return The singleton instance of the TrinketsCommand class
+     */
+    public TrinketsCommand getInstance() {
+        return instance;
     }
 }

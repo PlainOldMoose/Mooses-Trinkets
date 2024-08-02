@@ -1,0 +1,9 @@
+# Prefix
+prefix: "§3§lTrinkets >>> "
+
+# Trinket slots
+# Use § for formatting codes
+HEAD_SLOT:
+  enabled: true
+  material: DIAMOND
+  name: '§2§lHelmet'
