@@ -1,0 +1,4 @@
+name: Trinkets
+version: '${project.version}'
+main: me.plainoldmoose.trinkets.Trinkets
+api-version: '1.20'
