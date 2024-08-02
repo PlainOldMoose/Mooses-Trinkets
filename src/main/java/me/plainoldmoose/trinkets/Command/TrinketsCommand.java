@@ -1,6 +1,8 @@
 package me.plainoldmoose.trinkets.Command;
 
 
+import me.plainoldmoose.trinkets.Data.Trinket;
+import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.GUI.TrinketsGUI;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.command.Command;
@@ -46,14 +48,14 @@ public class TrinketsCommand implements CommandExecutor {
 
         // List trinkets
         if (args[0].equalsIgnoreCase("list")) {
-            List<me.plainoldmoose.moosestrinkets.Data.Trinket> trinketList = Trinkets.getInstance().getManager().getTrinketList();
+            List<Trinket> trinketList = Trinkets.getInstance().getManager().getTrinketList();
             if (trinketList.isEmpty()) {
                 player.sendMessage("There are no trinkets!");
                 return true;
             }
 
             // Send each trinket's information to the player
-            for (me.plainoldmoose.moosestrinkets.Data.Trinket t : trinketList) {
+            for (Trinket t : trinketList) {
                 player.sendMessage(t.getTrinketItem().toString());
             }
             return true;
@@ -66,7 +68,7 @@ public class TrinketsCommand implements CommandExecutor {
                 return true;
             }
 
-            me.plainoldmoose.moosestrinkets.Data.TrinketManager manager = Trinkets.getInstance().getManager();
+           TrinketManager manager = Trinkets.getInstance().getManager();
 
             int trinketID = Integer.parseInt(args[1]);
             ItemStack trinket = manager.getTrinketByID(trinketID);

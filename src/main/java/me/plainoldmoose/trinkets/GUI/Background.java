@@ -1,4 +1,4 @@
-package me.plainoldmoose.moosestrinkets.GUI;
+package me.plainoldmoose.trinkets.GUI;
 
 import org.bukkit.inventory.ItemStack;
 

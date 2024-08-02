@@ -1,16 +1,18 @@
 package me.plainoldmoose.trinkets;
 
+import me.plainoldmoose.trinkets.Command.TrinketsCommand;
+import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.GUI.TrinketsListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Trinkets extends JavaPlugin {
 
-    private me.plainoldmoose.moosestrinkets.Data.TrinketManager manager = new me.plainoldmoose.moosestrinkets.Data.TrinketManager();
+    private TrinketManager manager = new TrinketManager();
 
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(new TrinketsListener(), this);
-        getCommand("trinkets").setExecutor(new me.plainoldmoose.moosestrinkets.Command.TrinketsCommand());
+        getCommand("trinkets").setExecutor(new TrinketsCommand());
     }
 
     @Override
@@ -22,7 +24,7 @@ public final class Trinkets extends JavaPlugin {
         return getPlugin(Trinkets.class);
     }
 
-    public me.plainoldmoose.moosestrinkets.Data.TrinketManager getManager() {
+    public TrinketManager getManager() {
         return this.manager;
     }
 }

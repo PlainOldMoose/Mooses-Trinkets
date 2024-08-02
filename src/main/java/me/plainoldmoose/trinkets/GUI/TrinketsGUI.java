@@ -23,7 +23,7 @@ public class TrinketsGUI {
     final int size = 54; // Inventory size
     final String title = "               Trinkets"; // GUI title
     final HashMap<Integer, Button> buttonMap = new HashMap<Integer, Button>(); // List of buttons in the GUI
-    final List<me.plainoldmoose.moosestrinkets.GUI.Background> backgroundList = new ArrayList<>(); // List of background tiles in the GUI
+    final List<Background> backgroundList = new ArrayList<>(); // List of background tiles in the GUI
     private static Chat chat = null; // Vault chat instance for prefix handling
 
     Inventory inventory; // Inventory instance for the GUI
@@ -69,7 +69,7 @@ public class TrinketsGUI {
      *
      * @return List of Background objects.
      */
-    public final List<me.plainoldmoose.moosestrinkets.GUI.Background> getBackgrounds() {
+    public final List<Background> getBackgrounds() {
         return backgroundList;
     }
 
@@ -102,7 +102,7 @@ public class TrinketsGUI {
      */
     public void updateGUI() {
         // Set items for background tiles
-        for (me.plainoldmoose.moosestrinkets.GUI.Background background : backgroundList) {
+        for (Background background : backgroundList) {
             inventory.setItem(background.getSlot(), background.getItem());
         }
 
@@ -117,7 +117,7 @@ public class TrinketsGUI {
      */
     public void createBackgroundTiles() {
         for (int i = 0; i < this.size; i++) {
-            backgroundList.add(new me.plainoldmoose.moosestrinkets.GUI.Background(createItemStack(Material.GRAY_STAINED_GLASS_PANE, " "), i) {
+            backgroundList.add(new Background(createItemStack(Material.GRAY_STAINED_GLASS_PANE, " "), i) {
             });
         }
     }

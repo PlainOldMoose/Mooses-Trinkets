@@ -16,7 +16,7 @@ public class TrinketsListener implements Listener {
         if (eventPlayer.hasMetadata("TrinketsGUI")) {
             final TrinketsGUI menu = (TrinketsGUI) eventPlayer.getMetadata("TrinketsGUI").get(0).value();
 
-            for (final me.plainoldmoose.moosestrinkets.GUI.Background background : menu.getBackgrounds()) {
+            for (final Background background : menu.getBackgrounds()) {
                 if (background.getSlot() == event.getSlot()) {
                     event.setCancelled(true);
                 }

@@ -1,4 +1,4 @@
-package me.plainoldmoose.moosestrinkets.Data;
+package me.plainoldmoose.trinkets.Data;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -10,11 +10,11 @@ public class TrinketManager {
     private List<Trinket> trinketList = new ArrayList<Trinket>();
 
     public TrinketManager() {
-        Trinket test = new me.plainoldmoose.moosestrinkets.Data.Trinket(0, new ItemStack(Material.DIAMOND), true);
+        Trinket test = new Trinket(0, new ItemStack(Material.DIAMOND), true);
         trinketList.add(test);
     }
 
-    public void addTrinket(me.plainoldmoose.moosestrinkets.Data.Trinket trinket) {
+    public void addTrinket(Trinket trinket) {
         this.trinketList.add(trinket);
     }
 
@@ -40,7 +40,7 @@ public class TrinketManager {
         return null;
     }
 
-    public List<me.plainoldmoose.moosestrinkets.Data.Trinket> getTrinketList() {
+    public List<Trinket> getTrinketList() {
         return trinketList;
     }
 }

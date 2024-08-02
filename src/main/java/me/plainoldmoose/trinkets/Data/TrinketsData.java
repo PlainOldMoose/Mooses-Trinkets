@@ -1,6 +1,6 @@
-package me.plainoldmoose.moosestrinkets.Data;
+package me.plainoldmoose.trinkets.Data;
 
-import me.plainoldmoose.moosestrinkets.MoosesTrinkets;
+import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -17,10 +17,10 @@ public class TrinketsData {
     }
 
     private void loadConfig() {
-        configFile = new File(MoosesTrinkets.getInstance().getDataFolder(), "config.yml");
+        configFile = new File(Trinkets.getInstance().getDataFolder(), "config.yml");
 
         if (!configFile.exists()) {
-            MoosesTrinkets.getInstance().saveResource("config.yml", false);
+            Trinkets.getInstance().saveResource("config.yml", false);
         }
 
         fileConfig = new YamlConfiguration();

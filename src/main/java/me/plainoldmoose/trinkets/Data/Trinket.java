@@ -1,4 +1,4 @@
-package me.plainoldmoose.moosestrinkets.Data;
+package me.plainoldmoose.trinkets.Data;
 
 import org.bukkit.inventory.ItemStack;
 
