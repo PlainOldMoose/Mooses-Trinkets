@@ -5,21 +5,26 @@ import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.GUI.TrinketsGUI;
 import me.plainoldmoose.trinkets.Trinkets;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handles the /trinkets command for players.
  * This command allows players to interact with trinkets by listing them, giving specific trinkets,
  * or opening the trinkets GUI.
  */
-public class TrinketsCommand implements CommandExecutor {
+public class TrinketsCommand implements CommandExecutor, TabCompleter {
     private static final TrinketsCommand instance = new TrinketsCommand();
 
     private String ONLY_PLAYERS_MESSAGE;
@@ -158,4 +163,44 @@ public class TrinketsCommand implements CommandExecutor {
     public TrinketsCommand getInstance() {
         return instance;
     }
+
+    /**
+     * Provides tab completion for the wardrobe command.
+     *
+     * @param sender  The source of the command
+     * @param command The command that was executed
+     * @param label   The alias of the command which was used
+     * @param args    The arguments passed to the command
+     * @return A list of possible completions for the last argument, or null for all players
+     */
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+
+        if (!sender.hasPermission("trinkets.admin")) {
+            return new ArrayList<>();
+        }
+
+        if (args.length == 1) {
+            List<String> completions = new ArrayList<>();
+
+            completions.add("reload");
+            completions.add("reset");
+
+            return completions.stream()
+                    .filter(option -> option.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("reset")) {
+            // Tab completion for the second argument (player names for reset)
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[1].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return new ArrayList<>(); // Return an empty list if no completions are found
+    }
 }
+
+

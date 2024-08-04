@@ -11,5 +11,7 @@ commands:
     permission: trinkets.open
     permission-message: "You do not have permission to open your trinkets!"
 permissions:
+  trinkets.admin:
+    default: op
   trinkets.open:
     default: op
