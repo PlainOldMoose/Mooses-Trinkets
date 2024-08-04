@@ -49,12 +49,8 @@ public abstract class Button {
         return this.enabled;
     }
 
-    public void enable() {
-        this.enabled = true;
-    }
-
-    public void disable() {
-        this.enabled = false;
+    public void setVisibility(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public void setItemStack(ItemStack item) {

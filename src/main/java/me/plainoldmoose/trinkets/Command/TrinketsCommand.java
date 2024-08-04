@@ -62,7 +62,12 @@ public class TrinketsCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            new TrinketsGUI().displayTo(player);
+            try {
+                new TrinketsGUI().displayTo(player);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return true;
         }
 

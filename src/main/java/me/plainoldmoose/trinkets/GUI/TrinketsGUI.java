@@ -5,12 +5,15 @@ import me.plainoldmoose.trinkets.Trinkets;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.*;
@@ -32,25 +35,25 @@ public class TrinketsGUI {
     private ItemStack HEAD_TRINKET_BACKGROUND;
     private boolean HEAD_TRINKET_ENABLED;
 
-    private static int NECK_TRINKET_SLOT = 22;
-    private static Material NECKLACE_TRINKET_BACKGROUND = Material.ORANGE_STAINED_GLASS_PANE;
-    private static String NECKLACE_TRINKET_NAME = "Necklace Slot";
+    private int NECK_TRINKET_SLOT;
+    private ItemStack NECK_TRINKET_BACKGROUND;
+    private boolean NECK_TRINKET_ENABLED;
 
-    private static int LEFT_ARM_TRINKET_SLOT = 21;
-    private static Material LEFT_ARM_TRINKET_BACKGROUND = Material.GREEN_STAINED_GLASS_PANE;
-    private static String LEFT_ARM_TRINKET_NAME = "Left Arm Slot";
+    private int LEFT_ARM_TRINKET_SLOT;
+    private ItemStack LEFT_ARM_TRINKET_BACKGROUND;
+    private boolean LEFT_ARM_TRINKET_ENABLED;
 
-    private static int RIGHT_ARM_TRINKET_SLOT = 23;
-    private static Material RIGHT_ARM_TRINKET_BACKGROUND = Material.CYAN_STAINED_GLASS_PANE;
-    private static String RIGHT_ARM_TRINKET_NAME = "Right Arm Slot";
+    private int RIGHT_ARM_TRINKET_SLOT;
+    private ItemStack RIGHT_ARM_TRINKET_BACKGROUND;
+    private boolean RIGHT_ARM_TRINKET_ENABLED;
 
-    private static int LEG_TRINKET_SLOT = 31;
-    private static Material LEG_TRINKET_BACKGROUND = Material.PINK_STAINED_GLASS_PANE;
-    private static String LEG_TRINKET_NAME = "Leg Slot";
+    private int LEG_TRINKET_SLOT;
+    private ItemStack LEG_TRINKET_BACKGROUND;
+    private boolean LEG_TRINKET_ENABLED;
 
-    private static  int FEET_TRINKET_SLOT = 40;
-    private static  Material FEET_TRINKET_BACKGROUND = Material.YELLOW_STAINED_GLASS_PANE;
-    private static  String FEET_TRINKET_NAME = "Feet Slot";
+    private int FEET_TRINKET_SLOT;
+    private ItemStack FEET_TRINKET_BACKGROUND;
+    private boolean FEET_TRINKET_ENABLED;
 
     /**
      * Sets up Vault chat for handling player prefixes.
@@ -85,7 +88,7 @@ public class TrinketsGUI {
      * @param player Player to display the GUI to.
      */
     public void displayTo(Player player) {
-        loadTrinketSlotConfig();
+        loadTrinketSlots();
 
         if (!setupChat()) {
             return; // Cannot proceed without chat setup failed
@@ -138,8 +141,13 @@ public class TrinketsGUI {
      * Creates the slot buttons for the GUI.
      */
     public void createSlotButtons() {
-        System.out.println(TrinketsData.getInstance().getTrinketSlotMap().get("HEAD_SLOT").getItemMeta().getDisplayName());
         createButton(HEAD_TRINKET_SLOT, HEAD_TRINKET_BACKGROUND, this::headSlotAction, HEAD_TRINKET_ENABLED);
+        createButton(NECK_TRINKET_SLOT, NECK_TRINKET_BACKGROUND, this::headSlotAction, NECK_TRINKET_ENABLED);
+        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, this::headSlotAction, LEFT_ARM_TRINKET_ENABLED);
+        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, this::headSlotAction, RIGHT_ARM_TRINKET_ENABLED);
+        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, this::headSlotAction, LEG_TRINKET_ENABLED);
+        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, this::headSlotAction, FEET_TRINKET_ENABLED);
+
 //        createButton(NECK_TRINKET_SLOT, NECKLACE_TRINKET_BACKGROUND, "Necklace Slot", player -> player.sendMessage("Neckslot"));
 //        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, "Left arm Slot", player -> player.sendMessage("Left slot"));
 //        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, "Right arm slot", player -> player.sendMessage("Right arm Slot"));
@@ -161,7 +169,7 @@ public class TrinketsGUI {
                 onClickAction.accept(player);
             }
         };
-        
+
         button.setVisibility(enabled);
         buttonMap.put(slot, button);
     }
@@ -222,15 +230,71 @@ public class TrinketsGUI {
         return backgroundList;
     }
 
-    // TODO - Set this up to load all slots
-    public void loadTrinketSlotConfig() {
-        HEAD_TRINKET_SLOT = 13;
-        HEAD_TRINKET_BACKGROUND = TrinketsData.getInstance().getTrinketSlotMap().get("HEAD_SLOT");
-        if (HEAD_TRINKET_BACKGROUND.getItemMeta().getDisplayName().equalsIgnoreCase("disabled")) {
-            HEAD_TRINKET_ENABLED = false;
-            return;
+    private boolean isTrinketSlotEnabled(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
+        NamespacedKey enabledKey = new NamespacedKey(Trinkets.getInstance(), "enabled");
+
+        return dataContainer.has(enabledKey, PersistentDataType.INTEGER) && dataContainer.get(enabledKey, PersistentDataType.INTEGER) == 1;
+    }
+
+    private int getTrinketSlot(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
+        NamespacedKey slotKeyNamespace = new NamespacedKey(Trinkets.getInstance(), "slot");
+
+        return dataContainer.get(slotKeyNamespace, PersistentDataType.INTEGER);
+    }
+
+    private void loadTrinketSlots() {
+        loadTrinketSlotConfig("HEAD");
+        loadTrinketSlotConfig("NECK");
+        loadTrinketSlotConfig("LEFT_ARM");
+        loadTrinketSlotConfig("RIGHT_ARM");
+        loadTrinketSlotConfig("LEG");
+        loadTrinketSlotConfig("FEET");
+    }
+
+
+    private void loadTrinketSlotConfig(String slotKey) {
+        ItemStack background = TrinketsData.getInstance().getTrinketSlotMap().get(slotKey);
+        int slot = getTrinketSlot(background);
+        boolean isEnabled = isTrinketSlotEnabled(background);
+
+        switch (slotKey) {
+            case "HEAD":
+                HEAD_TRINKET_SLOT = slot;
+                HEAD_TRINKET_BACKGROUND = background;
+                HEAD_TRINKET_ENABLED = isEnabled;
+                break;
+            case "NECK":
+                NECK_TRINKET_SLOT = slot;
+                NECK_TRINKET_BACKGROUND = background;
+                NECK_TRINKET_ENABLED = isEnabled;
+                break;
+            case "LEFT_ARM":
+                LEFT_ARM_TRINKET_SLOT = slot;
+                LEFT_ARM_TRINKET_BACKGROUND = background;
+                LEFT_ARM_TRINKET_ENABLED = isEnabled;
+                break;
+            case "RIGHT_ARM":
+                RIGHT_ARM_TRINKET_SLOT = slot;
+                RIGHT_ARM_TRINKET_BACKGROUND = background;
+                RIGHT_ARM_TRINKET_ENABLED = isEnabled;
+                break;
+            case "LEG":
+                LEG_TRINKET_SLOT = slot;
+                LEG_TRINKET_BACKGROUND = background;
+                LEG_TRINKET_ENABLED = isEnabled;
+                break;
+            case "FEET":
+                FEET_TRINKET_SLOT = slot;
+                FEET_TRINKET_BACKGROUND = background;
+                FEET_TRINKET_ENABLED = isEnabled;
+                break;
         }
-        HEAD_TRINKET_ENABLED = true;
     }
 
     /**

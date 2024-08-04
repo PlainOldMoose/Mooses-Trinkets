@@ -3,7 +3,39 @@ prefix: "§3§lTrinkets >>> "
 
 # Trinket slots
 # Use § for formatting codes
-HEAD_SLOT:
+HEAD:
   enabled: true
+  slot: 13
   material: DIAMOND
   name: '§2§lHelmet'
+
+NECK:
+  enabled: true
+  slot: 22
+  material: DIAMOND
+  name: '§2§lHelmet'
+
+LEFT_ARM:
+  enabled: true
+  slot: 21
+  material: DIAMOND
+  name: '§2§lHelmet'
+
+RIGHT_ARM:
+  enabled: true
+  slot: 23
+  material: DIAMOND
+  name: '§2§lHelmet'
+
+LEG:
+  enabled: true
+  slot: 31
+  material: DIAMOND
+  name: '§2§lHelmet'
+
+FEET:
+  enabled: true
+  slot: 40
+  material: DIAMOND
+  name: '§2§lHelmet'
+
