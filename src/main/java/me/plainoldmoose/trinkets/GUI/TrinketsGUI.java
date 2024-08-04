@@ -147,12 +147,6 @@ public class TrinketsGUI {
         createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, this::headSlotAction, RIGHT_ARM_TRINKET_ENABLED);
         createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, this::headSlotAction, LEG_TRINKET_ENABLED);
         createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, this::headSlotAction, FEET_TRINKET_ENABLED);
-
-//        createButton(NECK_TRINKET_SLOT, NECKLACE_TRINKET_BACKGROUND, "Necklace Slot", player -> player.sendMessage("Neckslot"));
-//        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, "Left arm Slot", player -> player.sendMessage("Left slot"));
-//        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, "Right arm slot", player -> player.sendMessage("Right arm Slot"));
-//        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, "Leg slot", player -> player.sendMessage("Leg Slot"));
-//        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, "Feet slot", player -> player.sendMessage("Feet Slot"));
     }
 
     /**
@@ -174,6 +168,9 @@ public class TrinketsGUI {
         buttonMap.put(slot, button);
     }
 
+
+
+    // TODO - make this method generic and not specific to head slot
     /**
      * Action performed when the head slot button is clicked.
      *
@@ -230,24 +227,37 @@ public class TrinketsGUI {
         return backgroundList;
     }
 
+    /**
+     * Checks if the given ItemStack has correct MetaData to be enabled.
+     *
+     * @param item The ItemStack to check.
+     * @return True if the trinket slot is enabled, false otherwise.
+     */
     private boolean isTrinketSlotEnabled(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-
         PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
         NamespacedKey enabledKey = new NamespacedKey(Trinkets.getInstance(), "enabled");
 
         return dataContainer.has(enabledKey, PersistentDataType.INTEGER) && dataContainer.get(enabledKey, PersistentDataType.INTEGER) == 1;
     }
 
-    private int getTrinketSlot(ItemStack item) {
+    /**
+     * Retrieves the trinket slot index from the given ItemStack.
+     *
+     * @param item The ItemStack to retrieve the slot index from.
+     * @return The trinket slot index.
+     */
+    private int getTrinketSlotIndex(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-
         PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
         NamespacedKey slotKeyNamespace = new NamespacedKey(Trinkets.getInstance(), "slot");
 
         return dataContainer.get(slotKeyNamespace, PersistentDataType.INTEGER);
     }
 
+    /**
+     * Loads the configuration for all trinket slots.
+     */
     private void loadTrinketSlots() {
         loadTrinketSlotConfig("HEAD");
         loadTrinketSlotConfig("NECK");
@@ -257,10 +267,14 @@ public class TrinketsGUI {
         loadTrinketSlotConfig("FEET");
     }
 
-
+    /**
+     * Loads the configuration for a specific trinket slot and updates relevant fields.
+     *
+     * @param slotKey The key of the trinket slot to load.
+     */
     private void loadTrinketSlotConfig(String slotKey) {
         ItemStack background = TrinketsData.getInstance().getTrinketSlotMap().get(slotKey);
-        int slot = getTrinketSlot(background);
+        int slot = getTrinketSlotIndex(background);
         boolean isEnabled = isTrinketSlotEnabled(background);
 
         switch (slotKey) {
@@ -293,6 +307,8 @@ public class TrinketsGUI {
                 FEET_TRINKET_SLOT = slot;
                 FEET_TRINKET_BACKGROUND = background;
                 FEET_TRINKET_ENABLED = isEnabled;
+                break;
+            default:
                 break;
         }
     }

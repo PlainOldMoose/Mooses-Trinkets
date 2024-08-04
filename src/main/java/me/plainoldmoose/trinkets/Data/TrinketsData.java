@@ -18,6 +18,7 @@ import java.util.HashMap;
  * Manages the loading and storing of trinket data from a configuration file.
  */
 public class TrinketsData {
+
     private static final TrinketsData instance = new TrinketsData();
 
     private File configFile;
@@ -25,15 +26,14 @@ public class TrinketsData {
 
     private final HashMap<String, String> messagesMap = new HashMap<>();
     private final HashMap<String, ItemStack> trinketSlotMap = new HashMap<>();
-
-    private final HashMap<String, Integer> defaultTrinketSlots = new HashMap<String, Integer>();
+    private final HashMap<String, Integer> defaultTrinketSlots = new HashMap<>();
 
     private TrinketsData() {
         loadConfig();
     }
 
     /**
-     * Main load method, calls sub-methods to load individual components of the configuration.
+     * Loads the configuration file and initializes default values.
      */
     public void loadConfig() {
         configFile = new File(Trinkets.getInstance().getDataFolder(), "config.yml");
@@ -45,7 +45,6 @@ public class TrinketsData {
         fileConfig = YamlConfiguration.loadConfiguration(configFile);
         fileConfig.options().parseComments(true);
 
-        // TODO - setup proper error logging for this
         try {
             setUpDefaults();
             loadTrinketSlots();
@@ -55,6 +54,9 @@ public class TrinketsData {
         }
     }
 
+    /**
+     * Reloads the configuration file and updates the in-memory data.
+     */
     public void reloadConfig() {
         trinketSlotMap.clear();
         messagesMap.clear();
@@ -62,7 +64,9 @@ public class TrinketsData {
         Trinkets.getInstance().getCommandExecutor().update();
     }
 
-
+    /**
+     * Loads messages from the configuration file.
+     */
     private void loadMessages() {
         String prefix = fileConfig.getString("prefix");
         messagesMap.put("prefix", prefix);
@@ -72,6 +76,9 @@ public class TrinketsData {
         return messagesMap;
     }
 
+    /**
+     * Loads all trinket slots defined in the configuration file.
+     */
     private void loadTrinketSlots() {
         loadTrinketSlot("HEAD");
         loadTrinketSlot("NECK");
@@ -85,6 +92,9 @@ public class TrinketsData {
         return trinketSlotMap;
     }
 
+    /**
+     * Sets up the default index for trinket slots.
+     */
     private void setUpDefaults() {
         defaultTrinketSlots.put("HEAD", 13);
         defaultTrinketSlots.put("NECK", 22);
@@ -94,36 +104,77 @@ public class TrinketsData {
         defaultTrinketSlots.put("FEET", 40);
     }
 
-    private void loadTrinketSlot(String slotKey) {
-        String materialPath = slotKey + ".material";
-        String namePath = slotKey + ".name";
-        String enabledPath = slotKey + ".enabled";
-        String slotPath = slotKey + ".slot";
+    /**
+     * Loads a specific trinket slot from the configuration file.
+     *
+     * @param key The key of the trinket slot to load i.e. HEAD.
+     */
+    private void loadTrinketSlot(String key) {
+        String materialPath = key + ".material";
+        String namePath = key + ".name";
 
-        ItemStack trinketSlot = new ItemStack(Material.valueOf(fileConfig.getString(materialPath)));
-        ItemMeta trinketSlotMeta = trinketSlot.getItemMeta();
-        trinketSlotMeta.setDisplayName(fileConfig.getString(namePath));
+        ItemStack trinketSlotItem = createItemStack(materialPath);
+        ItemMeta trinketSlotMeta = trinketSlotItem.getItemMeta();
 
-        // Use PersistentDataContainer to store the enabled state
-        PersistentDataContainer dataContainer = trinketSlotMeta.getPersistentDataContainer();
+        setItemMetaName(trinketSlotMeta, namePath);
+        setPersistentData(trinketSlotMeta, key);
+
+        trinketSlotItem.setItemMeta(trinketSlotMeta);
+        trinketSlotMap.put(key, trinketSlotItem);
+    }
+
+    /**
+     * Creates an ItemStack from the configuration file.
+     *
+     * @param materialPath The path to the material in the configuration file.
+     * @return The created ItemStack.
+     */
+    private ItemStack createItemStack(String materialPath) {
+        Material material = Material.valueOf(fileConfig.getString(materialPath));
+        return new ItemStack(material);
+    }
+
+    /**
+     * Sets the display name of an ItemMeta from the configuration file.
+     *
+     * @param itemMeta The ItemMeta to modify.
+     * @param namePath The path to the display name in the configuration file.
+     */
+    private void setItemMetaName(ItemMeta itemMeta, String namePath) {
+        itemMeta.setDisplayName(fileConfig.getString(namePath));
+    }
+
+    /**
+     * Sets persistent data on an ItemMeta.
+     *
+     * @param itemMeta The ItemMeta to modify.
+     * @param key The key of the trinket slot.
+     */
+    private void setPersistentData(ItemMeta itemMeta, String key) {
+        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
         NamespacedKey enabledKey = new NamespacedKey(Trinkets.getInstance(), "enabled");
         NamespacedKey slotKeyNamespace = new NamespacedKey(Trinkets.getInstance(), "slot");
 
-        boolean isEnabled = fileConfig.getBoolean(enabledPath, true);
+        boolean isEnabled = fileConfig.getBoolean(key + ".enabled", true);
         dataContainer.set(enabledKey, PersistentDataType.INTEGER, isEnabled ? 1 : 0);
 
-        int slot;
-        try {
-            String slotAsString = fileConfig.getString(slotPath);
-            slot = Integer.parseInt(slotAsString);
-        } catch (NumberFormatException e) {
-            slot = defaultTrinketSlots.get(slotKey);
-        }
-
+        int slot = parseSlot(key);
         dataContainer.set(slotKeyNamespace, PersistentDataType.INTEGER, slot);
+    }
 
-        trinketSlot.setItemMeta(trinketSlotMeta);
-        trinketSlotMap.put(slotKey, trinketSlot);
+    /**
+     * Parses the slot index from the configuration file.
+     *
+     * @param key The key of the trinket slot.
+     * @return The slot index.
+     */
+    private int parseSlot(String key) {
+        String slotAsString = fileConfig.getString(key + ".slot");
+        try {
+            return Integer.parseInt(slotAsString);
+        } catch (NumberFormatException e) {
+            return defaultTrinketSlots.get(key);
+        }
     }
 
     public static TrinketsData getInstance() {
