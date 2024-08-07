@@ -16,7 +16,7 @@ public class TrinketManager {
      * Constructs a new TrinketManager and adds a default test trinket.
      */
     public TrinketManager() {
-        Trinket test = new Trinket(0, new ItemStack(Material.DIAMOND), "This is an example", true);
+        Trinket test = new Trinket(new ItemStack(Material.DIAMOND), "example1","This is an example", true);
         trinketList.add(test);
     }
 
@@ -28,34 +28,29 @@ public class TrinketManager {
         trinketList.remove(trinket);
     }
 
-//    /**
-//     * Gets a trinket by its display name.
-//     *
-//     * @param trinketName The name of the trinket to find
-//     * @return The ItemStack of the trinket, or null if not found
-//     */
-//    public ItemStack getTrinketByName(String trinketName) {
-//        for (Trinket t : trinketList) {
-//            if (t.getTrinketItem().getItemMeta().getDisplayName().equals(trinketName)) {
-//                return t.getTrinketItem();
-//            }
-//        }
-//        return null;
-//    }
-
     /**
-     * Gets a trinket by its ID.
+     * Gets a trinket by its display name.
      *
-     * @param trinketID The ID of the trinket to find
+     * @param trinketName The name of the trinket to find
      * @return The ItemStack of the trinket, or null if not found
      */
-    public ItemStack getTrinketByID(int trinketID) {
+    public ItemStack getTrinketByName(String trinketName) {
         for (Trinket t : trinketList) {
-            if (t.getTrinketID() == trinketID) {
+            if (t.getName().equals(trinketName)) {
                 return t.getTrinketItem();
             }
         }
         return null;
+    }
+
+    public List<String> getTrinketNameList() {
+        ArrayList<String> list = new ArrayList<String>();
+
+        for (Trinket t : trinketList) {
+            list.add(t.getName());
+        }
+
+        return list;
     }
 
     public List<Trinket> getTrinketList() {

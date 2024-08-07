@@ -17,8 +17,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <source>8</source>
+          <target>8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -48,8 +48,18 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>auxilor</id>
+      <url>https://repo.auxilor.io/repository/maven-public/</url>
+    </repository>
   </repositories>
   <dependencies>
+    <dependency>
+      <groupId>com.willfp</groupId>
+      <artifactId>eco</artifactId>
+      <version>6.73.3</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>

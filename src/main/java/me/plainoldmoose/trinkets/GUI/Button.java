@@ -1,5 +1,6 @@
 package me.plainoldmoose.trinkets.GUI;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,9 +13,11 @@ public abstract class Button {
     private ItemStack item;
     private final int slot;
     private boolean enabled;
+    private ItemStack containedItem;
 
     /**
      * Constructor to create a Button at a specified slot.
+     *
      *
      * @param slot      The slot number where the button will be placed.
      * @param itemStack
@@ -55,6 +58,23 @@ public abstract class Button {
 
     public void setItemStack(ItemStack item) {
         this.item = item;
+    }
+
+    public ItemStack pop() {
+        if (containedItem == null) {
+            return new ItemStack(Material.AIR);
+        }
+        ItemStack item = containedItem;
+        containedItem = null;
+        return item;
+    }
+
+    public void push(ItemStack item) {
+        containedItem = item;
+    }
+
+    public ItemStack getContainedItem() {
+        return containedItem;
     }
 
     /**

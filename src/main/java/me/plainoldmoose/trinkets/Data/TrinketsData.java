@@ -2,8 +2,10 @@ package me.plainoldmoose.trinkets.Data;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +34,21 @@ public class TrinketsData {
         loadConfig();
     }
 
+    public static void colorizeConfig(FileConfiguration config) {
+        colorizeSection(config);
+    }
+
+    private static void colorizeSection(ConfigurationSection section) {
+        for (String key : section.getKeys(false)) {
+            Object value = section.get(key);
+            if (value instanceof String) {
+                section.set(key, ChatColor.translateAlternateColorCodes('&', (String) value));
+            } else if (value instanceof ConfigurationSection) {
+                colorizeSection((ConfigurationSection) value);
+            }
+        }
+    }
+
     /**
      * Loads the configuration file and initializes default values.
      */
@@ -44,6 +61,7 @@ public class TrinketsData {
 
         fileConfig = YamlConfiguration.loadConfiguration(configFile);
         fileConfig.options().parseComments(true);
+        colorizeConfig(fileConfig);
 
         try {
             setUpDefaults();

@@ -1,44 +1,43 @@
 # Prefix
-prefix: "§b§lTrinkets §8» §r§3"
-message-format: "§r§f"
+prefix: "&b&lTrinkets &8» &r&3"
+message-format: "&r&f"
 
 background-material: GRAY_STAINED_GLASS_PANE
 
 # Trinket slots
-# Use § for formatting codes
+# Use & for formatting codes
 HEAD:
   enabled: true
   slot: 13
   material: RED_STAINED_GLASS_PANE
-  name: '§2§lHead'
+  name: '&2&lHead'
 
 NECK:
   enabled: true
   slot: 22
   material: GREEN_STAINED_GLASS_PANE
-  name: '§2§lNeck'
+  name: '&2&lNeck'
 
 LEFT_ARM:
   enabled: true
   slot: 21
   material: CYAN_STAINED_GLASS_PANE
-  name: '§2§lLeft Hand'
+  name: '&2&lLeft Hand'
 
 RIGHT_ARM:
   enabled: true
   slot: 23
   material: ORANGE_STAINED_GLASS_PANE
-  name: '§2§lRight Hand'
+  name: '&2&lRight Hand'
 
 LEG:
   enabled: true
   slot: 31
   material: PURPLE_STAINED_GLASS_PANE
-  name: '§2§lLeg'
+  name: '&2&lLeg'
 
 FEET:
   enabled: true
   slot: 40
   material: YELLOW_STAINED_GLASS_PANE
-  name: '§2§lAnkle'
-
+  name: '&2&lAnkle'

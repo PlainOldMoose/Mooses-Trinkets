@@ -1,9 +1,13 @@
 package me.plainoldmoose.trinkets.GUI;
 
+import com.willfp.eco.core.data.PlayerProfile;
+import com.willfp.eco.core.data.keys.PersistentDataKey;
+import com.willfp.eco.core.data.keys.PersistentDataKeyType;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Trinkets;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -17,7 +21,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Class representing the Trinkets GUI.
@@ -120,11 +124,25 @@ public class TrinketsGUI {
         for (Map.Entry<Integer, Button> entry : buttonMap.entrySet()) {
             Button button = entry.getValue();
             if (button.isEnabled()) {
-                inventory.setItem(button.getSlot(), button.getItem());
+                if (button.getContainedItem() != null) {
+                    inventory.setItem(button.getSlot(), button.getContainedItem());
+                } else {
+                    inventory.setItem(button.getSlot(), button.getItem());
+                }
             }
         }
 
         createPlayerSkullIcon(player); // Create and set the player's skull icon
+    }
+
+
+    // TODO - implement fetching all relevant skill data
+    public String fetchPlayerStats(Player player) {
+        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
+        NamespacedKey key = new NamespacedKey("ecoskills", "mining");
+        PersistentDataKey dataKey = new PersistentDataKey(key, PersistentDataKeyType.STRING, "");
+
+        return ChatColor.GOLD + "Mining: " + profile.read(dataKey).toString();
     }
 
     /**
@@ -141,12 +159,12 @@ public class TrinketsGUI {
      * Creates the slot buttons for the GUI.
      */
     public void createSlotButtons() {
-        createButton(HEAD_TRINKET_SLOT, HEAD_TRINKET_BACKGROUND, this::headSlotAction, HEAD_TRINKET_ENABLED);
-        createButton(NECK_TRINKET_SLOT, NECK_TRINKET_BACKGROUND, this::headSlotAction, NECK_TRINKET_ENABLED);
-        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, this::headSlotAction, LEFT_ARM_TRINKET_ENABLED);
-        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, this::headSlotAction, RIGHT_ARM_TRINKET_ENABLED);
-        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, this::headSlotAction, LEG_TRINKET_ENABLED);
-        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, this::headSlotAction, FEET_TRINKET_ENABLED);
+        createButton(HEAD_TRINKET_SLOT, HEAD_TRINKET_BACKGROUND, this::trinketOnClickHandler, HEAD_TRINKET_ENABLED);
+        createButton(NECK_TRINKET_SLOT, NECK_TRINKET_BACKGROUND, this::trinketOnClickHandler, NECK_TRINKET_ENABLED);
+        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, this::trinketOnClickHandler, LEFT_ARM_TRINKET_ENABLED);
+        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, this::trinketOnClickHandler, RIGHT_ARM_TRINKET_ENABLED);
+        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, this::trinketOnClickHandler, LEG_TRINKET_ENABLED);
+        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, this::trinketOnClickHandler, FEET_TRINKET_ENABLED);
     }
 
     /**
@@ -156,11 +174,11 @@ public class TrinketsGUI {
      * @param item          Item for the button.
      * @param onClickAction Action to be performed when the button is clicked.
      */
-    private void createButton(int slot, ItemStack item, Consumer<Player> onClickAction, boolean enabled) {
+    private void createButton(int slot, ItemStack item, BiConsumer<Player, Integer> onClickAction, boolean enabled) {
         Button button = new Button(slot, item) {
             @Override
             public void onClick(Player player) {
-                onClickAction.accept(player);
+                onClickAction.accept(player, slot);
             }
         };
 
@@ -168,46 +186,33 @@ public class TrinketsGUI {
         buttonMap.put(slot, button);
     }
 
-
-
-    // TODO - make this method generic and not specific to head slot
-    /**
-     * Action performed when the head slot button is clicked.
-     *
-     * @param player Player who clicked the button.
-     */
-    private void headSlotAction(Player player) {
-        Button button = buttonMap.get(HEAD_TRINKET_SLOT);
+    private void trinketOnClickHandler(Player player, int slot) {
+        Button button = buttonMap.get(slot);
 
         ItemStack itemOnCursor = player.getItemOnCursor();
-        ItemStack buttonItem = button.getItem();
+        ItemStack buttonItem = button.getContainedItem();
 
-        if (buttonItem == HEAD_TRINKET_BACKGROUND && itemOnCursor.getType() == Material.AIR) {
-            return;
-        }
-
-        if (itemOnCursor.getType() == Material.AIR) {
-            ItemStack buttonItemStack = button.getItem();
-            player.setItemOnCursor(buttonItemStack);
-            button.setItemStack(HEAD_TRINKET_BACKGROUND);
+        if (!(itemOnCursor.getType() == Material.AIR)) {
+            ItemStack itemToReturn = button.pop();
+            button.push(itemOnCursor);
+            player.setItemOnCursor(itemToReturn);
 
             return;
         }
 
-        button.setItemStack(itemOnCursor);
-        player.setItemOnCursor(new ItemStack(Material.AIR));
+        player.setItemOnCursor(button.pop());
     }
 
-    // TODO - replace this with data loading, i.e. should have default in config.yml or if config provided load from there instead
-    private static ItemStack createDefaultBackground(Material material) {
-        ItemStack background = new ItemStack(material);
-        ItemMeta meta = background.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(" "); // Set to a blank space
-            background.setItemMeta(meta);
-        }
-        return background;
-    }
+//    // TODO - replace this with data loading, i.e. should have default in config.yml or if config provided load from there instead
+//    private static ItemStack createDefaultBackground(Material material) {
+//        ItemStack background = new ItemStack(material);
+//        ItemMeta meta = background.getItemMeta();
+//        if (meta != null) {
+//            meta.setDisplayName(" "); // Set to a blank space
+//            background.setItemMeta(meta);
+//        }
+//        return background;
+//    }
 
     /**
      * Gets the list of buttons in the GUI.
@@ -323,6 +328,7 @@ public class TrinketsGUI {
         ItemStack skull = createPlayerHead(PlayerUUID);
 
         ItemMeta meta = skull.getItemMeta();
+        meta.setLore(Arrays.asList(fetchPlayerStats(player)));
         meta.setDisplayName("§4§l" + getPlayerPrefix(player) + player.getName() + "'s trinkets");
         skull.setItemMeta(meta);
 

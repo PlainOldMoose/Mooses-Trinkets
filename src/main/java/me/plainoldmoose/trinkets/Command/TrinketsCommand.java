@@ -67,7 +67,11 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            new TrinketsGUI().displayTo(player);
+            try {
+                new TrinketsGUI().displayTo(player);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         }
 
@@ -119,15 +123,15 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
      * @param args   The arguments passed with the command
      */
     private void handleGive(Player player, String[] args) {
-        if (args.length < 2 || !isInteger(args[1])) {
+        if (args.length < 2) {
             player.sendMessage(PREFIX + INVALID_TRINKET_ID_MESSAGE);
             return;
         }
 
         TrinketManager manager = Trinkets.getInstance().getManager();
 
-        int trinketID = Integer.parseInt(args[1]);
-        ItemStack trinket = manager.getTrinketByID(trinketID);
+//        int trinketID = Integer.parseInt(args[1]);
+        ItemStack trinket = manager.getTrinketByName(args[1]);
 
         if (trinket == null) {
             player.sendMessage(PREFIX + TRINKET_NOT_FOUND_MESSAGE);
@@ -185,6 +189,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
 
             completions.add("reload");
             completions.add("reset");
+            completions.add("give");
 
             return completions.stream()
                     .filter(option -> option.toLowerCase().startsWith(args[0].toLowerCase()))
@@ -197,6 +202,11 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
                     .map(Player::getName)
                     .filter(name -> name.toLowerCase().startsWith(args[1].toLowerCase()))
                     .collect(Collectors.toList());
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
+            // Tab completion for the second argument (player names for reset)
+            return Trinkets.getInstance().getManager().getTrinketNameList();
         }
 
         return new ArrayList<>(); // Return an empty list if no completions are found
