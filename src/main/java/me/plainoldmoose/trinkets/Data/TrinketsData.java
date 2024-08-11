@@ -1,5 +1,6 @@
 package me.plainoldmoose.trinkets.Data;
 
+import me.plainoldmoose.trinkets.Data.handlers.*;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -14,6 +15,7 @@ public class TrinketsData {
     private final ConfigHandler configHandler = new ConfigHandler();
     private final MessageHandler messageHandler = new MessageHandler();
     private final SkillsHandler skillsHandler = new SkillsHandler();
+    private final IconHandler iconHandler = new IconHandler();
 
     public SkillsHandler getSkillsHandler() {
         return skillsHandler;
@@ -40,11 +42,16 @@ public class TrinketsData {
         loadConfig();
     }
 
+    public IconHandler getIconHandler() {
+        return iconHandler;
+    }
+
     public void loadConfig() {
         configHandler.loadConfig();
         trinketsHandler.loadConfig();
         messageHandler.loadConfig();
         skillsHandler.loadConfig();
+        iconHandler.loadConfig();
     }
 
     /**

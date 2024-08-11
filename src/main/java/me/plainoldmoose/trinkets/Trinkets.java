@@ -17,6 +17,7 @@ public final class Trinkets extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         // Register event listeners
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
 
@@ -26,6 +27,7 @@ public final class Trinkets extends JavaPlugin {
         // Update command configurations and load data
         commandExecutor.update();
         TrinketsData.getInstance().loadConfig();
+
     }
 
     @Override

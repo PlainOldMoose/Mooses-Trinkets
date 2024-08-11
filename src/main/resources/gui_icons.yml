@@ -1,0 +1,22 @@
+# Stats icons, these are icons at the top of the GUI that display a players stats and their values,
+# for the stat use the exact filename without .yml (e.g. "mining_fortune.yml" becomes "mining_fortune")
+# If none of your icons are loading, double-check the stat names
+
+# For player name use %playername%
+# For the player's skull use PLAYER_HEAD
+
+# exampleIcon1:
+#   material: PLAYER_HEAD
+#   name: "&c%playername%'s Stats"
+#   slot: 2
+#   stats:
+#     - mining_fortune
+#     - lumber_fortune
+#     - crit_chance
+
+exampleIcon1:
+   material: PLAYER_HEAD
+   name: "&c%playername%'s Stats - Configure me!"
+   slot: 4
+   stats:
+     -

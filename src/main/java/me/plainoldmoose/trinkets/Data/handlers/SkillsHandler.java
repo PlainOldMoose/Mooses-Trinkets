@@ -1,5 +1,6 @@
-package me.plainoldmoose.trinkets.Data;
+package me.plainoldmoose.trinkets.Data.handlers;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -38,6 +39,8 @@ public class SkillsHandler {
 
         if (pluginFolder.exists() && pluginFolder.isDirectory()) {
             return pluginFolder;
+        } else {
+            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading skills from eco, please check the configuration.");
         }
         return null;
     }

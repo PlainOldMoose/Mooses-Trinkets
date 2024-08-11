@@ -1,4 +1,4 @@
-package me.plainoldmoose.trinkets.Data;
+package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
@@ -32,7 +32,7 @@ public class MessageHandler {
         try {
             loadMessages();
         } catch (Exception e) {
-            Bukkit.getServer().getLogger().severe("Something went wrong loading YML config");
+            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading messages.yml, please check the configuration.");
         }
     }
 

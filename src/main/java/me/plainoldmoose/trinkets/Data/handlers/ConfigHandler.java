@@ -1,4 +1,4 @@
-package me.plainoldmoose.trinkets.Data;
+package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
@@ -45,7 +45,7 @@ public class ConfigHandler {
             loadTrinketSlots();
             loadBackgroundMaterials();
         } catch (Exception e) {
-            Bukkit.getServer().getLogger().severe("Something went wrong loading YML config");
+            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading config.yml, please check the configuration.");
         }
     }
 
@@ -85,6 +85,10 @@ public class ConfigHandler {
 
         trinketSlotItem.setItemMeta(trinketSlotMeta);
         trinketSlotMap.put(key, trinketSlotItem);
+    }
+
+    private void loadIcons() {
+
     }
 
     /**

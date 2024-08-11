@@ -1,7 +1,9 @@
 package me.plainoldmoose.trinkets.Data;
 
-import org.bukkit.Material;
+import me.plainoldmoose.trinkets.Data.handlers.Keys;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +14,17 @@ import java.util.List;
 public class TrinketManager {
     private final List<Trinket> trinketList = new ArrayList<>();
 
-    /**
-     * Constructs a new TrinketManager and adds a default test trinket.
-     */
-    public TrinketManager() {
-        Trinket test = new Trinket(new ItemStack(Material.DIAMOND), "example1","This is an example", true);
-        trinketList.add(test);
+    public void addTrinket(Trinket trinket) {
+        trinket.setItem(addTrinketFlag(trinket.getTrinketItem()));
+        trinketList.add(trinket);
     }
 
-    public void addTrinket(Trinket trinket) {
-        trinketList.add(trinket);
+    private ItemStack addTrinketFlag(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+
+        meta.getPersistentDataContainer().set(Keys.TRINKET, PersistentDataType.BOOLEAN, true);
+        item.setItemMeta(meta);
+        return item;
     }
 
     public void removeTrinket(Trinket trinket) {
@@ -38,6 +41,17 @@ public class TrinketManager {
         for (Trinket t : trinketList) {
             if (t.getName().equals(trinketName)) {
                 return t.getTrinketItem();
+            }
+        }
+        return null;
+    }
+
+    // TODO - Find better way to retrive trinket from itemstack.
+    public Trinket getTrinketByDisplayName(String trinketName) {
+        for (Trinket t : trinketList) {
+            System.out.println("Checking > " + t.getDisplayName() + " == " + trinketName);
+            if (t.getDisplayName().equals(trinketName)) {
+                return t;
             }
         }
         return null;

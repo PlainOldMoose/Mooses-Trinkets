@@ -1,6 +1,8 @@
+# Background tile
 background-material: GRAY_STAINED_GLASS_PANE
+secondary-background-material: BLACK_STAINED_GLASS_PANE
 
-# Trinket slots
+# Trinket slots (these are the actual slots that trinkets fit into, each trinket has a type e.g. Trinket.HEAD meaning that you can only fit trinkets of that type into this slot)
 # Use & for formatting codes
 HEAD:
   enabled: true

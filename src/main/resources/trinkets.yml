@@ -1,0 +1,12 @@
+Trinket1:
+  name: "trinket1"
+  material: STONE_SWORD
+  stats:
+    mining_fortune: 50
+
+Trinket2:
+  name: "trinket1"
+  material: STONE_SWORD
+  stats:
+    defense: 50
+

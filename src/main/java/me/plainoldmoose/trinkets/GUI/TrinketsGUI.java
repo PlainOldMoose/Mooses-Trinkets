@@ -1,47 +1,46 @@
 package me.plainoldmoose.trinkets.GUI;
 
-import me.plainoldmoose.trinkets.Data.ConfigHandler;
+import com.willfp.eco.core.data.PlayerProfile;
+import com.willfp.eco.core.data.keys.PersistentDataKey;
+import com.willfp.eco.core.data.keys.PersistentDataKeyType;
+import me.plainoldmoose.trinkets.Data.Trinket;
+import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
+import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
+import me.plainoldmoose.trinkets.Data.handlers.Keys;
 import me.plainoldmoose.trinkets.GUI.components.Background;
 import me.plainoldmoose.trinkets.GUI.components.Button;
+import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
 import me.plainoldmoose.trinkets.GUI.fetchers.ChatServiceFetcher;
 import me.plainoldmoose.trinkets.GUI.fetchers.PlayerStatsFetcher;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TrinketsGUI {
     private final int size = 54; // Inventory size
-
     // TODO - setup config for this
     private final String title = "               Trinkets"; // GUI title
-    private final HashMap<Integer, Button> buttonMap = new HashMap<>();
-
-    public List<Background> getBackgroundList() {
-        return backgroundList;
-    }
-
-    public HashMap<Integer, Button> getButtonMap() {
-        return buttonMap;
-    }
-
-    private final List<Background> backgroundList = new ArrayList<>();
     private Inventory inventory;
+
+    private final HashMap<Integer, Button> buttonMap = new HashMap<>();
+    private final List<Background> backgroundList = new ArrayList<>();
+    private List<StatsIcon> iconList = new ArrayList<>();
+
     private final ChatServiceFetcher chatSetup = new ChatServiceFetcher();
     private final PlayerStatsFetcher playerStatsFetcher = new PlayerStatsFetcher();
     private final ConfigHandler configHandler = TrinketsData.getInstance().getConfigHandler();
-
 
 
     /**
@@ -59,6 +58,7 @@ public class TrinketsGUI {
 
         inventory = Bukkit.createInventory(player, this.size, this.title);
         createBackgroundTiles();
+        createStatsIcons(player);
         createSlotButtons();
         updateGUI(player);
 
@@ -68,6 +68,62 @@ public class TrinketsGUI {
 
         player.setMetadata("TrinketsGUI", new FixedMetadataValue(Trinkets.getInstance(), this));
         player.openInventory(inventory);
+
+        for (StatsIcon icon : iconList) {
+            List<String> stats = icon.getStatsList();
+        }
+    }
+
+    private ItemStack changeItemStackName(ItemStack item, String newName) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(newName);
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private ItemStack changeItemStackLore(ItemStack item, List<String> lore) {
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    private void renderBackgrounds() {
+        for (Background background : backgroundList) {
+            inventory.setItem(background.getSlot(), background.getItem());
+        }
+    }
+
+    private void renderStatIcons(Player player) {
+        for (StatsIcon icon : iconList) {
+            String iconItemName = icon.getItem().getItemMeta().getDisplayName();
+            List<String> stats = icon.getStatsList();
+
+
+            // This is some fancy shenanigans because ItemStack is bad and I hate bukkit.
+            if (iconItemName.contains("%playername%")) {
+                if (icon.getItem().getType() == Material.PLAYER_HEAD) {
+                    icon.setItem(createPlayerHead(player.getUniqueId()));
+                }
+
+                iconItemName = iconItemName.replace("%playername%", player.getDisplayName());
+                icon.setItem(changeItemStackName(icon.getItem(), iconItemName));
+                icon.setItem(changeItemStackLore(icon.getItem(), stats));
+            }
+
+            inventory.setItem(icon.getSlot(), icon.getItem());
+        }
+    }
+
+    private void renderButtons() {
+        for (Map.Entry<Integer, Button> entry : buttonMap.entrySet()) {
+            Button button = entry.getValue();
+            if (button.isEnabled()) {
+                inventory.setItem(button.getSlot(), button.getContainedItem() != null ? button.getContainedItem() : button.getItem());
+            }
+        }
     }
 
     /**
@@ -76,19 +132,25 @@ public class TrinketsGUI {
      * @param player The player whose GUI will be updated.
      */
     public void updateGUI(Player player) {
-        for (Background background : backgroundList) {
-            inventory.setItem(background.getSlot(), background.getItem());
-        }
-
-        for (Map.Entry<Integer, Button> entry : buttonMap.entrySet()) {
-            Button button = entry.getValue();
-            if (button.isEnabled()) {
-                inventory.setItem(button.getSlot(), button.getContainedItem() != null ? button.getContainedItem() : button.getItem());
-            }
-        }
-
-        createPlayerSkullIcon(player);
+        renderBackgrounds();
+        createStatsIcons(player);
+        renderStatIcons(player);
+        renderButtons();
     }
+
+    private void createStatsIcons(Player player) {
+        // Load the icon list from the IconHandler
+        iconList = TrinketsData.getInstance().getIconHandler().getIconList();
+
+        for (StatsIcon icon : iconList) {
+            // Fetch the player stats for the current icon
+            List<String> fetchedStats = playerStatsFetcher.fetchPlayerStats(player, icon.getRawStatNames());
+
+            // Set the fetched stats list in the icon
+            icon.setListOfStats(fetchedStats);
+        }
+    }
+
 
     /**
      * Creates background tiles for the GUI based on configuration settings.
@@ -114,11 +176,12 @@ public class TrinketsGUI {
     /**
      * Adds a background item at the specified index in the GUI.
      *
-     * @param index The index in the inventory where the background item will be placed.
+     * @param index    The index in the inventory where the background item will be placed.
      * @param material The material of the background item.
      */
     private void addBackgroundItem(int index, Material material) {
-        backgroundList.add(new Background(createItemStack(material, " "), index){});
+        backgroundList.add(new Background(createItemStack(material, " "), index) {
+        });
     }
 
 
@@ -147,45 +210,70 @@ public class TrinketsGUI {
         buttonMap.put(slot.getSlot(), button);
     }
 
+
     /**
      * Handles the click event for a button in the GUI.
      * If the player is holding an item, it is swapped with the button's item. Otherwise, the button's item is placed in the player's cursor.
      *
      * @param player The player who clicked the button.
-     * @param slot The slot index of the button clicked.
+     * @param slot   The slot index of the button clicked.
      */
     private void buttonOnClickHandler(Player player, int slot) {
-        Button button = buttonMap.get(slot);
 
-        ItemStack itemOnCursor = player.getItemOnCursor();
-        ItemStack buttonItem = button.getContainedItem();
+        // TODO - implement removing item too
+        ItemStack item = player.getItemOnCursor();
+        ItemMeta meta = item.getItemMeta();
 
-        if (itemOnCursor.getType() != Material.AIR) {
-            ItemStack itemToReturn = button.pop();
-            button.push(itemOnCursor);
-            player.setItemOnCursor(itemToReturn);
-        } else {
-            player.setItemOnCursor(button.pop());
+        PersistentDataContainer itemContainer = player.getItemOnCursor().getItemMeta().getPersistentDataContainer();
+
+        if (!itemContainer.has(Keys.TRINKET)) {
+            return;
         }
-    }
 
-    /**
-     * Creates and sets the player's skull icon in the center of the GUI.
-     *
-     * @param player The player whose skull is to be displayed.
-     */
-    private void createPlayerSkullIcon(Player player) {
-        ItemStack skull = playerStatsFetcher.createPlayerHead(player.getUniqueId());
-        playerStatsFetcher.applyPlayerStats(skull, player);
+        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
+        TrinketManager manager = Trinkets.getInstance().getManager();
 
-        inventory.setItem(4, skull);
+        // TODO - find better way to retrieve trinket from itemstack.
+        Trinket t = manager.getTrinketByDisplayName(meta.getDisplayName());
+
+        Map<String, Integer> statsMap = t.getStats();
+
+        for (Map.Entry e : statsMap.entrySet()) {
+            String stat = (String) e.getKey();
+            int value = (int) e.getValue();
+
+            NamespacedKey key = new NamespacedKey("ecoskills", stat);
+            PersistentDataKey<Integer> intKey = new PersistentDataKey<>(key, PersistentDataKeyType.INT, 0);
+
+            Integer intValue = profile.read(intKey);
+            intValue += value;
+
+            profile.write(intKey, intValue);
+
+            player.sendMessage("Updated > " + intValue);
+
+//        Button button = buttonMap.get(slot);
+//
+//        ItemStack itemOnCursor = player.getItemOnCursor();
+//        ItemStack buttonItem = button.getContainedItem();
+//
+//        if (itemOnCursor.getType() != Material.AIR) {
+//            ItemStack itemToReturn = button.pop();
+//            button.push(itemOnCursor);
+//            player.setItemOnCursor(itemToReturn);
+//        } else {
+//            player.setItemOnCursor(button.pop());
+//        }
+//
+//        TrinketsData.getInstance().loadConfig();
+        }
     }
 
     /**
      * Creates an ItemStack with the specified material and name.
      *
      * @param material The material of the item.
-     * @param name The display name of the item.
+     * @param name     The display name of the item.
      * @return The created ItemStack.
      */
     private ItemStack createItemStack(Material material, String name) {
@@ -205,4 +293,32 @@ public class TrinketsGUI {
             slot.load();
         }
     }
+
+    public List<Background> getBackgroundList() {
+        return backgroundList;
+    }
+
+    public HashMap<Integer, Button> getButtonMap() {
+        return buttonMap;
+    }
+
+    /**
+     * Creates an item stack representing the head of the player with the given UUID.
+     *
+     * @param playerUUID The UUID of the player whose head is to be created.
+     * @return An ItemStack representing the player's head.
+     */
+    public ItemStack createPlayerHead(UUID playerUUID) {
+        Player player = Bukkit.getPlayer(playerUUID);
+
+        String playerName = player.getName();
+        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(playerName));
+        skull.setItemMeta(skullMeta);
+
+        return skull;
+    }
+
 }

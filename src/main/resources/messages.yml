@@ -1,3 +1,9 @@
 # Prefix
 prefix: "&b&lTrinkets &8» &r&3"
-message-format: "&r&f"
+
+# Messages
+invalid_trinket: "Enter a valid trinket ID!"
+trinket_not_found: "This trinket does not exist!"
+unknown_command: "Unknown command!"
+reload: "Reloaded!"
+no_trinkets: "There are no trinkets!"
