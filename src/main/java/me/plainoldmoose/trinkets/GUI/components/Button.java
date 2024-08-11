@@ -1,4 +1,4 @@
-package me.plainoldmoose.trinkets.GUI;
+package me.plainoldmoose.trinkets.GUI.components;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

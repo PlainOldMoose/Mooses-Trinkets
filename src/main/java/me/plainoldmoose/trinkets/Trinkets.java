@@ -3,7 +3,7 @@ package me.plainoldmoose.trinkets;
 import me.plainoldmoose.trinkets.Command.TrinketsCommand;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
-import me.plainoldmoose.trinkets.GUI.TrinketsListener;
+import me.plainoldmoose.trinkets.GUI.GUIListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -18,7 +18,7 @@ public final class Trinkets extends JavaPlugin {
     @Override
     public void onEnable() {
         // Register event listeners
-        getServer().getPluginManager().registerEvents(new TrinketsListener(), this);
+        getServer().getPluginManager().registerEvents(new GUIListener(), this);
 
         // Register commands and their executors
         getCommand("trinkets").setExecutor(commandExecutor);

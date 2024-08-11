@@ -13,6 +13,11 @@ public class TrinketsData {
     private static final TrinketsData instance = new TrinketsData();
     private final ConfigHandler configHandler = new ConfigHandler();
     private final MessageHandler messageHandler = new MessageHandler();
+    private final SkillsHandler skillsHandler = new SkillsHandler();
+
+    public SkillsHandler getSkillsHandler() {
+        return skillsHandler;
+    }
 
     public MessageHandler getMessageHandler() {
         return messageHandler;
@@ -39,6 +44,7 @@ public class TrinketsData {
         configHandler.loadConfig();
         trinketsHandler.loadConfig();
         messageHandler.loadConfig();
+        skillsHandler.loadConfig();
     }
 
     /**

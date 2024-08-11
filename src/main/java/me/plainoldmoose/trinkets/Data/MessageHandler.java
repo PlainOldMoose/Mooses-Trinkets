@@ -40,6 +40,11 @@ public class MessageHandler {
         return messagesMap;
     }
 
+    /**
+     * Colorsizes the configuration file's values.
+     *
+     * @param config The configuration file to colorize.
+     */
     public static void colorizeConfig(FileConfiguration config) {
         colorizeSection(config);
     }
@@ -56,13 +61,11 @@ public class MessageHandler {
     }
 
     /**
-     * Loads messages from the configuration file.
+     * Loads messages from the configuration file into the messagesMap.
      */
     private void loadMessages() {
-        // List of keys to fetch from the configuration file
         String[] keys = {"prefix", "invalid_trinket", "trinket_not_found", "unknown_command", "reload", "no_trinkets"};
 
-        // Loop through each key and put it into the messagesMap
         for (String key : keys) {
             String value = fileConfig.getString(key);
             messagesMap.put(key, value);

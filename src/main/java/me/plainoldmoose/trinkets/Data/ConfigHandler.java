@@ -43,25 +43,19 @@ public class ConfigHandler {
         try {
             setUpDefaults();
             loadTrinketSlots();
-            loadBackgroundMaterial();
+            loadBackgroundMaterials();
         } catch (Exception e) {
             Bukkit.getServer().getLogger().severe("Something went wrong loading YML config");
         }
     }
 
-    private void loadBackgroundMaterial() {
+    /**
+     * Loads the background materials from the configuration file.
+     */
+    private void loadBackgroundMaterials() {
         backgroundMaterial = Material.valueOf(fileConfig.getString("background-material"));
         secondaryBackgroundMaterial = Material.valueOf(fileConfig.getString("secondary-background-material"));
     }
-
-    public Material getBackgroundMaterial() {
-        return backgroundMaterial;
-    }
-
-    public Material getSecondaryBackgroundMaterial() {
-        return secondaryBackgroundMaterial;
-    }
-
 
     /**
      * Creates an ItemStack from the configuration file.
@@ -118,21 +112,6 @@ public class ConfigHandler {
         defaultTrinketSlots.put("FEET", 40);
     }
 
-    public static void colorizeConfig(FileConfiguration config) {
-        colorizeSection(config);
-    }
-
-    private static void colorizeSection(ConfigurationSection section) {
-        for (String key : section.getKeys(false)) {
-            Object value = section.get(key);
-            if (value instanceof String) {
-                section.set(key, ChatColor.translateAlternateColorCodes('&', (String) value));
-            } else if (value instanceof ConfigurationSection) {
-                colorizeSection((ConfigurationSection) value);
-            }
-        }
-    }
-
     /**
      * Sets the display name of an ItemMeta from the configuration file.
      *
@@ -147,7 +126,7 @@ public class ConfigHandler {
      * Sets persistent data on an ItemMeta.
      *
      * @param itemMeta The ItemMeta to modify.
-     * @param key The key of the trinket slot.
+     * @param key      The key of the trinket slot.
      */
     private void setPersistentData(ItemMeta itemMeta, String key) {
         PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
@@ -174,6 +153,35 @@ public class ConfigHandler {
         } catch (NumberFormatException e) {
             return defaultTrinketSlots.get(key);
         }
+    }
+
+    /**
+     * Colorsize the configuration file's values.
+     *
+     * @param config The configuration file to colorize.
+     */
+    public static void colorizeConfig(FileConfiguration config) {
+        colorizeSection(config);
+    }
+
+    private static void colorizeSection(ConfigurationSection section) {
+        for (String key : section.getKeys(false)) {
+            Object value = section.get(key);
+            if (value instanceof String) {
+                section.set(key, ChatColor.translateAlternateColorCodes('&', (String) value));
+            } else if (value instanceof ConfigurationSection) {
+                colorizeSection((ConfigurationSection) value);
+            }
+        }
+    }
+
+    // Getter methods
+    public Material getBackgroundMaterial() {
+        return backgroundMaterial;
+    }
+
+    public Material getSecondaryBackgroundMaterial() {
+        return secondaryBackgroundMaterial;
     }
 
     public HashMap<String, ItemStack> getTrinketIndexMap() {
