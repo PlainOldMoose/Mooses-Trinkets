@@ -22,6 +22,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Class representing the Trinkets GUI.
@@ -64,6 +65,8 @@ public class TrinketsGUI {
      *
      * @return true if setup was successful, false otherwise.
      */
+
+    // TODO - make this a soft depend
     private boolean setupChat() {
         RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
         if (rsp == null) {
@@ -135,36 +138,143 @@ public class TrinketsGUI {
         createPlayerSkullIcon(player); // Create and set the player's skull icon
     }
 
+//    public List<String> fetchPlayerFortuneStats(Player player) {
+//        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
+//        List<String> stats = new ArrayList<>();
+//
+//        if (profile == null) {
+//            stats.add(ChatColor.RED + "Profile not found!");
+//            return stats;
+//        }
+//
+//        // TODO - import this via a config
+//        String[] skillNames = {"attack_speed", "crit_chance", "crit_damage",  "farming_fortune", "ferocity", "health", "lumber_fortune", "mining_fortune", "sea_creature_chance", "speed", "strength", "wisdom"};
+//
+//    }
 
-    // TODO - implement fetching all relevant skill data
-    public String fetchPlayerStats(Player player) {
+    public List<String> fetchPlayerStats(Player player) {
+        List<String> stats = new ArrayList<>();
+        stats.add(" ");
         PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
-        NamespacedKey key = new NamespacedKey("ecoskills", "mining");
-        PersistentDataKey dataKey = new PersistentDataKey(key, PersistentDataKeyType.STRING, "");
 
-        return ChatColor.GOLD + "Mining: " + profile.read(dataKey).toString();
+        if (profile == null) {
+            stats.add(ChatColor.RED + "Profile not found!");
+            return stats;
+        }
+
+        // Skill names and their corresponding emojis with hex colors
+        Map<String, String> skillMap = Map.of(
+                "crit_chance", applyHexColor("#f7ff85") + "※ Crit Chance",
+                "crit_damage", applyHexColor("#5555FF") + "☠ Crit Damage",
+                "defense", applyHexColor("#e884b0") + "🛡 Defense",
+                "attack_speed", applyHexColor("#fcba03") + "⚔ Attack Speed",
+                "ferocity", applyHexColor("#6b0000") + "🔥 Ferocity",
+                "health", applyHexColor("#FF5555") + "❤ Health",
+                "speed", applyHexColor("#42f566") + "✦ Speed",
+                "strength", applyHexColor("#db0000") + "\uD83D\uDDE1 Strength",
+                "wisdom", applyHexColor("#40FFE6") + "✎ Wisdom"
+        );
+
+        List<String> order = List.of(
+                "defense",
+                "strength",
+                "crit_chance",
+                "crit_damage",
+                "speed",
+                "wisdom",
+                "ferocity",
+                "health"
+        );
+
+        // Fetch and format each skill stat in the specified order
+        for (String skill : order) {
+            String displayName = skillMap.get(skill);
+
+            NamespacedKey key = new NamespacedKey("ecoskills", skill);
+            PersistentDataKey<Integer> intKey = new PersistentDataKey<>(key, PersistentDataKeyType.INT, 0);
+            Integer intValue = profile.read(intKey);
+
+            if (intValue != null) {
+                stats.add(displayName + ChatColor.DARK_GRAY + " » " + ChatColor.WHITE + intValue);
+            }
+        }
+
+        return stats;
     }
+
+    private String applyHexColor(String hexColor) {
+        // Convert hex color code to Minecraft color code format
+        return "§x" + hexColor.substring(1).chars()
+                .mapToObj(c -> "§" + (char) c)
+                .collect(Collectors.joining());
+    }
+
+    // Utility method to capitalize the first letter
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+
+        // Replace underscores with spaces
+        str = str.replace('_', ' ');
+
+        // Capitalize the first letter
+        return Character.toUpperCase(str.charAt(0)) + str.substring(1).toLowerCase();
+    }
+
+
+//    // TODO - implement fetching all relevant skill data
+//    public String fetchPlayerStats(Player player) {
+//        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
+//        NamespacedKey mining = new NamespacedKey("ecoskills", "mining");
+//        NamespacedKey fishing = new NamespacedKey("ecoskills", "fishing");
+//        NamespacedKey combat = new NamespacedKey("ecoskills", "combat");
+//        NamespacedKey defense = new NamespacedKey("ecoskills", "defense");
+//        NamespacedKey strength = new NamespacedKey("ecoskills", "strength");
+//
+//        PersistentDataKey miningData = new PersistentDataKey(mining, PersistentDataKeyType.STRING, "");
+//
+//        return ChatColor.GOLD + "Mining: " + profile.read(dataKey).toString();
+//    }
 
     /**
      * Creates background tiles for the GUI.
      */
     public void createBackgroundTiles() {
-        for (int i = 0; i < this.size; i++) {
-            backgroundList.add(new Background(createItemStack(Material.GRAY_STAINED_GLASS_PANE, " "), i) {
-            });
+        Material backgroundMaterial = TrinketsData.getInstance().getConfigHandler().getBackgroundMaterial();
+        Material secondaryMaterial = TrinketsData.getInstance().getConfigHandler().getSecondaryBackgroundMaterial();
+
+        for (int row = 0; row < 6; row++) {
+            int firstColumnIndex = row * 9;
+            int lastColumnIndex = firstColumnIndex + 8;
+
+            // Add first and last columns
+            addBackgroundItem(firstColumnIndex, secondaryMaterial);
+            addBackgroundItem(lastColumnIndex, secondaryMaterial);
+
+            // Add the middle columns
+            for (int col = 1; col < 8; col++) {
+                int index = firstColumnIndex + col;
+                addBackgroundItem(index, backgroundMaterial);
+            }
         }
+    }
+
+    private void addBackgroundItem(int index, Material material) {
+        backgroundList.add(new Background(createItemStack(material, " "), index) {
+        });
     }
 
     /**
      * Creates the slot buttons for the GUI.
      */
     public void createSlotButtons() {
-        createButton(HEAD_TRINKET_SLOT, HEAD_TRINKET_BACKGROUND, this::trinketOnClickHandler, HEAD_TRINKET_ENABLED);
-        createButton(NECK_TRINKET_SLOT, NECK_TRINKET_BACKGROUND, this::trinketOnClickHandler, NECK_TRINKET_ENABLED);
-        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, this::trinketOnClickHandler, LEFT_ARM_TRINKET_ENABLED);
-        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, this::trinketOnClickHandler, RIGHT_ARM_TRINKET_ENABLED);
-        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, this::trinketOnClickHandler, LEG_TRINKET_ENABLED);
-        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, this::trinketOnClickHandler, FEET_TRINKET_ENABLED);
+        createButton(HEAD_TRINKET_SLOT, HEAD_TRINKET_BACKGROUND, this::buttonOnClickHandler, HEAD_TRINKET_ENABLED);
+        createButton(NECK_TRINKET_SLOT, NECK_TRINKET_BACKGROUND, this::buttonOnClickHandler, NECK_TRINKET_ENABLED);
+        createButton(LEFT_ARM_TRINKET_SLOT, LEFT_ARM_TRINKET_BACKGROUND, this::buttonOnClickHandler, LEFT_ARM_TRINKET_ENABLED);
+        createButton(RIGHT_ARM_TRINKET_SLOT, RIGHT_ARM_TRINKET_BACKGROUND, this::buttonOnClickHandler, RIGHT_ARM_TRINKET_ENABLED);
+        createButton(LEG_TRINKET_SLOT, LEG_TRINKET_BACKGROUND, this::buttonOnClickHandler, LEG_TRINKET_ENABLED);
+        createButton(FEET_TRINKET_SLOT, FEET_TRINKET_BACKGROUND, this::buttonOnClickHandler, FEET_TRINKET_ENABLED);
     }
 
     /**
@@ -186,7 +296,7 @@ public class TrinketsGUI {
         buttonMap.put(slot, button);
     }
 
-    private void trinketOnClickHandler(Player player, int slot) {
+    private void buttonOnClickHandler(Player player, int slot) {
         Button button = buttonMap.get(slot);
 
         ItemStack itemOnCursor = player.getItemOnCursor();
@@ -278,7 +388,9 @@ public class TrinketsGUI {
      * @param slotKey The key of the trinket slot to load.
      */
     private void loadTrinketSlotConfig(String slotKey) {
-        ItemStack background = TrinketsData.getInstance().getTrinketSlotMap().get(slotKey);
+        // Get map from config handler
+        HashMap<String, ItemStack> trinketIndexMap = TrinketsData.getInstance().getConfigHandler().getTrinketIndexMap();
+        ItemStack background = trinketIndexMap.get(slotKey);
         int slot = getTrinketSlotIndex(background);
         boolean isEnabled = isTrinketSlotEnabled(background);
 
@@ -323,13 +435,15 @@ public class TrinketsGUI {
      *
      * @param player Player whose skull icon is to be created.
      */
+
+//TODO - make this a softdepend (i.e. does't need a prefix to render fully.
     public void createPlayerSkullIcon(Player player) {
         UUID PlayerUUID = player.getPlayer().getUniqueId();
         ItemStack skull = createPlayerHead(PlayerUUID);
 
         ItemMeta meta = skull.getItemMeta();
-        meta.setLore(Arrays.asList(fetchPlayerStats(player)));
-        meta.setDisplayName("§4§l" + getPlayerPrefix(player) + player.getName() + "'s trinkets");
+        meta.setLore(fetchPlayerStats(player));
+        meta.setDisplayName("§f" + getPlayerPrefix(player) + player.getName() + "'s Trinkets");
         skull.setItemMeta(meta);
 
         inventory.setItem(4, skull);

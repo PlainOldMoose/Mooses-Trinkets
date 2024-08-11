@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,13 +40,15 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
      * Updates the command messages from the configuration.
      */
     public void update() {
-        PREFIX = TrinketsData.getInstance().getMessagesMap().get("prefix");
+        HashMap<String, String> messagesMap = TrinketsData.getInstance().getMessageHandler().getMessagesMap();
+
+        PREFIX = messagesMap.get("prefix");
         ONLY_PLAYERS_MESSAGE = "Only players can use this command!";
-        INVALID_TRINKET_ID_MESSAGE = "Enter a valid trinket ID!";
-        TRINKET_NOT_FOUND_MESSAGE = "This trinket does not exist!";
-        UNKNOWN_COMMAND_MESSAGE = "Unknown command!";
-        RELOADED_MESSAGE = "Reloaded!";
-        NO_TRINKETS_MESSAGE = "There are no trinkets!";
+        INVALID_TRINKET_ID_MESSAGE = messagesMap.get("invalid_trinket");
+        TRINKET_NOT_FOUND_MESSAGE = messagesMap.get("trinket_not_found");
+        UNKNOWN_COMMAND_MESSAGE = messagesMap.get("unknown_command");
+        RELOADED_MESSAGE = messagesMap.get("reload");
+        NO_TRINKETS_MESSAGE = messagesMap.get("no_trinkets");
     }
 
     /**

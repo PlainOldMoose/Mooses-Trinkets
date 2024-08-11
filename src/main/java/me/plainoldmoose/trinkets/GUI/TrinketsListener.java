@@ -19,6 +19,11 @@ public class TrinketsListener implements Listener {
         Inventory topInv = eventPlayer.getOpenInventory().getTopInventory();
 
         // Check if the clicked inventory is the Trinkets GUI
+
+        if (clickedInv == null){
+            return;
+        }
+
         if (!clickedInv.equals(topInv)) {
             return;
         }
