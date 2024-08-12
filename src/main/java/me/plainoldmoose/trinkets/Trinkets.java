@@ -18,16 +18,12 @@ public final class Trinkets extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        // Register event listeners
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
-
-        // Register commands and their executors
         getCommand("trinkets").setExecutor(commandExecutor);
+        TrinketsData.getInstance().loadConfig();
 
         // Update command configurations and load data
         commandExecutor.update();
-        TrinketsData.getInstance().loadConfig();
-
     }
 
     @Override

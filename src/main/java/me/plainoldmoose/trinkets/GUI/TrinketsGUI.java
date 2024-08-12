@@ -1,6 +1,12 @@
 package me.plainoldmoose.trinkets.GUI;
 
-import me.plainoldmoose.trinkets.GUI.components.*;
+import me.plainoldmoose.trinkets.Data.Trinket;
+import me.plainoldmoose.trinkets.Data.TrinketsData;
+import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
+import me.plainoldmoose.trinkets.GUI.components.Background;
+import me.plainoldmoose.trinkets.GUI.components.Button;
+import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
+import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
 import me.plainoldmoose.trinkets.GUI.fetchers.BackgroundFetcher;
 import me.plainoldmoose.trinkets.GUI.fetchers.ChatServiceFetcher;
 import me.plainoldmoose.trinkets.GUI.fetchers.PlayerStatsFetcher;
@@ -11,11 +17,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TrinketsGUI {
     private final int size = 54; // Inventory size
@@ -26,7 +31,6 @@ public class TrinketsGUI {
     private final HashMap<Integer, Button> buttonMap = new HashMap<>();
 
     private final ChatServiceFetcher chatSetup = new ChatServiceFetcher();
-    private final PlayerStatsFetcher playerStatsFetcher = new PlayerStatsFetcher();
     private final BackgroundFetcher BackgroundFetcher = new BackgroundFetcher();
     private final TrinketInteractionHandler trinketInteractionHandler = new TrinketInteractionHandler();
 
@@ -38,8 +42,6 @@ public class TrinketsGUI {
      * @param player The player to whom the GUI will be displayed.
      */
     public void displayTo(Player player) {
-        TrinketSlot.loadTrinketSlots();
-
         if (!chatSetup.setupChat()) {
             return; // Cannot proceed without chat setup failed
         }
@@ -47,6 +49,7 @@ public class TrinketsGUI {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundFetcher.createBackgroundTiles();
         createSlotButtons();
+        loadTrinketSaveData(player);
         updateGUI(player);
 
         if (player.hasMetadata("TrinketsGUI")) {
@@ -64,9 +67,9 @@ public class TrinketsGUI {
     }
 
     private void renderStatIcons(Player player) {
-        playerStatsFetcher.createStatsIcons(player);
+        PlayerStatsFetcher.createStatsIcons(player);
 
-        for (StatsIcon icon : playerStatsFetcher.getIconList()) {
+        for (StatsIcon icon : PlayerStatsFetcher.getIconList()) {
             String iconItemName = icon.getItem().getItemMeta().getDisplayName();
             List<String> stats = icon.getStatsList();
 
@@ -109,8 +112,42 @@ public class TrinketsGUI {
      * Creates buttons for each TrinketSlot and adds them to the button map.
      */
     private void createSlotButtons() {
-        for (TrinketSlot slot : TrinketSlot.values()) {
-            createButton(slot);
+        ConfigHandler configHandler = TrinketsData.getInstance().getConfigHandler();
+        Set<TrinketSlot> trinketSlotSet = configHandler.getTrinketSlotSet();
+
+        for (TrinketSlot ts : trinketSlotSet) {
+            createButton(ts);
+        }
+//
+//        Map<String, ItemStack> trinketSlotsMap = configHandler.getTrinketSlotMap();
+//
+//        for (Map.Entry<String, ItemStack> e : trinketSlotsMap.entrySet()) {
+//            String name = e.getKey();
+//            ItemStack item = e.getValue();
+//            ItemMeta meta = item.getItemMeta();
+//
+//            TrinketSlot slot = new TrinketSlot(meta.getDisplayName(), )
+//        }
+    }
+
+    private void loadTrinketSaveData(Player player) {
+        Map<UUID, List<ItemStack>> savedTrinkets = TrinketsData.getInstance().getDataHandler().getEquippedTrinkets();
+        List<ItemStack> playerTrinkets = savedTrinkets.get(player.getUniqueId());
+
+        if (playerTrinkets == null) {
+            return;
+        }
+
+        for (ItemStack t : playerTrinkets) {
+            Trinket trinket = Trinkets.getInstance().getManager().getTrinketByDisplayName(t.getItemMeta().getDisplayName());
+            player.sendMessage("Loading from players trinkets > " + trinket.getDisplayName());
+        }
+
+        for (int i = 0; i < playerTrinkets.size(); i++) {
+            Button b = buttonMap.get(22 );
+            if (b.getContainedItem() == null) {
+                b.push(playerTrinkets.get(i));
+            }
         }
     }
 

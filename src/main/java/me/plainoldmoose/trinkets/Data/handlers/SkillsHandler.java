@@ -1,8 +1,7 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
+import me.plainoldmoose.trinkets.utils.ConfigUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -56,7 +55,7 @@ public class SkillsHandler {
             if (file.isFile() && file.getName().endsWith(".yml")) {
                 FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(file);
                 fileConfig.options().parseComments(true);
-                colorizeConfig(fileConfig);
+                ConfigUtils.colorizeConfig(fileConfig);
 
                 String fileNameWithoutExtension = file.getName().replace(".yml", "");
 
@@ -81,27 +80,6 @@ public class SkillsHandler {
                 }
             }
         }
-    }
-
-    /**
-     * Colorsizes the configuration file's values.
-     *
-     * @param config The configuration file to colorize.
-     */
-    public static void colorizeConfig(FileConfiguration config) {
-        colorizeSection(config);
-    }
-
-    private static void colorizeSection(ConfigurationSection section) {
-        for (String key : section.getKeys(false)) {
-            Object value = section.get(key);
-            if (value instanceof String) {
-                section.set(key, ChatColor.translateAlternateColorCodes('&', (String) value));
-            } else if (value instanceof ConfigurationSection) {
-                colorizeSection((ConfigurationSection) value);
-            }
-        }
-
     }
 
     public Map<String, String> getSkillNameFormat() {

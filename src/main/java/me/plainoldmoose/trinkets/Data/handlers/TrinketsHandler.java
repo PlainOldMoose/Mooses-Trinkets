@@ -2,18 +2,18 @@ package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
+import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Trinkets;
+import me.plainoldmoose.trinkets.utils.ConfigUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class TrinketsHandler {
@@ -35,17 +35,20 @@ public class TrinketsHandler {
 
         fileConfig = YamlConfiguration.loadConfiguration(configFile);
         fileConfig.options().parseComments(true);
-        colorizeConfig(fileConfig);
+        ConfigUtils.colorizeConfig(fileConfig);
 
         try {
             loadTrinkets();
         } catch (Exception e) {
+            e.printStackTrace();
             Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading trinkets.yml, please check the configuration.");
         }
     }
 
     private void loadTrinkets() {
-        TrinketManager manager= Trinkets.getInstance().getManager();
+        TrinketManager manager = Trinkets.getInstance().getManager();
+        manager.getTrinketList().clear();
+
         Set<String> keySet = fileConfig.getKeys(false);
 
         for (String key : keySet) {
@@ -55,11 +58,20 @@ public class TrinketsHandler {
     }
 
     private Trinket loadTrinket(String key) {
+        TrinketsData data = TrinketsData.getInstance();
+        if (data == null) {
+            return null;
+        }
+
         String name = fileConfig.getString(key + ".name");
         String materialName = fileConfig.getString(key + ".material");
+        String slotName = fileConfig.getString(key + ".slot");
 
         ConfigurationSection statsSection = fileConfig.getConfigurationSection(key + ".stats");
         HashMap<String, Integer> statsMap = new HashMap<>();
+        HashMap<String, Integer> formattedStatsMap = new HashMap<>();
+
+        Map<String, String> formats = data.getSkillsHandler().getSkillNameFormat();
 
         if (statsSection == null) {
             return null;
@@ -70,39 +82,9 @@ public class TrinketsHandler {
         for (String stat : statKeys) {
             int value = statsSection.getInt(stat);
             statsMap.put(stat, value);
+            formattedStatsMap.put(formats.get(stat), value);
         }
 
-        return new Trinket(Material.valueOf(materialName), key, name, statsMap, false);
-    }
-
-    public static void colorizeConfig(FileConfiguration config) {
-        colorizeSection(config);
-    }
-
-    private static void colorizeSection(ConfigurationSection section) {
-        for (String key : section.getKeys(false)) {
-            Object value = section.get(key);
-            if (value instanceof String) {
-                section.set(key, ChatColor.translateAlternateColorCodes('&', (String) value));
-            } else if (value instanceof ConfigurationSection) {
-                colorizeSection((ConfigurationSection) value);
-            }
-        }
-    }
-
-    /**
-     * Creates an ItemStack with the specified material and name.
-     *
-     * @param material The material of the item.
-     * @param name     The display name of the item.
-     * @return The created ItemStack.
-     */
-    private ItemStack createItemStack(Material material, String name) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
-        item.setItemMeta(meta);
-
-        return item;
+        return new Trinket(Material.valueOf(materialName), key, name, statsMap, formattedStatsMap, slotName);
     }
 }

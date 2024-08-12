@@ -21,15 +21,15 @@ import java.util.regex.Pattern;
  * including creating player heads and applying statistics to item metadata.
  */
 public class PlayerStatsFetcher {
-    private List<StatsIcon> iconList = new ArrayList<>();
+    private static List<StatsIcon> iconList = new ArrayList<>();
 
-    public void createStatsIcons(Player player) {
+    public static void createStatsIcons(Player player) {
         // Load the icon list from the IconHandler
         iconList = TrinketsData.getInstance().getIconHandler().getIconList();
 
         for (StatsIcon icon : iconList) {
             // Fetch the player stats for the current icon
-            List<String> fetchedStats = fetchPlayerStats(player, icon.getRawStatNames());
+            List<String> fetchedStats = fetchFormattedPlayerStats(player, icon.getRawStatNames());
 
             // Set the fetched stats list in the icon
             icon.setListOfStats(fetchedStats);
@@ -45,7 +45,7 @@ public class PlayerStatsFetcher {
      * @param listOfStats the list of statistics to be fetched.
      * @return A list of strings representing the player's statistics.
      */
-    private List<String> fetchPlayerStats(Player player, List<String> listOfStats) {
+    public static List<String> fetchFormattedPlayerStats(Player player, List<String> listOfStats) {
         List<String> stats = new ArrayList<>();
         stats.add(" ");
         PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
@@ -110,7 +110,7 @@ public class PlayerStatsFetcher {
         return result.toString();
     }
 
-    public List<StatsIcon> getIconList() {
+    public static List<StatsIcon> getIconList() {
         return iconList;
     }
 }

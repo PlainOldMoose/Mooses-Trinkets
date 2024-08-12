@@ -1,5 +1,6 @@
 package me.plainoldmoose.trinkets.Data;
 
+import me.plainoldmoose.trinkets.GUI.fetchers.PlayerStatsFetcher;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -12,40 +13,54 @@ import java.util.Map;
  */
 public class Trinket {
     private ItemStack item;
-    private final boolean enchanted;
     private final String name;
     private final String displayName;
     private final Map<String, Integer> stats;
+    private final Map<String, Integer> formattedStats;
+    private final String slot;
 
     public void setItem(ItemStack item) {
         this.item = item;
+    }
+
+    public String getSlot() {
+        return slot;
     }
 
     /**
      * Constructs a new Trinket.
      *
      * @param material The material representing the trinket item
-     * @param name The display name of the trinket
-     * @param enchanted Whether the trinket is enchanted
+     * @param name     The display name of the trinket
      */
-    public Trinket(Material material, String name, String displayName, Map<String, Integer> stats, boolean enchanted) {
+    public Trinket(Material material, String name, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, String slot) {
         this.item = new ItemStack(material);
         this.name = name;
-        this.enchanted = enchanted;
         this.displayName = displayName;
         this.stats = stats;
+        this.formattedStats = formattedStats;
+        this.slot = slot;
 
 
         // TODO - find a better way to display stats that trinkets give as lore
         ArrayList<String> list = new ArrayList<>();
+        list.add(" ");
 
-        for (Map.Entry e : stats.entrySet()) {
-            list.add((String) e.getKey());
+        for (Map.Entry e : formattedStats.entrySet()) {
+
+            // FIX THIS ITS SO UGLY
+            String statName = (String) e.getKey();
+            int statValue = (int) e.getValue();
+            if (!(statName == null)) {
+                String convertedName = PlayerStatsFetcher.convertToBukkitColor(statName);
+                list.add(convertedName + " §8»§f " + statValue);
+            }
         }
 
         ItemMeta meta = this.item.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(name);;
+            meta.setDisplayName(displayName);
+            ;
             meta.setLore(list);
             this.item.setItemMeta(meta);
         }
@@ -61,10 +76,6 @@ public class Trinket {
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public boolean isEnchanted() {
-        return enchanted;
     }
 
     public Map<String, Integer> getStats() {

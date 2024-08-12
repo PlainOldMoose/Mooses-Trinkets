@@ -15,6 +15,10 @@ public class TrinketManager {
     private final List<Trinket> trinketList = new ArrayList<>();
 
     public void addTrinket(Trinket trinket) {
+        if (trinket == null) {
+            return;
+        }
+
         trinket.setItem(addTrinketFlag(trinket.getTrinketItem()));
         trinketList.add(trinket);
     }
@@ -49,7 +53,6 @@ public class TrinketManager {
     // TODO - Find better way to retrive trinket from itemstack.
     public Trinket getTrinketByDisplayName(String trinketName) {
         for (Trinket t : trinketList) {
-            System.out.println("Checking > " + t.getDisplayName() + " == " + trinketName);
             if (t.getDisplayName().equals(trinketName)) {
                 return t;
             }
@@ -68,6 +71,6 @@ public class TrinketManager {
     }
 
     public List<Trinket> getTrinketList() {
-        return new ArrayList<>(trinketList);
+        return trinketList;
     }
 }
