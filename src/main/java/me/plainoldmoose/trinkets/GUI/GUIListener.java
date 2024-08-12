@@ -2,6 +2,7 @@ package me.plainoldmoose.trinkets.GUI;
 
 import me.plainoldmoose.trinkets.GUI.components.Background;
 import me.plainoldmoose.trinkets.GUI.components.Button;
+import me.plainoldmoose.trinkets.GUI.fetchers.BackgroundFetcher;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,7 +36,7 @@ public class GUIListener implements Listener {
             final TrinketsGUI menu = (TrinketsGUI) eventPlayer.getMetadata("TrinketsGUI").get(0).value();
 
             // Cancel interactions with background tiles
-            for (final Background background : menu.getBackgroundList()) {
+            for (final Background background : BackgroundFetcher.getBackgroundList()) {
                 if (background.getSlot() == event.getSlot()) {
                     event.setCancelled(true);
                 }

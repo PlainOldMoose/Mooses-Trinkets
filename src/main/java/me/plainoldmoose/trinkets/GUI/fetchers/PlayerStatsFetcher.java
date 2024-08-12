@@ -5,7 +5,7 @@ import com.willfp.eco.core.data.keys.PersistentDataKey;
 import com.willfp.eco.core.data.keys.PersistentDataKeyType;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.SkillsHandler;
-import org.bukkit.Bukkit;
+import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +21,20 @@ import java.util.regex.Pattern;
  * including creating player heads and applying statistics to item metadata.
  */
 public class PlayerStatsFetcher {
-    private static final Logger LOGGER = Bukkit.getLogger();
+    private List<StatsIcon> iconList = new ArrayList<>();
+
+    public void createStatsIcons(Player player) {
+        // Load the icon list from the IconHandler
+        iconList = TrinketsData.getInstance().getIconHandler().getIconList();
+
+        for (StatsIcon icon : iconList) {
+            // Fetch the player stats for the current icon
+            List<String> fetchedStats = fetchPlayerStats(player, icon.getRawStatNames());
+
+            // Set the fetched stats list in the icon
+            icon.setListOfStats(fetchedStats);
+        }
+    }
 
     /**
      * Fetches and returns a list of player statistics as strings.
@@ -33,7 +45,7 @@ public class PlayerStatsFetcher {
      * @param listOfStats the list of statistics to be fetched.
      * @return A list of strings representing the player's statistics.
      */
-    public List<String> fetchPlayerStats(Player player, List<String> listOfStats) {
+    private List<String> fetchPlayerStats(Player player, List<String> listOfStats) {
         List<String> stats = new ArrayList<>();
         stats.add(" ");
         PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
@@ -71,7 +83,6 @@ public class PlayerStatsFetcher {
         return stats;
     }
 
-
     /**
      * This is a chatGPT method, it works, don't touch it.
      * Converts a color code from hexadecimal format to Bukkit color code format.
@@ -97,5 +108,9 @@ public class PlayerStatsFetcher {
         matcher.appendTail(result);
 
         return result.toString();
+    }
+
+    public List<StatsIcon> getIconList() {
+        return iconList;
     }
 }

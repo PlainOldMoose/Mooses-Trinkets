@@ -36,6 +36,7 @@ public class Trinket {
         this.stats = stats;
 
 
+        // TODO - find a better way to display stats that trinkets give as lore
         ArrayList<String> list = new ArrayList<>();
 
         for (Map.Entry e : stats.entrySet()) {

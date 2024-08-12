@@ -101,4 +101,13 @@ public enum TrinketSlot {
         NamespacedKey slotKeyNamespace = new NamespacedKey(Trinkets.getInstance(), "slot");
         return dataContainer.get(slotKeyNamespace, PersistentDataType.INTEGER);
     }
+
+    /**
+     * Loads all TrinketSlots, initializing their state.
+     */
+    public static void loadTrinketSlots() {
+        for (TrinketSlot slot : TrinketSlot.values()) {
+            slot.load();
+        }
+    }
 }
