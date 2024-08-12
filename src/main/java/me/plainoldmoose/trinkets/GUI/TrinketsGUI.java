@@ -4,7 +4,7 @@ import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
 import me.plainoldmoose.trinkets.GUI.components.Background;
-import me.plainoldmoose.trinkets.GUI.components.Button;
+import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
 import me.plainoldmoose.trinkets.GUI.fetchers.BackgroundFetcher;
@@ -28,7 +28,7 @@ public class TrinketsGUI {
     private final String title = "               Trinkets"; // GUI title
     private Inventory inventory;
 
-    private final HashMap<Integer, Button> buttonMap = new HashMap<>();
+    private final HashMap<Integer, TrinketSlotButton> buttonMap = new HashMap<>();
 
     private final ChatServiceFetcher chatSetup = new ChatServiceFetcher();
     private final BackgroundFetcher BackgroundFetcher = new BackgroundFetcher();
@@ -89,10 +89,10 @@ public class TrinketsGUI {
     }
 
     private void renderButtons() {
-        for (Map.Entry<Integer, Button> entry : buttonMap.entrySet()) {
-            Button button = entry.getValue();
-            if (button.isEnabled()) {
-                inventory.setItem(button.getSlot(), button.getContainedItem() != null ? button.getContainedItem() : button.getItem());
+        for (Map.Entry<Integer, TrinketSlotButton> entry : buttonMap.entrySet()) {
+            TrinketSlotButton trinketSlotButton = entry.getValue();
+            if (trinketSlotButton.isEnabled()) {
+                inventory.setItem(trinketSlotButton.getSlot(), trinketSlotButton.getContainedItem() != null ? trinketSlotButton.getContainedItem() : trinketSlotButton.getItem());
             }
         }
     }
@@ -116,18 +116,8 @@ public class TrinketsGUI {
         Set<TrinketSlot> trinketSlotSet = configHandler.getTrinketSlotSet();
 
         for (TrinketSlot ts : trinketSlotSet) {
-            createButton(ts);
+            createTrinketSlotButton(ts);
         }
-//
-//        Map<String, ItemStack> trinketSlotsMap = configHandler.getTrinketSlotMap();
-//
-//        for (Map.Entry<String, ItemStack> e : trinketSlotsMap.entrySet()) {
-//            String name = e.getKey();
-//            ItemStack item = e.getValue();
-//            ItemMeta meta = item.getItemMeta();
-//
-//            TrinketSlot slot = new TrinketSlot(meta.getDisplayName(), )
-//        }
     }
 
     private void loadTrinketSaveData(Player player) {
@@ -138,15 +128,12 @@ public class TrinketsGUI {
             return;
         }
 
-        for (ItemStack t : playerTrinkets) {
-            Trinket trinket = Trinkets.getInstance().getManager().getTrinketByDisplayName(t.getItemMeta().getDisplayName());
-            player.sendMessage("Loading from players trinkets > " + trinket.getDisplayName());
-        }
-
-        for (int i = 0; i < playerTrinkets.size(); i++) {
-            Button b = buttonMap.get(22 );
-            if (b.getContainedItem() == null) {
-                b.push(playerTrinkets.get(i));
+        for (TrinketSlotButton b : buttonMap.values()) {
+            for (ItemStack t : playerTrinkets) {
+                Trinket trinket = Trinkets.getInstance().getManager().getTrinketByDisplayName(t.getItemMeta().getDisplayName());
+                if (b.getKey().equals(trinket.getSlot())) {
+                    b.push(t);
+                }
             }
         }
     }
@@ -156,23 +143,23 @@ public class TrinketsGUI {
      *
      * @param slot The TrinketSlot for which the button is created.
      */
-    private void createButton(TrinketSlot slot) {
-        Button button = new Button(slot.getSlot(), slot.getBackground()) {
+    private void createTrinketSlotButton(TrinketSlot slot) {
+        TrinketSlotButton trinketSlotButton = new TrinketSlotButton(slot.getSlot(), slot.getBackground(), slot.getKey()) {
             @Override
             public void onClick(Player player) {
-                buttonOnClickHandler(player, slot.getSlot());
+                trinketButtonClickHandler(player, slot.getSlot());
             }
         };
-        button.setVisibility(slot.isEnabled());
-        buttonMap.put(slot.getSlot(), button);
+        trinketSlotButton.setVisibility(slot.isEnabled());
+        buttonMap.put(slot.getSlot(), trinketSlotButton);
     }
 
-    private void buttonOnClickHandler(Player player, int slot) {
-        Button button = buttonMap.get(slot);
-        trinketInteractionHandler.handleButtonClick(player, slot, button);
+    private void trinketButtonClickHandler(Player player, int slot) {
+        TrinketSlotButton trinketSlotButton = buttonMap.get(slot);
+        trinketInteractionHandler.handleButtonClick(player, slot, trinketSlotButton);
     }
 
-    public HashMap<Integer, Button> getButtonMap() {
+    public HashMap<Integer, TrinketSlotButton> getButtonMap() {
         return buttonMap;
     }
 }

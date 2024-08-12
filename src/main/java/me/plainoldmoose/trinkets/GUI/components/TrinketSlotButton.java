@@ -8,12 +8,17 @@ import org.bukkit.inventory.ItemStack;
  * Abstract class representing a button in a GUI.
  * Each button has a specific slot and defines behavior for when it is clicked.
  */
-public abstract class Button {
+public abstract class TrinketSlotButton {
 
+    private String key;
     private ItemStack item;
     private final int slot;
     private boolean enabled;
     private ItemStack containedItem;
+
+    public String getKey() {
+        return key;
+    }
 
     /**
      * Constructor to create a Button at a specified slot.
@@ -22,10 +27,11 @@ public abstract class Button {
      * @param slot      The slot number where the button will be placed.
      * @param itemStack
      */
-    public Button(int slot, ItemStack itemStack) {
+    public TrinketSlotButton(int slot, ItemStack itemStack, String key) {
         this.slot = slot;
         this.item = itemStack;
         this.enabled = false;
+        this.key = key;
     }
 
     /**

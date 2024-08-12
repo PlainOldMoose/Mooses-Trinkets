@@ -24,15 +24,10 @@ public class ConfigHandler {
     private File configFile;
     private FileConfiguration fileConfig;
 
-    private final HashMap<String, ItemStack> trinketSlotMap = new HashMap<>();
     private final Set<TrinketSlot> trinketSlotSet = new HashSet<TrinketSlot>();
     private final HashMap<String, Integer> defaultTrinketSlots = new HashMap<>();
     private Material backgroundMaterial;
     private Material secondaryBackgroundMaterial;
-
-    public HashMap<String, ItemStack> getTrinketSlotMap() {
-        return trinketSlotMap;
-    }
 
     /**
      * Loads the configuration file and initializes default values.
@@ -86,19 +81,11 @@ public class ConfigHandler {
         ItemMeta trinketSlotMeta = trinketSlotItem.getItemMeta();
         setItemMetaName(trinketSlotMeta, namePath);
         trinketSlotItem.setItemMeta(trinketSlotMeta);
-        System.out.println("Setting name to > " + trinketSlotItem.getItemMeta().getDisplayName());
         int slot = fileConfig.getInt(slotPath);
         boolean isEnabled = fileConfig.getBoolean(isEnabledPath);
 
-        TrinketSlot trinketSlot = new TrinketSlot(namePath, slot, trinketSlotItem, isEnabled);
+        TrinketSlot trinketSlot = new TrinketSlot(key, slot, trinketSlotItem, isEnabled);
         trinketSlotSet.add(trinketSlot);
-
-//        ItemStack trinketSlotItem = ConfigUtils.createItemStack(fileConfig, materialPath);
-
-//        setPersistentData(trinketSlotMeta, key);
-//
-//        trinketSlotItem.setItemMeta(trinketSlotMeta);
-//        trinketSlotMap.put(key, trinketSlotItem);
     }
 
     public Set<TrinketSlot> getTrinketSlotSet() {
@@ -117,10 +104,8 @@ public class ConfigHandler {
 
         SlotTypesHandler slotTypesHandler = data.getSlotsHandler();
         System.out.println(slotTypesHandler.getSlotSet().isEmpty());
-        trinketSlotMap.clear();
         for (String slot : slotTypesHandler.getSlotSet()) {
             loadTrinketSlot(slot);
-            System.out.println("Loaded full slot info > " + slot);
         }
     }
 
@@ -186,9 +171,5 @@ public class ConfigHandler {
 
     public Material getSecondaryBackgroundMaterial() {
         return secondaryBackgroundMaterial;
-    }
-
-    public HashMap<String, ItemStack> getTrinketIndexMap() {
-        return trinketSlotMap;
     }
 }

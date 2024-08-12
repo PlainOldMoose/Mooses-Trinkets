@@ -40,7 +40,6 @@ public class SlotTypesHandler {
     private void loadSlots() {
         slotSet = new HashSet<String>(fileConfig.getStringList("Slots"));
         for (String slot : slotSet) {
-            System.out.println("Loaded slot > " + slot);
         }
     }
 

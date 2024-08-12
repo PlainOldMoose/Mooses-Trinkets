@@ -5,7 +5,7 @@ import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
 import me.plainoldmoose.trinkets.Data.handlers.Keys;
 import me.plainoldmoose.trinkets.GUI.components.Background;
-import me.plainoldmoose.trinkets.GUI.components.Button;
+import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
 import me.plainoldmoose.trinkets.GUI.fetchers.BackgroundFetcher;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.entity.Player;
@@ -53,10 +53,10 @@ public class GUIListener implements Listener {
             }
 
             // Handle interactions with buttons
-            for (Map.Entry<Integer, Button> entry : menu.getButtonMap().entrySet()) {
-                Button button = entry.getValue();
-                if (button.getSlot() == event.getSlot()) {
-                    button.onClick(eventPlayer);
+            for (Map.Entry<Integer, TrinketSlotButton> entry : menu.getButtonMap().entrySet()) {
+                TrinketSlotButton trinketSlotButton = entry.getValue();
+                if (trinketSlotButton.getSlot() == event.getSlot()) {
+                    trinketSlotButton.onClick(eventPlayer);
                     event.setCancelled(true);
                 }
             }

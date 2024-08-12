@@ -12,6 +12,10 @@ public class TrinketSlot {
     private ItemStack background;
     private boolean enabled;
 
+    public String getKey() {
+        return key;
+    }
+
     /**
      * Constructs a TrinketSlot with the specified key.
      *

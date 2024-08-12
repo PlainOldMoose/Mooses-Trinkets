@@ -6,7 +6,7 @@ import com.willfp.eco.core.data.keys.PersistentDataKeyType;
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.handlers.Keys;
-import me.plainoldmoose.trinkets.GUI.components.Button;
+import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -20,36 +20,42 @@ import java.util.Map;
 public class TrinketInteractionHandler {
     private final TrinketManager trinketManager = Trinkets.getInstance().getManager();
 
-    public void handleButtonClick(Player player, int slot, Button button) {
-        ItemStack buttonItem = button != null ? button.getContainedItem() : null;
+    public void handleButtonClick(Player player, int slot, TrinketSlotButton trinketSlotButton) {
+        ItemStack buttonItem = trinketSlotButton != null ? trinketSlotButton.getContainedItem() : null;
         ItemStack itemOnCursor = player.getItemOnCursor();
         PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
 
         if (itemOnCursor.getType() == Material.AIR) {
-            handleEmptyCursorClick(button, buttonItem, profile, player);
+            handleEmptyCursorClick(trinketSlotButton, buttonItem, profile, player);
         } else {
-            handleCursorItemClick(itemOnCursor, button, profile, player);
+            handleCursorItemClick(itemOnCursor, trinketSlotButton, profile, player);
         }
     }
 
-    private void handleEmptyCursorClick(Button button, ItemStack buttonItem, PlayerProfile profile, Player player) {
+    private void handleEmptyCursorClick(TrinketSlotButton trinketSlotButton, ItemStack buttonItem, PlayerProfile profile, Player player) {
         if (buttonItem == null) return;
 
         Trinket trinket = getTrinketFromItem(buttonItem);
         if (trinket != null) {
             updatePlayerStats(profile, trinket.getStats(), false);
-            player.setItemOnCursor(button.pop());
+            player.setItemOnCursor(trinketSlotButton.pop());
         }
     }
 
-    private void handleCursorItemClick(ItemStack itemOnCursor, Button button, PlayerProfile profile, Player player) {
+    private void handleCursorItemClick(ItemStack itemOnCursor, TrinketSlotButton trinketSlotButton, PlayerProfile profile, Player player) {
         Trinket trinket = getTrinketFromItem(itemOnCursor);
-        if (trinket == null || !itemHasTrinketKey(itemOnCursor)) return;
+        if (trinket == null || !itemHasTrinketKey(itemOnCursor)) {
+            return;
+        }
+
+        if (!trinket.getSlot().equals(trinketSlotButton.getKey())) {
+            return;
+        }
 
         updatePlayerStats(profile, trinket.getStats(), true);
         if (itemOnCursor.getType() != Material.AIR) {
-            ItemStack itemToReturn = button.pop();
-            button.push(itemOnCursor);
+            ItemStack itemToReturn = trinketSlotButton.pop();
+            trinketSlotButton.push(itemOnCursor);
             player.setItemOnCursor(itemToReturn);
         }
     }
