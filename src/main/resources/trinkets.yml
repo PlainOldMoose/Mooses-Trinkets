@@ -1,12 +1,19 @@
-Trinket1:
-  name: "trinket1"
-  material: STONE_SWORD
-  stats:
-    mining_fortune: 50
+# For slots use types from Mooses-Trinkets/trinket_slots.yml
+# For stats use stats from EcoSkills/stats
 
-Trinket2:
-  name: "trinket1"
-  material: STONE_SWORD
-  stats:
-    defense: 50
+# Use & for formatting codes
 
+# ~ EXAMPLE ~
+# trinketID:
+#   name: "&3Helmet of defense"
+#   material: IRON_HELMET
+#   slot: HEAD
+#   stats:
+#     defense: 50
+
+ template_trinket:
+   name: "&3This is a template!"
+   material: IRON_HELMET
+   slot: TEMPLATE
+   stats:
+     defense: 50

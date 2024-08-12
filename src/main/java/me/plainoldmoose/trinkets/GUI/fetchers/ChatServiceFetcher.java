@@ -14,6 +14,10 @@ public class ChatServiceFetcher {
     private static Chat chat = null;
     private static final Logger LOGGER = Bukkit.getLogger();
 
+    public static Chat getChat() {
+        return chat;
+    }
+
     /**
      * Sets up the chat service by initializing the Vault Chat API provider.
      *

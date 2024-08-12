@@ -1,0 +1,21 @@
+# Background tile
+background-material: GRAY_STAINED_GLASS_PANE
+secondary-background-material: BLACK_STAINED_GLASS_PANE
+
+# These are the actual slots on the GUI that trinkets are equipped into, each trinket slot has a type e.g. HEAD meaning that you can only fit trinkets of that type into this slot
+# Trinket types are configured in Mooses-Trinkets/trinket_types.yml
+# Use & for formatting codes
+
+# ~ EXAMPLE ~
+# HEAD:
+#   enabled: true
+#   slot: 13
+#   material: RED_STAINED_GLASS_PANE
+#   name: '&2&lHead trinket'
+
+TEMPLATE:
+  enabled: true
+  slot: 13
+  material: RED_STAINED_GLASS_PANE
+  name: '&2&lYour first trinket slot - Configure me!'
+

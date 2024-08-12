@@ -1,9 +1,10 @@
-# Stats icons, these are icons at the top of the GUI that display a players stats and their values,
-# for the stat use the exact filename without .yml (e.g. "mining_fortune.yml" becomes "mining_fortune")
+# these are icons at the top of the GUI that display a players stats and their values,
+# for the stat use the exact EcoSkills/stats filename without .yml (e.g. "mining_fortune.yml" becomes "mining_fortune")
 # If none of your icons are loading, double-check the stat names
 
-# For player name use %playername%
-# For the player's skull use PLAYER_HEAD
+# For player's name use %playername%
+# For player's skull use PLAYER_HEAD
+# Use & for formatting codes
 
 # exampleIcon1:
 #   material: PLAYER_HEAD
@@ -19,4 +20,3 @@ exampleIcon1:
    name: "&c%playername%'s Stats - Configure me!"
    slot: 4
    stats:
-     -

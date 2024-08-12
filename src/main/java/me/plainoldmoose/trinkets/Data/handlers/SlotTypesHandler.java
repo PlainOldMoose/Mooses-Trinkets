@@ -19,10 +19,10 @@ public class SlotTypesHandler {
      * Loads the configuration file and initializes default values.
      */
     public void loadConfig() {
-        configFile = new File(Trinkets.getInstance().getDataFolder(), "trinket_slots.yml");
+        configFile = new File(Trinkets.getInstance().getDataFolder(), "trinket_types.yml");
 
         if (!configFile.exists()) {
-            Trinkets.getInstance().saveResource("trinket_slots.yml", false);
+            Trinkets.getInstance().saveResource("trinket_types.yml", false);
         }
 
         fileConfig = YamlConfiguration.loadConfiguration(configFile);
@@ -33,12 +33,12 @@ public class SlotTypesHandler {
             loadSlots();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading trinket_slots.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading trinket_types.yml, please check the configuration.");
         }
     }
 
     private void loadSlots() {
-        slotSet = new HashSet<String>(fileConfig.getStringList("Slots"));
+        slotSet = new HashSet<String>(fileConfig.getStringList("types"));
         for (String slot : slotSet) {
         }
     }

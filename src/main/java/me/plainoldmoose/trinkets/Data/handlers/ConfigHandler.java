@@ -33,10 +33,10 @@ public class ConfigHandler {
      * Loads the configuration file and initializes default values.
      */
     public void loadConfig() {
-        configFile = new File(Trinkets.getInstance().getDataFolder(), "config.yml");
+        configFile = new File(Trinkets.getInstance().getDataFolder(), "gui_trinket_slots.yml");
 
         if (!configFile.exists()) {
-            Trinkets.getInstance().saveResource("config.yml", false);
+            Trinkets.getInstance().saveResource("gui_trinket_slots.yml", false);
         }
 
         fileConfig = YamlConfiguration.loadConfiguration(configFile);
@@ -49,7 +49,7 @@ public class ConfigHandler {
             loadBackgroundMaterials();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading config.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading gui_trinket_slots.yml, please check the configuration.");
         }
     }
 

@@ -37,4 +37,8 @@ public class ConfigUtils {
             }
         }
     }
+
+    public static String colorizeString(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
+    }
 }

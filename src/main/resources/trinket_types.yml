@@ -1,0 +1,11 @@
+# These represent the types of trinkets that are available
+
+# ~ EXAMPLE ~
+# types:
+#   - RING
+#   - TIARA
+#   - BELT
+#   - BRACELET
+
+types:
+  - TEMPLATE

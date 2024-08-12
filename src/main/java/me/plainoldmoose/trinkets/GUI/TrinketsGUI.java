@@ -4,14 +4,15 @@ import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
 import me.plainoldmoose.trinkets.GUI.components.Background;
-import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
+import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
 import me.plainoldmoose.trinkets.GUI.fetchers.BackgroundFetcher;
 import me.plainoldmoose.trinkets.GUI.fetchers.ChatServiceFetcher;
 import me.plainoldmoose.trinkets.GUI.fetchers.PlayerStatsFetcher;
 import me.plainoldmoose.trinkets.GUI.interactions.TrinketInteractionHandler;
 import me.plainoldmoose.trinkets.Trinkets;
+import me.plainoldmoose.trinkets.utils.ConfigUtils;
 import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -80,6 +81,9 @@ public class TrinketsGUI {
                 }
 
                 iconItemName = iconItemName.replace("%playername%", player.getDisplayName());
+                if (ChatServiceFetcher.getChat() != null) {
+                    iconItemName = ConfigUtils.colorizeString(chatSetup.getPlayerPrefix(player)) + iconItemName;
+                }
                 icon.setItem(ItemFactory.changeItemStackName(icon.getItem(), iconItemName));
                 icon.setItem(ItemFactory.changeItemStackLore(icon.getItem(), stats));
             }
