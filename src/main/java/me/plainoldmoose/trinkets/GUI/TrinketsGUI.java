@@ -23,6 +23,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
 
+import static org.bukkit.Bukkit.getLogger;
+
 public class TrinketsGUI {
     private final int size = 54; // Inventory size
     // TODO - setup config for this
@@ -65,11 +67,13 @@ public class TrinketsGUI {
     private void renderStatIcons(Player player) {
         PlayerStatsFetcher.createStatsIcons(player);
 
+        // Check if Vault is installed and if its Chat class is available
+        boolean vaultChatAvailable = isVaultChatAvailable();
+
         for (StatsIcon icon : PlayerStatsFetcher.getIconList()) {
             String iconItemName = icon.getItem().getItemMeta().getDisplayName();
             List<String> stats = icon.getStatsList();
 
-            // This is some fancy shenanigans because ItemStack is bad and I hate bukkit.
             if (iconItemName.contains("%playername%")) {
                 if (icon.getItem().getType() == Material.PLAYER_HEAD) {
                     icon.setItem(ItemFactory.createPlayerHead(player.getUniqueId()));
@@ -77,9 +81,10 @@ public class TrinketsGUI {
 
                 iconItemName = iconItemName.replace("%playername%", player.getDisplayName());
 
-                if (ChatServiceFetcher.getInstance().getChat() != null) {
+                if (vaultChatAvailable && ChatServiceFetcher.getInstance().getChat() != null) {
                     iconItemName = ConfigUtils.colorizeString(ChatServiceFetcher.getInstance().getPlayerPrefix(player)) + iconItemName;
                 }
+
                 icon.setItem(ItemFactory.changeItemStackName(icon.getItem(), iconItemName));
                 icon.setItem(ItemFactory.changeItemStackLore(icon.getItem(), stats));
             }
@@ -87,6 +92,18 @@ public class TrinketsGUI {
             inventory.setItem(icon.getSlot(), icon.getItem());
         }
     }
+
+    // TODO - refactor this shit it's ugly asf ty
+    private boolean isVaultChatAvailable() {
+        try {
+            Class.forName("net.milkbowl.vault.chat.Chat");
+            return true;
+        } catch (ClassNotFoundException e) {
+            getLogger().warning("Vault's Chat class is not available. Chat functionality will be disabled.");
+            return false;
+        }
+    }
+
 
     private void renderButtons() {
         for (Map.Entry<Integer, TrinketSlotButton> entry : buttonMap.entrySet()) {
