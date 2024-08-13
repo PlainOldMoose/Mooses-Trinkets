@@ -1,7 +1,11 @@
 name: Mooses-Trinkets
 version: '${project.version}'
 main: me.plainoldmoose.trinkets.Trinkets
-depend: [ Vault , LuckPerms, LPC, eco, EcoSkills ]
+depend: [ eco, EcoSkills ]
+softdepend:
+  - Vault
+  - LPC
+  - LuckPerms
 api-version: '1.20'
 commands:
   trinkets:

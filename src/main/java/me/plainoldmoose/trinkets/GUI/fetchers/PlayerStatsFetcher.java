@@ -3,7 +3,7 @@ package me.plainoldmoose.trinkets.GUI.fetchers;
 import com.willfp.eco.core.data.PlayerProfile;
 import com.willfp.eco.core.data.keys.PersistentDataKey;
 import com.willfp.eco.core.data.keys.PersistentDataKeyType;
-import me.plainoldmoose.trinkets.Data.TrinketsData;
+import me.plainoldmoose.trinkets.Data.handlers.IconHandler;
 import me.plainoldmoose.trinkets.Data.handlers.SkillsHandler;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import org.bukkit.ChatColor;
@@ -25,7 +25,7 @@ public class PlayerStatsFetcher {
 
     public static void createStatsIcons(Player player) {
         // Load the icon list from the IconHandler
-        iconList = TrinketsData.getInstance().getIconHandler().getIconList();
+        iconList = IconHandler.getInstance().getIconList();;
 
         for (StatsIcon icon : iconList) {
             // Fetch the player stats for the current icon
@@ -55,8 +55,7 @@ public class PlayerStatsFetcher {
             return stats;
         }
 
-        SkillsHandler skillsHandler = TrinketsData.getInstance().getSkillsHandler();
-        Map<String, String> formatNames = skillsHandler.getSkillNameFormat();
+        Map<String, String> formatNames = SkillsHandler.getInstance().getSkillNameFormat();
 
         if (listOfStats == null) {
             return stats;

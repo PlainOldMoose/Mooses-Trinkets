@@ -1,6 +1,5 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
-import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.utils.ConfigUtils;
@@ -20,6 +19,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ConfigHandler {
+
+    private static final ConfigHandler instance = new ConfigHandler();
+
+    public static ConfigHandler getInstance() {
+        return instance;
+    }
 
     private File configFile;
     private FileConfiguration fileConfig;
@@ -49,7 +54,7 @@ public class ConfigHandler {
             loadBackgroundMaterials();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading gui_trinket_slots.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading gui_trinket_slots.yml, please check the configuration.");
         }
     }
 
@@ -97,13 +102,9 @@ public class ConfigHandler {
      */
     private void loadTrinketSlots() {
         trinketSlotSet.clear();
-        TrinketsData data = TrinketsData.getInstance();
-        if (data == null) {
-            return;
-        }
 
-        SlotTypesHandler slotTypesHandler = data.getSlotsHandler();
-        System.out.println(slotTypesHandler.getSlotSet().isEmpty());
+        SlotTypesHandler slotTypesHandler = SlotTypesHandler.getInstance();
+
         for (String slot : slotTypesHandler.getSlotSet()) {
             loadTrinketSlot(slot);
         }

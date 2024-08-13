@@ -1,6 +1,5 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
-import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.utils.ConfigUtils;
@@ -16,6 +15,12 @@ import java.util.List;
 import java.util.Set;
 
 public class IconHandler {
+    private static final IconHandler instance = new IconHandler();
+
+    public static final IconHandler getInstance() {
+        return instance;
+    }
+
     private File configFile;
     private FileConfiguration fileConfig;
 
@@ -40,15 +45,11 @@ public class IconHandler {
             loadIcons();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading gui_icons.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading gui_icons.yml, please check the configuration.");
         }
     }
 
     private void loadIcons() {
-        TrinketsData data = TrinketsData.getInstance();
-        if (data == null) {
-            return;
-        }
 
         iconList.clear();
         Set<String> keys = fileConfig.getKeys(false);
@@ -61,7 +62,7 @@ public class IconHandler {
 
             Material material = Material.getMaterial(materialName.toUpperCase());
 
-            stats.removeIf(stat -> !data.getSkillsHandler().getSkillFileNames().contains(stat));
+            stats.removeIf(stat -> !SkillsHandler.getInstance().getSkillFileNames().contains(stat));
 
             StatsIcon icon = new StatsIcon(ItemFactory.createItemStack(material, name), slot);
             icon.setRawStatNames(stats);

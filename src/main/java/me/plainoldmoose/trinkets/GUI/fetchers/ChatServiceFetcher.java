@@ -4,18 +4,26 @@ import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import java.util.logging.Logger;
 
 /**
- * Manages interactions with the Vault chat service. Provides functionality to setup chat integration
+ * Manages interactions with the Vault chat service. Provides functionality to set up chat integration
  * and retrieve player prefixes using the Vault Chat API.
  */
 public class ChatServiceFetcher {
-    private static Chat chat = null;
-    private static final Logger LOGGER = Bukkit.getLogger();
+    private static final ChatServiceFetcher instance = new ChatServiceFetcher();
 
-    public static Chat getChat() {
+    public static ChatServiceFetcher getInstance() {
+        return instance;
+    }
+
+    private Chat chat = null;
+
+    public Chat getChat() {
         return chat;
+    }
+
+    public ChatServiceFetcher() {
+        setupChat();
     }
 
     /**
@@ -26,14 +34,23 @@ public class ChatServiceFetcher {
     public boolean setupChat() {
         RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
         if (rsp == null) {
-            LOGGER.severe("Vault Chat service provider not found!");
+            Bukkit.getLogger().severe("[Mooses-Trinkets] Vault Chat service provider not found!");
             return false;
         }
         chat = rsp.getProvider();
         boolean setupSuccessful = chat != null;
-        if (!setupSuccessful) {
-            LOGGER.severe("Failed to initialize Vault Chat provider.");
+        if (setupSuccessful) {
+            Bukkit.getLogger().info("[Mooses-Trinkets] Successfully initialized Vault Chat provider.");
+        } else {
+            Bukkit.getLogger().severe("[Mooses-Trinkets] Failed to initialize Vault Chat provider.");
         }
+
+        // This is an info log, not a severe error
+        Bukkit.getLogger().info("[Mooses-Trinkets] Registered Vault chat hook.");
+
+        // Optional: Force flush logs for debugging purposes
+        System.out.flush();
+
         return setupSuccessful;
     }
 

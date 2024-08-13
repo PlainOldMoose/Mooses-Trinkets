@@ -1,6 +1,5 @@
 package me.plainoldmoose.trinkets.GUI.fetchers;
 
-import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
 import me.plainoldmoose.trinkets.GUI.components.Background;
 import me.plainoldmoose.trinkets.utils.ItemFactory;
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BackgroundFetcher {
-    private final ConfigHandler configHandler = TrinketsData.getInstance().getConfigHandler();
 
     public static List<Background> getBackgroundList() {
         return backgroundList;
@@ -22,8 +20,8 @@ public class BackgroundFetcher {
      * Creates background tiles for the GUI based on configuration settings.
      */
     public void createBackgroundTiles() {
-        Material backgroundMaterial = configHandler.getBackgroundMaterial();
-        Material secondaryMaterial = configHandler.getSecondaryBackgroundMaterial();
+        Material backgroundMaterial = ConfigHandler.getInstance().getBackgroundMaterial();
+        Material secondaryMaterial = ConfigHandler.getInstance().getSecondaryBackgroundMaterial();
 
         for (int row = 0; row < 6; row++) {
             int firstColumnIndex = row * 9;

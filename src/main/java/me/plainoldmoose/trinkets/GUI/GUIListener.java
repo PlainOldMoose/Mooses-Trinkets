@@ -1,7 +1,6 @@
 package me.plainoldmoose.trinkets.GUI;
 
 import me.plainoldmoose.trinkets.Data.TrinketManager;
-import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
 import me.plainoldmoose.trinkets.Data.handlers.Keys;
 import me.plainoldmoose.trinkets.GUI.components.Background;
@@ -87,9 +86,8 @@ public class GUIListener implements Listener {
 
         UUID playerUUID = eventPlayer.getUniqueId();
 
-        DataHandler dataHandler =  TrinketsData.getInstance().getDataHandler();
-        dataHandler.getEquippedTrinkets().put(playerUUID, trinketList);
-        dataHandler.saveData();
+        DataHandler.getInstance().getEquippedTrinkets().put(playerUUID, trinketList);
+        DataHandler.getInstance().saveData();
 
         eventPlayer.removeMetadata("TrinketsGUI", Trinkets.getInstance());
     }

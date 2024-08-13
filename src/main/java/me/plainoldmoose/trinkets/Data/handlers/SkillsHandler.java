@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 public class SkillsHandler {
+    private static final SkillsHandler instance = new SkillsHandler();
+
+    public static final SkillsHandler getInstance() {
+        return instance;
+    }
+
     private File pluginFolder;
     private List<String> skillFileNames = new ArrayList<String>();
     private Map<String, String> skillNameFormat = new HashMap<String, String>();
@@ -39,7 +45,7 @@ public class SkillsHandler {
         if (pluginFolder.exists() && pluginFolder.isDirectory()) {
             return pluginFolder;
         } else {
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading skills from eco, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading skills from eco, please check the configuration.");
         }
         return null;
     }

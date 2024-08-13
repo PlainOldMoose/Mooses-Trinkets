@@ -10,6 +10,12 @@ import java.io.File;
 import java.util.HashMap;
 
 public class MessageHandler {
+    private static final MessageHandler instance = new MessageHandler();
+
+    public static MessageHandler getInstance() {
+        return instance;
+    }
+
     private File configFile;
     private FileConfiguration fileConfig;
     private final HashMap<String, String> messagesMap = new HashMap<>();
@@ -31,7 +37,7 @@ public class MessageHandler {
         try {
             loadMessages();
         } catch (Exception e) {
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading messages.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading messages.yml, please check the configuration.");
         }
     }
 

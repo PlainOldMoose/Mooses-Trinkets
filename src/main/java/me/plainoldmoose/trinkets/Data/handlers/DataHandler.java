@@ -10,6 +10,12 @@ import java.io.File;
 import java.util.*;
 
 public class DataHandler {
+    private static final DataHandler instance = new DataHandler();
+
+    public static DataHandler getInstance() {
+        return instance;
+    }
+
     private File configFile;
     private FileConfiguration fileConfig;
 

@@ -3,6 +3,7 @@ package me.plainoldmoose.trinkets.Command;
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
+import me.plainoldmoose.trinkets.Data.handlers.MessageHandler;
 import me.plainoldmoose.trinkets.GUI.TrinketsGUI;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
@@ -40,7 +41,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
      * Updates the command messages from the configuration.
      */
     public void update() {
-        HashMap<String, String> messagesMap = TrinketsData.getInstance().getMessageHandler().getMessagesMap();
+        HashMap<String, String> messagesMap = MessageHandler.getInstance().getMessagesMap();
 
         PREFIX = messagesMap.get("prefix");
         ONLY_PLAYERS_MESSAGE = "Only players can use this command!";
@@ -133,7 +134,6 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
 
         TrinketManager manager = Trinkets.getInstance().getManager();
 
-//        int trinketID = Integer.parseInt(args[1]);
         ItemStack trinket = manager.getTrinketByName(args[1]);
 
         if (trinket == null) {

@@ -11,6 +11,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SlotTypesHandler {
+    private static final SlotTypesHandler instance = new SlotTypesHandler();
+
+    public static SlotTypesHandler getInstance() {
+        return instance;
+    }
+
     private File configFile;
     private FileConfiguration fileConfig;
     private Set<String> slotSet = new HashSet<String>();
@@ -33,7 +39,7 @@ public class SlotTypesHandler {
             loadSlots();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading trinket_types.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading trinket_types.yml, please check the configuration.");
         }
     }
 

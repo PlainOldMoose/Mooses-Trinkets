@@ -46,15 +46,12 @@ public class Trinket {
         ArrayList<String> list = new ArrayList<>();
         list.add(" ");
 
-        for (Map.Entry e : formattedStats.entrySet()) {
+        for (Map.Entry<String, Integer> e : formattedStats.entrySet()) {
 
-            // FIX THIS ITS SO UGLY
             String statName = (String) e.getKey();
             int statValue = (int) e.getValue();
-            if (!(statName == null)) {
-                String convertedName = PlayerStatsFetcher.convertToBukkitColor(statName);
-                list.add(convertedName + " §8»§f " + statValue);
-            }
+            String convertedName = PlayerStatsFetcher.convertToBukkitColor(statName);
+            list.add(convertedName + " §8»§f " + statValue);
         }
 
         ItemMeta meta = this.item.getItemMeta();

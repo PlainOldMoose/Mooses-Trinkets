@@ -12,58 +12,17 @@ import java.io.File;
 public class TrinketsData {
     private static TrinketsData instance = new TrinketsData();
 
-    private final ConfigHandler configHandler = new ConfigHandler();
-    private final MessageHandler messageHandler = new MessageHandler();
-    private final SkillsHandler skillsHandler = new SkillsHandler();
-    private final IconHandler iconHandler = new IconHandler();
-    private final DataHandler dataHandler = new DataHandler();
-    private final SlotTypesHandler slotTypesHandler = new SlotTypesHandler();
-
-    public SlotTypesHandler getSlotsHandler() {
-        return slotTypesHandler;
-    }
-
-    public SkillsHandler getSkillsHandler() {
-        return skillsHandler;
-    }
-
-    public MessageHandler getMessageHandler() {
-        return messageHandler;
-    }
-
-    public ConfigHandler getConfigHandler() {
-        return configHandler;
-    }
-
-    public TrinketsHandler getTrinketsHandler() {
-        return trinketsHandler;
-    }
-
-    private final TrinketsHandler trinketsHandler = new TrinketsHandler();
-
-    public DataHandler getDataHandler() {
-        return dataHandler;
-    }
-
     private File configFile;
     private FileConfiguration fileConfig;
 
-//    private TrinketsData() {
-//        loadConfig();
-//    }
-
-    public IconHandler getIconHandler() {
-        return iconHandler;
-    }
-
     public void loadConfig() {
-        slotTypesHandler.loadConfig();
-        configHandler.loadConfig();
-        trinketsHandler.loadConfig();
-        messageHandler.loadConfig();
-        skillsHandler.loadConfig();
-        iconHandler.loadConfig();
-        dataHandler.loadData();
+        SlotTypesHandler.getInstance().loadConfig();
+        ConfigHandler.getInstance().loadConfig();
+        SkillsHandler.getInstance().loadConfig();
+        TrinketsHandler.getInstance().loadConfig();
+        MessageHandler.getInstance().loadConfig();
+        IconHandler.getInstance().loadConfig();
+        DataHandler.getInstance().loadData();
     }
 
     /**

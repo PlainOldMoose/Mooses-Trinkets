@@ -2,7 +2,6 @@ package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
-import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.utils.ConfigUtils;
 import org.bukkit.Bukkit;
@@ -22,7 +21,7 @@ public class TrinketsHandler {
     private File configFile;
     private FileConfiguration fileConfig;
 
-    public TrinketsHandler getInstance() {
+    public static TrinketsHandler getInstance() {
         return instance;
     }
 
@@ -41,7 +40,7 @@ public class TrinketsHandler {
             loadTrinkets();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses - Trinkets] Something went wrong when loading trinkets.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading trinkets.yml, please check the configuration.");
         }
     }
 
@@ -58,20 +57,16 @@ public class TrinketsHandler {
     }
 
     private Trinket loadTrinket(String key) {
-        TrinketsData data = TrinketsData.getInstance();
-        if (data == null) {
-            return null;
-        }
-
         String name = fileConfig.getString(key + ".name");
         String materialName = fileConfig.getString(key + ".material");
         String slotName = fileConfig.getString(key + ".slot");
 
         ConfigurationSection statsSection = fileConfig.getConfigurationSection(key + ".stats");
         HashMap<String, Integer> statsMap = new HashMap<>();
+
         HashMap<String, Integer> formattedStatsMap = new HashMap<>();
 
-        Map<String, String> formats = data.getSkillsHandler().getSkillNameFormat();
+        Map<String, String> formats = SkillsHandler.getInstance().getSkillNameFormat();
 
         if (statsSection == null) {
             return null;

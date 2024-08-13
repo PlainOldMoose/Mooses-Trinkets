@@ -17,5 +17,5 @@ TEMPLATE:
   enabled: true
   slot: 13
   material: RED_STAINED_GLASS_PANE
-  name: '&2&lYour first trinket slot - Configure me!'
+  name: '&2Your first trinket slot - Configure me!'
 

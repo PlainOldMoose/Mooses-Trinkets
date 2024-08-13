@@ -1,8 +1,8 @@
 package me.plainoldmoose.trinkets.GUI;
 
 import me.plainoldmoose.trinkets.Data.Trinket;
-import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
+import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
 import me.plainoldmoose.trinkets.GUI.components.Background;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
@@ -31,7 +31,6 @@ public class TrinketsGUI {
 
     private final HashMap<Integer, TrinketSlotButton> buttonMap = new HashMap<>();
 
-    private final ChatServiceFetcher chatSetup = new ChatServiceFetcher();
     private final BackgroundFetcher BackgroundFetcher = new BackgroundFetcher();
     private final TrinketInteractionHandler trinketInteractionHandler = new TrinketInteractionHandler();
 
@@ -43,10 +42,6 @@ public class TrinketsGUI {
      * @param player The player to whom the GUI will be displayed.
      */
     public void displayTo(Player player) {
-        if (!chatSetup.setupChat()) {
-            return; // Cannot proceed without chat setup failed
-        }
-
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundFetcher.createBackgroundTiles();
         createSlotButtons();
@@ -81,8 +76,9 @@ public class TrinketsGUI {
                 }
 
                 iconItemName = iconItemName.replace("%playername%", player.getDisplayName());
-                if (ChatServiceFetcher.getChat() != null) {
-                    iconItemName = ConfigUtils.colorizeString(chatSetup.getPlayerPrefix(player)) + iconItemName;
+
+                if (ChatServiceFetcher.getInstance().getChat() != null) {
+                    iconItemName = ConfigUtils.colorizeString(ChatServiceFetcher.getInstance().getPlayerPrefix(player)) + iconItemName;
                 }
                 icon.setItem(ItemFactory.changeItemStackName(icon.getItem(), iconItemName));
                 icon.setItem(ItemFactory.changeItemStackLore(icon.getItem(), stats));
@@ -116,8 +112,7 @@ public class TrinketsGUI {
      * Creates buttons for each TrinketSlot and adds them to the button map.
      */
     private void createSlotButtons() {
-        ConfigHandler configHandler = TrinketsData.getInstance().getConfigHandler();
-        Set<TrinketSlot> trinketSlotSet = configHandler.getTrinketSlotSet();
+        Set<TrinketSlot> trinketSlotSet = ConfigHandler.getInstance().getTrinketSlotSet();;
 
         for (TrinketSlot ts : trinketSlotSet) {
             createTrinketSlotButton(ts);
@@ -125,7 +120,7 @@ public class TrinketsGUI {
     }
 
     private void loadTrinketSaveData(Player player) {
-        Map<UUID, List<ItemStack>> savedTrinkets = TrinketsData.getInstance().getDataHandler().getEquippedTrinkets();
+        Map<UUID, List<ItemStack>> savedTrinkets = DataHandler.getInstance().getEquippedTrinkets();;
         List<ItemStack> playerTrinkets = savedTrinkets.get(player.getUniqueId());
 
         if (playerTrinkets == null) {
