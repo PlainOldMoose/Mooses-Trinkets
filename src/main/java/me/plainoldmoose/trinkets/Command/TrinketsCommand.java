@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,6 +136,11 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
         TrinketManager manager = Trinkets.getInstance().getManager();
 
         ItemStack trinket = manager.getTrinketByName(args[1]);
+
+        ItemMeta m = trinket.getItemMeta();
+//        m.setCustomModelData(17);
+        Bukkit.getLogger().info("" + m.getCustomModelData());
+        trinket.setItemMeta(m);
 
         if (trinket == null) {
             player.sendMessage(PREFIX + TRINKET_NOT_FOUND_MESSAGE);

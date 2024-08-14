@@ -83,6 +83,7 @@ public class TrinketsHandler {
         String name = config.getString(key + ".name");
         String materialName = config.getString(key + ".material");
         String slotName = config.getString(key + ".type");
+        int modelID = config.getInt(key + ".model_id");
 
         ConfigurationSection statsSection = config.getConfigurationSection(key + ".stats");
         HashMap<String, Integer> statsMap = new HashMap<>();
@@ -99,6 +100,6 @@ public class TrinketsHandler {
             formattedStatsMap.put(formats.get(stat), value);
         }
 
-        return new Trinket(Material.valueOf(materialName), key, name, statsMap, formattedStatsMap, slotName);
+        return new Trinket(Material.valueOf(materialName), key, name, statsMap, formattedStatsMap, slotName, modelID);
     }
 }

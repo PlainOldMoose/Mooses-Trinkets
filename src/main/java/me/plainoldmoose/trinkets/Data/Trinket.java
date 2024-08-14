@@ -18,6 +18,7 @@ public class Trinket {
     private final Map<String, Integer> stats;
     private final Map<String, Integer> formattedStats;
     private final String type;
+    private final int modelID;
 
     public void setItem(ItemStack item) {
         this.item = item;
@@ -33,13 +34,14 @@ public class Trinket {
      * @param material The material representing the trinket item
      * @param name     The display name of the trinket
      */
-    public Trinket(Material material, String name, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, String type) {
+    public Trinket(Material material, String name, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, String type, int modelID) {
         this.item = new ItemStack(material);
         this.name = name;
         this.displayName = displayName;
         this.stats = stats;
         this.formattedStats = formattedStats;
         this.type = type;
+        this.modelID = modelID;
 
         // TODO - find a better way to display stats that trinkets give as lore
         ArrayList<String> list = new ArrayList<>();
@@ -58,6 +60,7 @@ public class Trinket {
             meta.setDisplayName(displayName);
             ;
             meta.setLore(list);
+            meta.setCustomModelData(modelID);
             this.item.setItemMeta(meta);
         }
     }
