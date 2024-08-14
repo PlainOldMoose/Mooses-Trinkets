@@ -10,14 +10,14 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class TrinketSlotButton {
 
-    private String key;
+    private String type;
     private ItemStack item;
     private final int slot;
     private boolean enabled;
     private ItemStack containedItem;
 
-    public String getKey() {
-        return key;
+    public String getType() {
+        return type;
     }
 
     /**
@@ -31,7 +31,7 @@ public abstract class TrinketSlotButton {
         this.slot = slot;
         this.item = itemStack;
         this.enabled = false;
-        this.key = key;
+        this.type = key;
     }
 
     /**

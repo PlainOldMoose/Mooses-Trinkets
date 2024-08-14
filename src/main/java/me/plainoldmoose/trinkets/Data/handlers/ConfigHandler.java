@@ -3,15 +3,14 @@ package me.plainoldmoose.trinkets.Data.handlers;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.utils.ConfigUtils;
+import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.io.File;
 import java.util.HashMap;
@@ -38,10 +37,10 @@ public class ConfigHandler {
      * Loads the configuration file and initializes default values.
      */
     public void loadConfig() {
-        configFile = new File(Trinkets.getInstance().getDataFolder(), "gui_trinket_slots.yml");
+        configFile = new File(Trinkets.getInstance().getDataFolder(), "config.yml");
 
         if (!configFile.exists()) {
-            Trinkets.getInstance().saveResource("gui_trinket_slots.yml", false);
+            Trinkets.getInstance().saveResource("config.yml", false);
         }
 
         fileConfig = YamlConfiguration.loadConfiguration(configFile);
@@ -54,7 +53,7 @@ public class ConfigHandler {
             loadBackgroundMaterials();
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading gui_trinket_slots.yml, please check the configuration.");
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading config.yml, please check the configuration.");
         }
     }
 
@@ -72,29 +71,21 @@ public class ConfigHandler {
      * @param key The key of the trinket slot to load i.e. HEAD.
      */
     private void loadTrinketSlot(String key) {
-        if (!fileConfig.getKeys(false).contains(key)) {
+        System.out.println(key);
+        ConfigurationSection section = fileConfig.getConfigurationSection("trinket_slots." + key);
+
+        if (section == null) {
             return;
         }
 
-        String materialPath = key + ".material";
-        String namePath = key + ".name";
-        String slotPath = key + ".slot";
-        String isEnabledPath = key + ".enabled";
-
-        String name = fileConfig.getString(namePath);
-        ItemStack trinketSlotItem = ConfigUtils.createItemStack(fileConfig, materialPath);
-        ItemMeta trinketSlotMeta = trinketSlotItem.getItemMeta();
-        setItemMetaName(trinketSlotMeta, namePath);
-        trinketSlotItem.setItemMeta(trinketSlotMeta);
-        int slot = fileConfig.getInt(slotPath);
-        boolean isEnabled = fileConfig.getBoolean(isEnabledPath);
-
-        TrinketSlot trinketSlot = new TrinketSlot(key, slot, trinketSlotItem, isEnabled);
+        String type = section.getString("type");
+        String name = section.getString("name");
+        int slot = section.getInt("slot");
+        boolean isEnabled = section.getBoolean("enabled");
+        Material material = Material.valueOf(section.getString("material"));
+        ItemStack trinketSlotItem = ItemFactory.createItemStack(material, name + " " + type);
+        TrinketSlot trinketSlot = new TrinketSlot(type, slot, trinketSlotItem, isEnabled);
         trinketSlotSet.add(trinketSlot);
-    }
-
-    public Set<TrinketSlot> getTrinketSlotSet() {
-        return trinketSlotSet;
     }
 
     /**
@@ -102,12 +93,21 @@ public class ConfigHandler {
      */
     private void loadTrinketSlots() {
         trinketSlotSet.clear();
+        Set<String> slots = (fileConfig.getConfigurationSection("trinket_slots").getKeys(false));
 
-        SlotTypesHandler slotTypesHandler = SlotTypesHandler.getInstance();
-
-        for (String slot : slotTypesHandler.getSlotSet()) {
-            loadTrinketSlot(slot);
+        for (String s : slots) {
+            loadTrinketSlot(s);
         }
+//
+//        SlotTypesHandler slotTypesHandler = SlotTypesHandler.getInstance();
+//
+//        for (String slot : slotTypesHandler.getSlotSet()) {
+//            loadTrinketSlot(slot);
+//        }
+    }
+
+    public Set<TrinketSlot> getTrinketSlotSet() {
+        return trinketSlotSet;
     }
 
     /**
@@ -126,43 +126,9 @@ public class ConfigHandler {
      * Sets the display name of an ItemMeta from the configuration file.
      *
      * @param itemMeta The ItemMeta to modify.
-     * @param namePath The path to the display name in the configuration file.
      */
-    private void setItemMetaName(ItemMeta itemMeta, String namePath) {
-        itemMeta.setDisplayName(fileConfig.getString(namePath));
-    }
-
-    /**
-     * Sets persistent data on an ItemMeta.
-     *
-     * @param itemMeta The ItemMeta to modify.
-     * @param key      The key of the trinket slot.
-     */
-    private void setPersistentData(ItemMeta itemMeta, String key) {
-        PersistentDataContainer dataContainer = itemMeta.getPersistentDataContainer();
-        NamespacedKey enabledKey = new NamespacedKey(Trinkets.getInstance(), "enabled");
-        NamespacedKey slotKeyNamespace = new NamespacedKey(Trinkets.getInstance(), "slot");
-
-        boolean isEnabled = fileConfig.getBoolean(key + ".enabled", true);
-        dataContainer.set(enabledKey, PersistentDataType.INTEGER, isEnabled ? 1 : 0);
-
-        int slot = parseSlot(key);
-        dataContainer.set(slotKeyNamespace, PersistentDataType.INTEGER, slot);
-    }
-
-    /**
-     * Parses the slot index from the configuration file.
-     *
-     * @param key The key of the trinket slot.
-     * @return The slot index.
-     */
-    private int parseSlot(String key) {
-        String slotAsString = fileConfig.getString(key + ".slot");
-        try {
-            return Integer.parseInt(slotAsString);
-        } catch (NumberFormatException e) {
-            return defaultTrinketSlots.get(key);
-        }
+    private void setItemMetaName(ItemMeta itemMeta, String name) {
+        itemMeta.setDisplayName(name);
     }
 
     // Getter methods

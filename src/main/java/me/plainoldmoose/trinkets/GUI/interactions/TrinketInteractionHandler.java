@@ -48,7 +48,7 @@ public class TrinketInteractionHandler {
             return;
         }
 
-        if (!trinket.getSlot().equals(trinketSlotButton.getKey())) {
+        if (!trinket.getType().equals(trinketSlotButton.getType())) {
             return;
         }
 

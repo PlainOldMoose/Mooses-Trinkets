@@ -16,10 +16,11 @@ public class TrinketsData {
     private FileConfiguration fileConfig;
 
     public void loadConfig() {
-        SlotTypesHandler.getInstance().loadConfig();
+//        SlotTypesHandler.getInstance().loadConfig();
         ConfigHandler.getInstance().loadConfig();
         SkillsHandler.getInstance().loadConfig();
-        TrinketsHandler.getInstance().loadConfig();
+//        TrinketsHandler.getInstance().loadConfig();
+        TrinketsHandler.getInstance().loadYMLs();
         MessageHandler.getInstance().loadConfig();
         IconHandler.getInstance().loadConfig();
         DataHandler.getInstance().loadData();

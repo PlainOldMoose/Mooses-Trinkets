@@ -1,0 +1,6 @@
+my_trinket:
+  name: "&3This is my tinket!"
+  material: IRON_HELMET
+  type: TEMPLATE
+  stats:
+    defense: 50

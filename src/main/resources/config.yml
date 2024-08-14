@@ -1,0 +1,78 @@
+############################################################################
+#                                     _____      _       _        _        #
+#   /\/\   ___   ___  ___  ___  ___  /__   \_ __(_)_ __ | | _____| |_ ___  #
+#  /    \ / _ \ / _ \/ __|/ _ \/ __|   / /\/ '__| | '_ \| |/ / _ \ __/ __| #
+# / /\/\ \ (_) | (_) \__ \  __/\__ \  / /  | |  | | | | |   <  __/ |_\__ \ #
+# \/    \/\___/ \___/|___/\___||___/  \/   |_|  |_|_| |_|_|\_\___|\__|___/ #
+############################################################################
+
+# ___ _   _ ___  ____ ____
+#  |   \_/  |__] |___ [__
+#  |    |   |    |___ ___]
+
+# These are the types of trinkets available, e.g. a ring trinket, a belt trinket etc.
+
+trinket_types:
+#   - TEMPLATE
+#   - RING
+#   - BELT
+
+
+#  ______ _     _ _____
+# |  ____ |     |   |
+# |_____| |_____| __|__
+
+gui:
+  # These are the items used for the background of the GUI
+
+  background-material: GRAY_STAINED_GLASS_PANE
+  secondary-background-material: BLACK_STAINED_GLASS_PANE
+
+  # _ ____ ____ _  _ ____
+  # | |    |  | |\ | [__
+  # | |___ |__| | \| ___]
+
+  # these are icons at the top of the GUI that display a players stats and their values,
+  # for the stat use the exact EcoSkills/stats filename without .yml (e.g. "mining_fortune.yml" becomes "mining_fortune")
+  # If none of your icons are loading, double-check the stat names
+
+  # For player's name use %playername%
+  # For player's skull use PLAYER_HEAD
+  # Use & for formatting codes
+
+  stat_icons:
+  # exampleIcon1:
+  #   material: PLAYER_HEAD
+  #   name: "&c%playername%'s Stats"
+  #   slot: 2
+  #   stats:
+  #     - mining_fortune
+  #     - lumber_fortune
+  #     - crit_chance
+
+
+  # ____ _    ____ ___ ____
+  # [__  |    |  |  |  [__
+  # ___] |___ |__|  |  ___]
+
+  # These are the actual slots on the GUI that trinkets are equipped into, each trinket slot has a type.
+  # e.g. HEAD meaning that you can only fit trinkets of that type into this slot
+  # Use & for formatting codes
+
+  # ~ EXAMPLE ~
+  # HEAD:
+  #   enabled: true
+  #   slot: 13
+  #   material: RED_STAINED_GLASS_PANE
+  #   name: '&2&lHead trinket'
+
+  trinket_slots:
+    TEMPLATE:
+      enabled: true
+      slot: 22
+      material: RED_STAINED_GLASS_PANE
+      name: '&2Your first trinket slot'
+
+
+
+

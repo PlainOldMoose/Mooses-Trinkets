@@ -17,14 +17,14 @@ public class Trinket {
     private final String displayName;
     private final Map<String, Integer> stats;
     private final Map<String, Integer> formattedStats;
-    private final String slot;
+    private final String type;
 
     public void setItem(ItemStack item) {
         this.item = item;
     }
 
-    public String getSlot() {
-        return slot;
+    public String getType() {
+        return type;
     }
 
     /**
@@ -33,14 +33,13 @@ public class Trinket {
      * @param material The material representing the trinket item
      * @param name     The display name of the trinket
      */
-    public Trinket(Material material, String name, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, String slot) {
+    public Trinket(Material material, String name, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, String type) {
         this.item = new ItemStack(material);
         this.name = name;
         this.displayName = displayName;
         this.stats = stats;
         this.formattedStats = formattedStats;
-        this.slot = slot;
-
+        this.type = type;
 
         // TODO - find a better way to display stats that trinkets give as lore
         ArrayList<String> list = new ArrayList<>();

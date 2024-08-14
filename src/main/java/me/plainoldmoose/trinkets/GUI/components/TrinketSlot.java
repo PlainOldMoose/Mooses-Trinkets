@@ -7,22 +7,22 @@ import org.bukkit.inventory.ItemStack;
  * Each enum constant corresponds to a specific trinket slot in the inventory.
  */
 public class TrinketSlot {
-    private final String key;
+    private final String type;
     private int slot;
     private ItemStack background;
     private boolean enabled;
 
-    public String getKey() {
-        return key;
+    public String getType() {
+        return type;
     }
 
     /**
      * Constructs a TrinketSlot with the specified key.
      *
-     * @param key the key associated with the trinket slot
+     * @param type the type associated with the trinket slot
      */
-    public TrinketSlot(String key, int slot, ItemStack background, boolean enabled) {
-        this.key = key;
+    public TrinketSlot(String type, int slot, ItemStack background, boolean enabled) {
+        this.type = type;
         this.slot = slot;
         this.background = background;
         this.enabled = enabled;

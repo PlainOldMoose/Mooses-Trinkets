@@ -136,6 +136,7 @@ public class TrinketsGUI {
         }
     }
 
+    // TODO - re-implement this to fix duplication
     private void loadTrinketSaveData(Player player) {
         Map<UUID, List<ItemStack>> savedTrinkets = DataHandler.getInstance().getEquippedTrinkets();;
         List<ItemStack> playerTrinkets = savedTrinkets.get(player.getUniqueId());
@@ -147,7 +148,7 @@ public class TrinketsGUI {
         for (TrinketSlotButton b : buttonMap.values()) {
             for (ItemStack t : playerTrinkets) {
                 Trinket trinket = Trinkets.getInstance().getManager().getTrinketByDisplayName(t.getItemMeta().getDisplayName());
-                if (b.getKey().equals(trinket.getSlot())) {
+                if (b.getType().equals(trinket.getType())) {
                     b.push(t);
                 }
             }
@@ -160,7 +161,7 @@ public class TrinketsGUI {
      * @param slot The TrinketSlot for which the button is created.
      */
     private void createTrinketSlotButton(TrinketSlot slot) {
-        TrinketSlotButton trinketSlotButton = new TrinketSlotButton(slot.getSlot(), slot.getBackground(), slot.getKey()) {
+        TrinketSlotButton trinketSlotButton = new TrinketSlotButton(slot.getSlot(), slot.getBackground(), slot.getType()) {
             @Override
             public void onClick(Player player) {
                 trinketButtonClickHandler(player, slot.getSlot());

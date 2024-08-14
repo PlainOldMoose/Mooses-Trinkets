@@ -19,6 +19,16 @@ public class ConfigUtils {
     }
 
     /**
+     * Creates an ItemStack from the configuration file.
+     *
+     * @return The created ItemStack.
+     */
+    public static ItemStack createItemStack(ConfigurationSection section, String materialName) {
+        Material material = Material.valueOf(materialName);
+        return new ItemStack(material);
+    }
+
+    /**
      * Colorsize the configuration file's values.
      *
      * @param config The configuration file to colorize.
