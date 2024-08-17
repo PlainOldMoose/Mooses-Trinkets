@@ -6,6 +6,7 @@ import me.plainoldmoose.trinkets.utils.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -16,12 +17,7 @@ import java.util.Set;
 public class TrinketsHandler {
     private static final TrinketsHandler instance = new TrinketsHandler();
 
-//    private File configFile;
-//    private FileConfiguration fileConfig;
-
-    public static TrinketsHandler getInstance() {
-        return instance;
-    }
+    //TODO - refactor this entire class
 
     public void createTrinketsDir() {
         Trinkets plugin = Trinkets.getInstance();
@@ -70,36 +66,39 @@ public class TrinketsHandler {
     }
 
     private void loadTrinketsFile(File file) {
-        YamlConfiguration fileYamlConfig = YamlConfiguration.loadConfiguration(file);
-        fileYamlConfig.options().parseComments(true);
-        ConfigUtils.colorizeConfig(fileYamlConfig);
+        FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(file);
+        fileConfig.options().parseComments(true);
+        ConfigUtils.colorizeConfig(fileConfig);
 
-        Set<String> keys = fileYamlConfig.getKeys(false);
+        Set<String> keys = fileConfig.getKeys(false);
         String key = keys.iterator().next();
-        Trinkets.getInstance().getManager().addTrinket(loadTrinket(fileYamlConfig, key));
+        Trinkets.getInstance().getManager().addTrinket(loadTrinket(key, fileConfig));
     }
 
-    private Trinket loadTrinket(YamlConfiguration config, String key) {
-        String name = config.getString(key + ".name");
-        String materialName = config.getString(key + ".material");
-        String slotName = config.getString(key + ".type");
-        int modelID = config.getInt(key + ".model_id");
+    private Trinket loadTrinket(String identifier, FileConfiguration fileConfig) {
+        String displayName = fileConfig.getString(identifier + ".name");
+        String materialName = fileConfig.getString(identifier + ".material");
+        String slotName = fileConfig.getString(identifier + ".type");
+        int modelID = fileConfig.getInt(identifier + ".model_id");
 
-        ConfigurationSection statsSection = config.getConfigurationSection(key + ".stats");
+        ConfigurationSection statsSection = fileConfig.getConfigurationSection(identifier + ".stats");
         HashMap<String, Integer> statsMap = new HashMap<>();
-
         HashMap<String, Integer> formattedStatsMap = new HashMap<>();
 
-        Map<String, String> formats = SkillsHandler.getInstance().getSkillNameFormat();
+        Map<String, String> formattedSkillNames = SkillsHandler.getInstance().getSkillNameFormat();
 
         Set<String> statKeys = statsSection.getKeys(false);
 
         for (String stat : statKeys) {
             int value = statsSection.getInt(stat);
             statsMap.put(stat, value);
-            formattedStatsMap.put(formats.get(stat), value);
+            formattedStatsMap.put(formattedSkillNames.get(stat), value);
         }
 
-        return new Trinket(Material.valueOf(materialName), key, name, statsMap, formattedStatsMap, slotName, modelID);
+        return new Trinket(Material.valueOf(materialName), identifier, displayName, statsMap, formattedStatsMap, slotName, modelID);
+    }
+
+    public static TrinketsHandler getInstance() {
+        return instance;
     }
 }

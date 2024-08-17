@@ -2,6 +2,7 @@ package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Trinkets;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +37,7 @@ public class DataHandler {
         try {
             fileConfig.load(configFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading data.yml, data may be corrupted.");
         }
 
         for (String key : fileConfig.getKeys(false)) {

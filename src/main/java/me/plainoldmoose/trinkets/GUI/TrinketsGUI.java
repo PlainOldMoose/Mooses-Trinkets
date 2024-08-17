@@ -1,8 +1,8 @@
 package me.plainoldmoose.trinkets.GUI;
 
 import me.plainoldmoose.trinkets.Data.Trinket;
-import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
 import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
+import me.plainoldmoose.trinkets.Data.handlers.TrinketSlotsHandler;
 import me.plainoldmoose.trinkets.GUI.components.Background;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
@@ -129,7 +129,7 @@ public class TrinketsGUI {
      * Creates buttons for each TrinketSlot and adds them to the button map.
      */
     private void createSlotButtons() {
-        Set<TrinketSlot> trinketSlotSet = ConfigHandler.getInstance().getTrinketSlotSet();;
+        Set<TrinketSlot> trinketSlotSet = TrinketSlotsHandler.getInstance().getTrinketSlotSet();;
 
         for (TrinketSlot ts : trinketSlotSet) {
             createTrinketSlotButton(ts);

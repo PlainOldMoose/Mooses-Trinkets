@@ -1,6 +1,6 @@
 package me.plainoldmoose.trinkets.GUI.fetchers;
 
-import me.plainoldmoose.trinkets.Data.handlers.ConfigHandler;
+import me.plainoldmoose.trinkets.Data.handlers.GUIBackgroundHandler;
 import me.plainoldmoose.trinkets.GUI.components.Background;
 import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.Material;
@@ -20,8 +20,8 @@ public class BackgroundFetcher {
      * Creates background tiles for the GUI based on configuration settings.
      */
     public void createBackgroundTiles() {
-        Material backgroundMaterial = ConfigHandler.getInstance().getBackgroundMaterial();
-        Material secondaryMaterial = ConfigHandler.getInstance().getSecondaryBackgroundMaterial();
+        Material backgroundMaterial = GUIBackgroundHandler.getInstance().getBackgroundMaterial();
+        Material secondaryMaterial = GUIBackgroundHandler.getInstance().getSecondaryBackgroundMaterial();
 
         for (int row = 0; row < 6; row++) {
             int firstColumnIndex = row * 9;

@@ -11,9 +11,10 @@ public class StatsIcon {
     private int slot;
     private List<String> rawStatNames = new ArrayList<>();
 
-    public StatsIcon(ItemStack item, int slot) {
+    public StatsIcon(ItemStack item, int slot, List<String> rawStatNames) {
         this.item = item;
         this.slot = slot;
+        this.rawStatNames = rawStatNames;
     }
 
     public ItemStack getItem() {

@@ -12,10 +12,6 @@ import java.util.HashMap;
 public class MessageHandler {
     private static final MessageHandler instance = new MessageHandler();
 
-    public static MessageHandler getInstance() {
-        return instance;
-    }
-
     private File configFile;
     private FileConfiguration fileConfig;
     private final HashMap<String, String> messagesMap = new HashMap<>();
@@ -41,10 +37,6 @@ public class MessageHandler {
         }
     }
 
-    public HashMap<String, String> getMessagesMap() {
-        return messagesMap;
-    }
-
     /**
      * Loads messages from the configuration file into the messagesMap.
      */
@@ -55,5 +47,13 @@ public class MessageHandler {
             String value = fileConfig.getString(key);
             messagesMap.put(key, value);
         }
+    }
+
+    public static MessageHandler getInstance() {
+        return instance;
+    }
+
+    public HashMap<String, String> getMessagesMap() {
+        return messagesMap;
     }
 }

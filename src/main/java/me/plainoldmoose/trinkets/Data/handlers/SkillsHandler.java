@@ -14,28 +14,15 @@ import java.util.Map;
 public class SkillsHandler {
     private static final SkillsHandler instance = new SkillsHandler();
 
-    public static final SkillsHandler getInstance() {
-        return instance;
-    }
-
     private File pluginFolder;
     private List<String> skillFileNames = new ArrayList<String>();
     private Map<String, String> skillNameFormat = new HashMap<String, String>();
-    private FileConfiguration fileConfig;
-
-    private List<String> skills = new ArrayList<String>();
-
-    public List<String> getSkillFileNames() {
-        return skillFileNames;
-    }
 
     public void loadConfig() {
         pluginFolder = getEcoSkillsFolder();
 
-
         if (pluginFolder.exists() && pluginFolder.isDirectory()) {
-            loadSkillFileNames();
-            loadSkillFormats();
+            loadFiles();
         }
     }
 
@@ -44,51 +31,51 @@ public class SkillsHandler {
 
         if (pluginFolder.exists() && pluginFolder.isDirectory()) {
             return pluginFolder;
-        } else {
-            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading skills from eco, please check the configuration.");
         }
+
+        Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading skills from eco, please check the configuration.");
         return null;
     }
 
-    private void loadSkillFormats() {
-        skillNameFormat.clear();
-        File skillDirectory = getEcoSkillsFolder();
+    public void loadFiles() {
+        File skillsDirectory = getEcoSkillsFolder();
 
-        File[] files = skillDirectory.listFiles();
+        File[] files = skillsDirectory.listFiles();
 
-        for (File file : files) {
-            // Check if the file has a .yml extension
-            if (file.isFile() && file.getName().endsWith(".yml")) {
-                FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(file);
-                fileConfig.options().parseComments(true);
-                ConfigUtils.colorizeConfig(fileConfig);
-
-                String fileNameWithoutExtension = file.getName().replace(".yml", "");
-
-                skillNameFormat.put(fileNameWithoutExtension, fileConfig.getString("name"));
-            }
+        if (files == null) {
+            Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading skills from eco, please check the configuration.");
+            return;
         }
 
-    }
-
-    private void loadSkillFileNames() {
-        skillFileNames.clear();
-        File skillDirectory = getEcoSkillsFolder();
-
-        File[] files = skillDirectory.listFiles();
-
         for (File file : files) {
-            // Check if the file has a .yml extension
-            if (file.isFile() && file.getName().endsWith(".yml")) {
-                String fileNameWithoutExtension = file.getName().replace(".yml", "");
-                if (!fileNameWithoutExtension.contains("example")) {
-                    skillFileNames.add(fileNameWithoutExtension);
-                }
+            if (file.getName().contains("example")) {
+                continue;
             }
+
+            if (!file.getName().endsWith(".yml")) {
+                continue;
+            }
+
+            String fileNameWithoutExtension = file.getName().replace(".yml", "");
+            skillFileNames.add(fileNameWithoutExtension);
+
+            FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(file);
+            fileConfig.options().parseComments(true);
+            ConfigUtils.colorizeConfig(fileConfig);
+
+            skillNameFormat.put(fileNameWithoutExtension, fileConfig.getString("name"));
         }
     }
 
     public Map<String, String> getSkillNameFormat() {
         return skillNameFormat;
+    }
+
+    public List<String> getSkillFileNames() {
+        return skillFileNames;
+    }
+
+    public static SkillsHandler getInstance() {
+        return instance;
     }
 }
