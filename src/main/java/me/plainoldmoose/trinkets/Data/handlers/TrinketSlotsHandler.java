@@ -24,6 +24,7 @@ public class TrinketSlotsHandler {
 
     public void loadTrinketSlots(FileConfiguration fileConfig) {
         trinketSlotSet.clear();
+        System.out.println("RELOADING >>>>>>>>>>>>>>>>>>>");
         ConfigurationSection section = fileConfig.getConfigurationSection("trinket_slots");
 
         if (section == null) {

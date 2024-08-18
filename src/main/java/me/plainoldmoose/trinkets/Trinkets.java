@@ -1,13 +1,25 @@
 package me.plainoldmoose.trinkets;
 
+import com.willfp.eco.core.data.PlayerProfile;
+import com.willfp.eco.core.data.keys.PersistentDataKey;
+import com.willfp.eco.core.data.keys.PersistentDataKeyType;
 import me.plainoldmoose.trinkets.Command.TrinketsCommand;
+import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
+import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
 import me.plainoldmoose.trinkets.GUI.GUIListener;
 import me.plainoldmoose.trinkets.GUI.fetchers.ChatServiceFetcher;
+import me.plainoldmoose.trinkets.GUI.interactions.TrinketInteractionHandler;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Main class for the Trinkets plugin.
@@ -20,6 +32,11 @@ public final class Trinkets extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        PlayerProfile pp = PlayerProfile.load(UUID.fromString("3fbf679d-5114-45a5-a2c6-db5d4e7a5e80"));
+        NamespacedKey statKey = new NamespacedKey("ecoskills", "defense");
+        PersistentDataKey<Integer> intKey = new PersistentDataKey<>(statKey, PersistentDataKeyType.INT, 0);
+        Integer currentStatValue = pp.read(intKey);
+        System.out.println(">>>>> defense is " + currentStatValue + " before any calculations");
 
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
         getCommand("trinkets").setExecutor(commandExecutor);
@@ -46,11 +63,42 @@ public final class Trinkets extends JavaPlugin {
 
         // Update command configurations and load data
         commandExecutor.update();
+
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! HELLO WORLD 1");
+        Map<UUID, List<ItemStack>> data = DataHandler.getInstance().getEquippedTrinkets();
+        for (Map.Entry<UUID, List<ItemStack>> entry : data.entrySet()) {
+            pp = PlayerProfile.load(entry.getKey());
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! HELLO WORLD 2");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! LENGTH " + entry.getValue().size());
+
+            for (ItemStack item : entry.getValue()) {
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! HELLO WORLD 3");
+                Trinket t = manager.getTrinketByDisplayName(item.getItemMeta().getDisplayName());
+                System.out.println(">>> Adding stats for " + t.getName() + " to player " + entry.getKey());
+                TrinketInteractionHandler.updatePlayerStats(pp, t.getStats(), true);
+            }
+        }
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        Map<UUID, List<ItemStack>> data = DataHandler.getInstance().getEquippedTrinkets();
+        for (Map.Entry<UUID, List<ItemStack>> entry : data.entrySet()) {
+            PlayerProfile pp = PlayerProfile.load(entry.getKey());
+
+            for (ItemStack item : entry.getValue()) {
+                Trinket t = manager.getTrinketByDisplayName(item.getItemMeta().getDisplayName());
+                System.out.println(">>> Removing stats for " + t.getName() + " from player " + entry.getKey());
+                TrinketInteractionHandler.updatePlayerStats(pp, t.getStats(), false);
+            }
+        }
+        DataHandler.getInstance().saveData();
+
+        PlayerProfile pp = PlayerProfile.load(UUID.fromString("3fbf679d-5114-45a5-a2c6-db5d4e7a5e80"));
+        NamespacedKey statKey = new NamespacedKey("ecoskills", "defense");
+        PersistentDataKey<Integer> intKey = new PersistentDataKey<>(statKey, PersistentDataKeyType.INT, 0);
+        Integer currentStatValue = pp.read(intKey);
+        System.out.println(">>>>> defense is now " + currentStatValue);
     }
 
     public static Trinkets getInstance() {

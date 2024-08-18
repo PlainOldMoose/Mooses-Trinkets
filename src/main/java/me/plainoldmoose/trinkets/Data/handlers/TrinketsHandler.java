@@ -45,22 +45,33 @@ public class TrinketsHandler {
             createTrinketsDir();
         }
 
-        // Get all .yml files in the directory that don't start with "_"
-        File[] trinketFiles = configDir.listFiles((dir, name) -> name.endsWith(".yml") && !name.startsWith("_"));
+        // Clear the current trinket list
+        Trinkets.getInstance().getManager().getTrinketList().clear();
 
-        if (trinketFiles == null || trinketFiles.length == 0) {
-            Bukkit.getServer().getLogger().warning("[Mooses-Trinkets] No valid trinket configuration files found in the /trinkets/ folder.");
+        // Recursively search and load all valid .yml files in the directory and subdirectories
+        loadYMLFilesRecursively(configDir);
+    }
+
+    private void loadYMLFilesRecursively(File directory) {
+        // Get all files in the directory
+        File[] files = directory.listFiles();
+
+        if (files == null) {
             return;
         }
 
-        Trinkets.getInstance().getManager().getTrinketList().clear();
-
-        // Loop through each file and load the configuration
-        for (File file : trinketFiles) {
-            try {
-                loadTrinketsFile(file); // Pass the configuration to your trinket loading method
-            } catch (Exception e) {
-                Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading " + file.getName() + ", please check the configuration.");
+        // Loop through each file
+        for (File file : files) {
+            if (file.isDirectory()) {
+                // If the file is a directory, recursively search it
+                loadYMLFilesRecursively(file);
+            } else if (file.isFile() && file.getName().endsWith(".yml") && !file.getName().startsWith("_")) {
+                try {
+                    // Load the trinket configuration file
+                    loadTrinketsFile(file);
+                } catch (Exception e) {
+                    Bukkit.getServer().getLogger().severe("[Mooses-Trinkets] Something went wrong when loading " + file.getName() + ", please check the configuration.");
+                }
             }
         }
     }

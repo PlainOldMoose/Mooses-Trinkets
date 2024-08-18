@@ -81,7 +81,7 @@ public class TrinketInteractionHandler {
      * @param stats the stats to be applied
      * @param addStats true to add the stats, false to remove the stats
      */
-    private void updatePlayerStats(PlayerProfile profile, Map<String, Integer> stats, boolean addStats) {
+    public static void updatePlayerStats(PlayerProfile profile, Map<String, Integer> stats, boolean addStats) {
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
             String stat = entry.getKey();
             int value = entry.getValue();
@@ -96,6 +96,7 @@ public class TrinketInteractionHandler {
 
             int updatedStatValue = currentStatValue + adjustment;
             profile.write(intKey, updatedStatValue);
+            System.out.println(">>> UPDATED " + stat + " from " + currentStatValue + " to " + updatedStatValue);
         }
     }
 }

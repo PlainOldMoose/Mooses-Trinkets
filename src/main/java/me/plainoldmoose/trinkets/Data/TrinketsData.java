@@ -46,6 +46,7 @@ public class TrinketsData {
      * Reloads the configuration file and updates the in-memory data.
      */
     public void reloadConfig() {
+        loadConfigFile();
         loadConfig();
         Trinkets.getInstance().getCommandExecutor().update();
     }

@@ -1,6 +1,5 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
-import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -8,21 +7,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class DataHandler {
     private static final DataHandler instance = new DataHandler();
-
-    public static DataHandler getInstance() {
-        return instance;
-    }
-
     private File configFile;
     private FileConfiguration fileConfig;
 
     private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<UUID, List<ItemStack>>();
-    private TrinketManager manager = Trinkets.getInstance().getManager();
-
 
     public void loadData() {
         configFile = new File(Trinkets.getInstance().getDataFolder(), "data.yml");
@@ -42,10 +37,11 @@ public class DataHandler {
 
         for (String key : fileConfig.getKeys(false)) {
             UUID playerUUID = UUID.fromString(key);
-            List<ItemStack> trinketsList = new ArrayList<ItemStack>();
+            List<ItemStack> trinketsList;
 
             ItemStack[] items = ((List<ItemStack>) fileConfig.get(key)).toArray(new ItemStack[0]);
             trinketsList = List.of(items);
+            System.out.println(">>>>> Loaded " + playerUUID + " > " +  trinketsList.size() + " trinkets");
             equippedTrinkets.put(playerUUID, trinketsList);
         }
     }
@@ -64,5 +60,9 @@ public class DataHandler {
 
     public Map<UUID, List<ItemStack>> getEquippedTrinkets() {
         return equippedTrinkets;
+    }
+
+    public static DataHandler getInstance() {
+        return instance;
     }
 }

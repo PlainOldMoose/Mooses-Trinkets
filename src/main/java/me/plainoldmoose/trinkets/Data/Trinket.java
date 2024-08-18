@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,23 +36,30 @@ public class Trinket {
         this.formattedStats = formattedStats;
         this.type = type;
 
-        // TODO - find a better way to display stats that trinkets give as lore
-        ArrayList<String> list = new ArrayList<>();
-        list.add(" ");
+        // Generate the lore based on formatted stats
+        List<String> lore = generateLore(formattedStats);
 
-        for (Map.Entry<String, Integer> e : formattedStats.entrySet()) {
+        // Apply metadata to the item
+        applyItemMeta(displayName, modelID, lore);
+    }
 
-            String statName = (String) e.getKey();
-            int statValue = (int) e.getValue();
+    private List<String> generateLore(Map<String, Integer> formattedStats) {
+        List<String> lore = new ArrayList<>();
+        lore.add(" ");
+
+        formattedStats.forEach((statName, statValue) -> {
             String convertedName = PlayerStatsFetcher.convertToBukkitColor(statName);
-            list.add(convertedName + " §8»§f " + statValue);
-        }
+            lore.add(String.format("%s §8»§f %d", convertedName, statValue));
+        });
 
+        return lore;
+    }
+
+    private void applyItemMeta(String displayName, int modelID, List<String> lore) {
         ItemMeta meta = this.item.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(displayName);
-            ;
-            meta.setLore(list);
+            meta.setLore(lore);
             meta.setCustomModelData(modelID);
             this.item.setItemMeta(meta);
         }
@@ -62,7 +70,7 @@ public class Trinket {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public String getDisplayName() {

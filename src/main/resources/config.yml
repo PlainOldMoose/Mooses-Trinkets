@@ -57,5 +57,6 @@ trinket_slots:
   slot1:
     enabled: true
     slot: 22
+    type: TEMPLATE
     material: RED_STAINED_GLASS_PANE
     name: '&2Your first trinket slot'
