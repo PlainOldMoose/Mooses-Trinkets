@@ -97,10 +97,6 @@ public class TrinketInteractionHandler {
             int updatedStatValue = currentStatValue + adjustment;
             profile.write(intKey, updatedStatValue);
             System.out.println(">>> UPDATED " + stat + " from " + currentStatValue + " to " + updatedStatValue);
-            profile.write(intKey, updatedStatValue++);
-            System.out.println(">>> UPDATED " + stat + " from " + currentStatValue + " to " + updatedStatValue++);
-            profile.write(intKey, updatedStatValue++);
-            System.out.println(">>> UPDATED " + stat + " from " + currentStatValue + " to " + updatedStatValue++);
         }
     }
 }
