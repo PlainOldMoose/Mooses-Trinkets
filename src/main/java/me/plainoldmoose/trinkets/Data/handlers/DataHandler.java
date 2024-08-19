@@ -1,9 +1,5 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
-import com.willfp.eco.core.data.PlayerProfile;
-import me.plainoldmoose.trinkets.Data.Trinket;
-import me.plainoldmoose.trinkets.Data.TrinketManager;
-import me.plainoldmoose.trinkets.GUI.interactions.TrinketInteractionHandler;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -59,20 +55,6 @@ public class DataHandler {
             fileConfig.save(configFile);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public static void hookTrinketsDataOntoEco(boolean add) {
-        Map<UUID, List<ItemStack>> data = DataHandler.getInstance().getEquippedTrinkets();
-        for (Map.Entry<UUID, List<ItemStack>> entry : data.entrySet()) {
-            PlayerProfile pp = PlayerProfile.load(entry.getKey());
-
-            for (ItemStack item : entry.getValue()) {
-                TrinketManager manager = Trinkets.getInstance().getManager();
-                Trinket t = manager.getTrinketByDisplayName(item.getItemMeta().getDisplayName());
-                System.out.println(">>> Editing stats for " + t.getName() + " on player " + entry.getKey());
-                TrinketInteractionHandler.updatePlayerStats(pp, t.getStats(), add);
-            }
         }
     }
 
