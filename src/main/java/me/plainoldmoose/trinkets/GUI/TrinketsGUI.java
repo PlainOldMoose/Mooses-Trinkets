@@ -147,7 +147,7 @@ public class TrinketsGUI {
 
         for (TrinketSlotButton b : buttonMap.values()) {
             for (ItemStack t : playerTrinkets) {
-                Trinket trinket = Trinkets.getInstance().getManager().getTrinketByDisplayName(t.getItemMeta().getDisplayName());
+                Trinket trinket = Trinkets.getInstance().getManager().getTrinket(t);
                 if (b.getType().equals(trinket.getType())) {
                     b.push(t);
                 }

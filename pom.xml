@@ -76,6 +76,11 @@
           <scope>provided</scope>
       </dependency>
       <dependency>
+          <groupId>com.willfp</groupId>
+          <artifactId>EcoSkills</artifactId>
+          <version>3.58.0</version>
+      </dependency>
+      <dependency>
           <groupId>com.github.MilkBowl</groupId>
           <artifactId>VaultAPI</artifactId>
           <version>1.7</version>

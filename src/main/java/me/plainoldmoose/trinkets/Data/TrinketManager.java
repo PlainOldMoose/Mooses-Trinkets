@@ -50,10 +50,9 @@ public class TrinketManager {
         return null;
     }
 
-    // TODO - Find better way to retrive trinket from itemstack.
-    public Trinket getTrinketByDisplayName(String trinketName) {
+    public Trinket getTrinket(ItemStack trinketItemStack) {
         for (Trinket t : trinketList) {
-            if (t.getDisplayName().equals(trinketName)) {
+            if (t.getDisplayName().equals(trinketItemStack.getItemMeta().getDisplayName())) {
                 return t;
             }
         }

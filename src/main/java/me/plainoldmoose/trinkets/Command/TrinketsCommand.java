@@ -1,5 +1,8 @@
 package me.plainoldmoose.trinkets.Command;
 
+import com.willfp.eco.core.data.PlayerProfile;
+import com.willfp.eco.core.data.keys.PersistentDataKey;
+import com.willfp.eco.core.data.keys.PersistentDataKeyType;
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.TrinketsData;
@@ -7,6 +10,7 @@ import me.plainoldmoose.trinkets.Data.handlers.MessageHandler;
 import me.plainoldmoose.trinkets.GUI.TrinketsGUI;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -89,10 +93,23 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
             case "give":
                 handleGive(player, args);
                 return true;
+            case "cringe":
+                handleCringe(player);
+                return true;
             default:
                 player.sendMessage(PREFIX + UNKNOWN_COMMAND_MESSAGE);
                 return true;
         }
+    }
+
+    private void handleCringe(Player player) {
+        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
+
+        NamespacedKey statKey = new NamespacedKey("ecoskills", "defense");
+        PersistentDataKey<Integer> intKey = new PersistentDataKey<>(statKey, PersistentDataKeyType.INT, 0);
+
+        profile.write(intKey, 6969);
+        Bukkit.getScheduler().runTaskLater(Trinkets.getInstance(), () -> Bukkit.shutdown(), 12L); // 300ms = 6 ticks (1 tick = 50ms)
     }
 
     /**
@@ -193,6 +210,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
             completions.add("reload");
             completions.add("reset");
             completions.add("give");
+            completions.add("cringe");
 
             return completions.stream()
                     .filter(option -> option.toLowerCase().startsWith(args[0].toLowerCase()))

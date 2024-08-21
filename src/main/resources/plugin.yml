@@ -1,7 +1,7 @@
 name: Mooses-Trinkets
 version: '${project.version}'
 main: me.plainoldmoose.trinkets.Trinkets
-depend: [ eco ]
+depend: [ eco, EcoSkills ]
 softdepend:
   - Vault
   - LPC

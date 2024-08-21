@@ -1,9 +1,13 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
+import me.plainoldmoose.trinkets.Data.Trinket;
+import me.plainoldmoose.trinkets.Data.TrinketManager;
+import me.plainoldmoose.trinkets.GUI.interactions.TrinketInteractionHandler;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -41,7 +45,7 @@ public class DataHandler {
 
             ItemStack[] items = ((List<ItemStack>) fileConfig.get(key)).toArray(new ItemStack[0]);
             trinketsList = List.of(items);
-            System.out.println(">>>>> Loaded " + playerUUID + " > " +  trinketsList.size() + " trinkets");
+            System.out.println(">>>>> Loaded " + playerUUID + " > " + trinketsList.size() + " trinkets");
             equippedTrinkets.put(playerUUID, trinketsList);
         }
     }
@@ -57,6 +61,27 @@ public class DataHandler {
             e.printStackTrace();
         }
     }
+
+    public void hookTrinketsDataOntoEco() {
+        Map<UUID, List<ItemStack>> equippedTrinkets = DataHandler.getInstance().getEquippedTrinkets();
+        TrinketManager trinketManager = Trinkets.getInstance().getManager();
+
+        for (Map.Entry<UUID, List<ItemStack>> entry : equippedTrinkets.entrySet()) {
+            UUID playerUUID = entry.getKey();
+            Player player = Bukkit.getPlayer(playerUUID);
+
+            List<ItemStack> trinketItems = entry.getValue();
+            for (ItemStack item : trinketItems) {
+
+                Trinket trinket = trinketManager.getTrinket(item);
+
+                Map<String, Integer> trinketStats = trinket.getStats();
+
+                TrinketInteractionHandler.updatePlayerStats(player, trinketStats, true);
+            }
+        }
+    }
+
 
     public Map<UUID, List<ItemStack>> getEquippedTrinkets() {
         return equippedTrinkets;

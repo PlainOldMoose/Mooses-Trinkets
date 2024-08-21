@@ -1,15 +1,15 @@
 package me.plainoldmoose.trinkets.GUI.interactions;
 
-import com.willfp.eco.core.data.PlayerProfile;
-import com.willfp.eco.core.data.keys.PersistentDataKey;
-import com.willfp.eco.core.data.keys.PersistentDataKeyType;
+import com.willfp.ecoskills.api.EcoSkillsAPI;
+import com.willfp.ecoskills.api.modifiers.ModifierOperation;
+import com.willfp.ecoskills.api.modifiers.StatModifier;
+import com.willfp.ecoskills.stats.Stats;
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.handlers.Keys;
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,27 +23,26 @@ public class TrinketInteractionHandler {
     public void handleButtonClick(Player player, int slot, TrinketSlotButton trinketSlotButton) {
         ItemStack buttonItem = trinketSlotButton != null ? trinketSlotButton.getContainedItem() : null;
         ItemStack itemOnCursor = player.getItemOnCursor();
-        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
 
         if (itemOnCursor.getType() == Material.AIR) {
-            handleEmptyCursorClick(trinketSlotButton, buttonItem, profile, player);
+            handleEmptyCursorClick(trinketSlotButton, player);
         } else {
-            handleCursorItemClick(itemOnCursor, trinketSlotButton, profile, player);
+            handleCursorItemClick(itemOnCursor, trinketSlotButton, player);
         }
     }
 
-    private void handleEmptyCursorClick(TrinketSlotButton trinketSlotButton, ItemStack buttonItem, PlayerProfile profile, Player player) {
-        if (buttonItem == null) return;
+    private void handleEmptyCursorClick(TrinketSlotButton trinketSlotButton, Player player) {
+        ItemStack buttonItem = trinketSlotButton.getContainedItem();
 
-        Trinket trinket = getTrinketFromItem(buttonItem);
+        Trinket trinket = trinketManager.getTrinket(buttonItem);
         if (trinket != null) {
-            updatePlayerStats(profile, trinket.getStats(), false);
+            updatePlayerStats(player, trinket.getStats(), false);
             player.setItemOnCursor(trinketSlotButton.pop());
         }
     }
 
-    private void handleCursorItemClick(ItemStack itemOnCursor, TrinketSlotButton trinketSlotButton, PlayerProfile profile, Player player) {
-        Trinket trinket = getTrinketFromItem(itemOnCursor);
+    private void handleCursorItemClick(ItemStack itemOnCursor, TrinketSlotButton trinketSlotButton, Player player) {
+        Trinket trinket = trinketManager.getTrinket(itemOnCursor);
         if (trinket == null || !itemHasTrinketKey(itemOnCursor)) {
             return;
         }
@@ -52,19 +51,12 @@ public class TrinketInteractionHandler {
             return;
         }
 
-        updatePlayerStats(profile, trinket.getStats(), true);
+        updatePlayerStats(player, trinket.getStats(), true);
         if (itemOnCursor.getType() != Material.AIR) {
             ItemStack itemToReturn = trinketSlotButton.pop();
             trinketSlotButton.push(itemOnCursor);
             player.setItemOnCursor(itemToReturn);
         }
-    }
-
-    private Trinket getTrinketFromItem(ItemStack item) {
-        if (item == null || !item.hasItemMeta()) return null;
-        ItemMeta itemMeta = item.getItemMeta();
-        String displayName = itemMeta.getDisplayName();
-        return trinketManager.getTrinketByDisplayName(displayName);
     }
 
     private boolean itemHasTrinketKey(ItemStack item) {
@@ -77,26 +69,18 @@ public class TrinketInteractionHandler {
     /**
      * Updates the player's stats based on the provided stats map.
      *
-     * @param profile the player's profile
      * @param stats the stats to be applied
      * @param addStats true to add the stats, false to remove the stats
      */
-    public static void updatePlayerStats(PlayerProfile profile, Map<String, Integer> stats, boolean addStats) {
+    public static void updatePlayerStats(Player player, Map<String, Integer> stats, boolean addStats) {
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
-            String stat = entry.getKey();
-            int value = entry.getValue();
+            String statName = entry.getKey();
+            int statValue = entry.getValue();
+            System.out.println(">>> UPDATED " + statName + " to " + statName);
 
-            // Adjust value based on add or remove operation
-            int adjustment = addStats ? value : -value;
-
-            NamespacedKey statKey = new NamespacedKey("ecoskills", stat);
-            PersistentDataKey<Integer> intKey = new PersistentDataKey<>(statKey, PersistentDataKeyType.INT, 0);
-
-            Integer currentStatValue = profile.read(intKey);
-
-            int updatedStatValue = currentStatValue + adjustment;
-            profile.write(intKey, updatedStatValue);
-            System.out.println(">>> UPDATED " + stat + " from " + currentStatValue + " to " + updatedStatValue);
+            int adjustment = addStats ? statValue : -statValue;
+            StatModifier modifier = new StatModifier(player.getUniqueId(), Stats.INSTANCE.get(statName), adjustment, ModifierOperation.ADD);
+            EcoSkillsAPI.addStatModifier(player, modifier);
         }
     }
 }
