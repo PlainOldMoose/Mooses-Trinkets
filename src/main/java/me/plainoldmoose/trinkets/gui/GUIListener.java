@@ -2,11 +2,11 @@ package me.plainoldmoose.trinkets.gui;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
-import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
-import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
+import me.plainoldmoose.trinkets.data.trinket.Key;
 import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
 import me.plainoldmoose.trinkets.gui.components.Background;
 import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
+import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +14,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,27 +72,19 @@ public class GUIListener implements Listener {
             return;
         }
 
+        Inventory inventory = event.getInventory();
+        List<ItemStack> trinketList = new ArrayList<ItemStack>();
 
-        List<SerializedTrinketSlot> serializedTrinketSlotList = new ArrayList<>();
-        for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
-            if (trinketSlot.getContainedTrinket() != null) {
-                serializedTrinketSlotList.add(new SerializedTrinketSlot(trinketSlot.serialize()));
-            }
-        }
-
-        List<ItemStack> trinketList = new ArrayList<>();
-        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
-        for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
-            if (trinketSlot.getContainedTrinket() != null) {
-                ItemStack item = trinketSlot.getContainedTrinket();
+        for (ItemStack item : inventory.getContents()) {
+            ItemMeta meta = item.getItemMeta();
+            PersistentDataContainer itemContainer = meta.getPersistentDataContainer();
+            if (itemContainer.has(Key.TRINKET)) {
                 trinketList.add(item);
             }
         }
 
         UUID playerUUID = eventPlayer.getUniqueId();
 
-        PlayerDataLoader.getInstance().getSerialisedSlots().put(playerUUID, serializedTrinketSlotList);
-        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
         PlayerDataLoader.getInstance().getEquippedTrinkets().put(playerUUID, trinketList);
         PlayerDataLoader.getInstance().saveData();
 

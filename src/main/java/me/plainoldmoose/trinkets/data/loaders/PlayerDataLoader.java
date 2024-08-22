@@ -1,10 +1,9 @@
 package me.plainoldmoose.trinkets.data.loaders;
 
-import me.plainoldmoose.trinkets.Trinkets;
-import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.data.trinket.Trinket;
 import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
 import me.plainoldmoose.trinkets.gui.interactions.TrinketInteractionHandler;
+import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,8 +21,7 @@ public class PlayerDataLoader {
     private File configFile;
     private FileConfiguration fileConfig;
 
-    private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
-    private final Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = new HashMap<>();
+    private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<UUID, List<ItemStack>>();
 
     public void loadData() {
         configFile = new File(Trinkets.getInstance().getDataFolder(), "data.yml");
@@ -43,13 +41,17 @@ public class PlayerDataLoader {
 
         for (String key : fileConfig.getKeys(false)) {
             UUID playerUUID = UUID.fromString(key);
-            List<SerializedTrinketSlot> serializedTrinketSlotList = (List<SerializedTrinketSlot>) fileConfig.get(playerUUID.toString());
-            serialisedSlots.put(playerUUID, serializedTrinketSlotList);
+            List<ItemStack> trinketsList;
+
+            ItemStack[] items = ((List<ItemStack>) fileConfig.get(key)).toArray(new ItemStack[0]);
+            trinketsList = List.of(items);
+            System.out.println(">>>>> Loaded " + playerUUID + " > " + trinketsList.size() + " trinkets");
+            equippedTrinkets.put(playerUUID, trinketsList);
         }
     }
 
     public void saveData() {
-        for (Map.Entry<UUID, List<SerializedTrinketSlot>> playerData : serialisedSlots.entrySet()) {
+        for (Map.Entry<UUID, List<ItemStack>> playerData : equippedTrinkets.entrySet()) {
             fileConfig.set(playerData.getKey().toString(), playerData.getValue());
         }
 
@@ -61,6 +63,7 @@ public class PlayerDataLoader {
     }
 
     public void hookTrinketsDataOntoEco(Player player, boolean add) {
+        Map<UUID, List<ItemStack>> equippedTrinkets = PlayerDataLoader.getInstance().getEquippedTrinkets();
         List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
 
         if (playerTrinkets == null) {
@@ -74,10 +77,6 @@ public class PlayerDataLoader {
             Map<String, Integer> trinketStats = trinket.getStats();
             TrinketInteractionHandler.updatePlayerStats(player, trinketStats, add);
         }
-    }
-
-    public Map<UUID, List<SerializedTrinketSlot>> getSerialisedSlots() {
-        return serialisedSlots;
     }
 
     public Map<UUID, List<ItemStack>> getEquippedTrinkets() {

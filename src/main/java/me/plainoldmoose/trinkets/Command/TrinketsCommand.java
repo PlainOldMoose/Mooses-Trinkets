@@ -164,6 +164,24 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
+     * Checks if the given string is a valid integer.
+     *
+     * @param s The string to check
+     * @return true if the string is a valid integer, false otherwise
+     */
+    private boolean isInteger(String s) {
+        if (s == null || s.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (!Character.isDigit(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Gets the singleton instance of the TrinketsCommand class.
      *
      * @return The singleton instance of the TrinketsCommand class

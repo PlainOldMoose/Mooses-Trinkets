@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class TrinketSlotBuilder {
-    private static Map<Integer, TrinketSlot> trinketSlotMap = new HashMap<>();
+    private static final Map<Integer, TrinketSlot> trinketSlotMap = new HashMap<>();
 
     /**
      * Creates buttons for each TrinketSlot and adds them to the button map.
@@ -23,9 +23,5 @@ public class TrinketSlotBuilder {
 
     public static Map<Integer, TrinketSlot> getTrinketSlotMap() {
         return trinketSlotMap;
-    }
-
-    public static void setTrinketSlotMap(Map<Integer, TrinketSlot> trinketSlotMap) {
-        TrinketSlotBuilder.trinketSlotMap = trinketSlotMap;
     }
 }
