@@ -1,11 +1,10 @@
 package me.plainoldmoose.trinkets.Command;
 
-import me.plainoldmoose.trinkets.Data.Trinket;
-import me.plainoldmoose.trinkets.Data.TrinketManager;
-import me.plainoldmoose.trinkets.Data.TrinketsData;
-import me.plainoldmoose.trinkets.Data.handlers.MessageHandler;
-import me.plainoldmoose.trinkets.GUI.TrinketsGUI;
-import me.plainoldmoose.trinkets.Trinkets;
+import me.plainoldmoose.trinkets.data.trinket.Trinket;
+import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
+import me.plainoldmoose.trinkets.data.TrinketsConfigHandler;
+import me.plainoldmoose.trinkets.data.loaders.config.MessageConfigLoader;
+import me.plainoldmoose.trinkets.gui.TrinketsGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -41,7 +40,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
      * Updates the command messages from the configuration.
      */
     public void update() {
-        HashMap<String, String> messagesMap = MessageHandler.getInstance().getMessagesMap();
+        HashMap<String, String> messagesMap = MessageConfigLoader.getInstance().getMessagesMap();
 
         PREFIX = messagesMap.get("prefix");
         ONLY_PLAYERS_MESSAGE = "Only players can use this command!";
@@ -121,7 +120,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
      * @param player The player executing the command
      */
     private void handleReload(Player player) {
-        TrinketsData.getInstance().reloadConfig();
+        TrinketsConfigHandler.getInstance().reloadConfig();
         player.sendMessage(PREFIX + RELOADED_MESSAGE);
     }
 
@@ -131,7 +130,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
      * @param player The player executing the command
      */
     private void handleList(Player player) {
-        List<Trinket> trinketList = Trinkets.getInstance().getManager().getTrinketList();
+        List<Trinket> trinketList = TrinketManager.getInstance().getTrinketList();
         if (trinketList.isEmpty()) {
             player.sendMessage(PREFIX + NO_TRINKETS_MESSAGE);
             return;
@@ -152,9 +151,9 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        TrinketManager manager = Trinkets.getInstance().getManager();
+        TrinketManager manager = TrinketManager.getInstance();
 
-        ItemStack trinket = manager.getTrinketByName(args[1]);
+        ItemStack trinket = manager.getTrinketItemStack(args[1]);
 
         if (trinket == null) {
             player.sendMessage(PREFIX + TRINKET_NOT_FOUND_MESSAGE);
@@ -230,7 +229,7 @@ public class TrinketsCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
             // Tab completion for the second argument (player names for reset)
-            return Trinkets.getInstance().getManager().getTrinketNameList();
+            return TrinketManager.getInstance().getTrinketNameList();
         }
 
         return new ArrayList<>(); // Return an empty list if no completions are found

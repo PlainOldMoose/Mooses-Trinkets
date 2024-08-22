@@ -5,8 +5,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>me.plainoldmoose</groupId>
-  <artifactId>Trinkets</artifactId>
-  <version>1.0</version>
+  <artifactId>MoosesTrinkets</artifactId>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
 
   <name>Trinkets</name>
