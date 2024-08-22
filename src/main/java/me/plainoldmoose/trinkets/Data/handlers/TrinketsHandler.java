@@ -2,6 +2,7 @@ package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.Data.Trinket;
 import me.plainoldmoose.trinkets.Trinkets;
+import me.plainoldmoose.trinkets.trinket.TrinketType;
 import me.plainoldmoose.trinkets.utils.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -90,6 +91,7 @@ public class TrinketsHandler {
         String displayName = fileConfig.getString(identifier + ".name");
         String materialName = fileConfig.getString(identifier + ".material");
         String slotName = fileConfig.getString(identifier + ".type");
+        TrinketType type = new TrinketType(slotName);
         int modelID = fileConfig.getInt(identifier + ".model_id");
 
         ConfigurationSection statsSection = fileConfig.getConfigurationSection(identifier + ".stats");
@@ -106,7 +108,7 @@ public class TrinketsHandler {
             formattedStatsMap.put(formattedSkillNames.get(stat), value);
         }
 
-        return new Trinket(Material.valueOf(materialName), identifier, displayName, statsMap, formattedStatsMap, slotName, modelID);
+        return new Trinket(Material.valueOf(materialName), identifier, displayName, statsMap, formattedStatsMap, type, modelID);
     }
 
     public static TrinketsHandler getInstance() {

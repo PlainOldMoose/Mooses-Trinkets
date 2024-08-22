@@ -1,6 +1,7 @@
 package me.plainoldmoose.trinkets.Data.handlers;
 
 import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
+import me.plainoldmoose.trinkets.trinket.TrinketType;
 import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,14 +40,25 @@ public class TrinketSlotsHandler {
     }
 
     private void loadTrinketSlot(String key, ConfigurationSection section) {
-        String type = section.getString(key + ".type");
-        String name = section.getString(key + ".name");
-        int slot = section.getInt(key + ".slot");
-        boolean isEnabled = section.getBoolean(key + ".enabled");
-        Material material = Material.valueOf(section.getString(key + ".material"));
+        // Construct TrinketType from YML value
+        String typeString = section.getString(key + ".type");
+        TrinketType type = new TrinketType(typeString);
 
-        ItemStack trinketSlotItem = ItemFactory.createItemStack(material, name + " " + type);
-        TrinketSlot trinketSlot = new TrinketSlot(type, slot, trinketSlotItem, isEnabled);
+        // Construct ItemStack from YML values
+        String name = section.getString(key + ".name");
+        Material material = Material.valueOf(section.getString(key + ".material"));
+        ItemStack displayItem = ItemFactory.createItemStack(material, name);
+
+        // Load inventory index from YML value
+        int inventoryIndex = section.getInt(key + ".slot");
+
+        // Create TrinketSlot
+        TrinketSlot trinketSlot = new TrinketSlot(displayItem, type, inventoryIndex);
+
+        // Enable / Disable as necessary
+        boolean isEnabled = section.getBoolean(key + ".enabled");
+        trinketSlot.setVisibility(isEnabled);
+
         trinketSlotSet.add(trinketSlot);
     }
 }

@@ -6,6 +6,7 @@ import me.plainoldmoose.trinkets.Data.TrinketsData;
 import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
 import me.plainoldmoose.trinkets.GUI.GUIListener;
 import me.plainoldmoose.trinkets.GUI.fetchers.ChatServiceFetcher;
+import me.plainoldmoose.trinkets.GUI.interactions.EcoHookListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,13 +23,13 @@ public final class Trinkets extends JavaPlugin {
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
+        getServer().getPluginManager().registerEvents(new EcoHookListener(), this);
         getCommand("trinkets").setExecutor(commandExecutor);
         TrinketsData.getInstance().loadConfig();
 
         // Update command configurations and load data
         commandExecutor.update();
 
-        DataHandler.getInstance().hookTrinketsDataOntoEco();
 
         Plugin vaultPlugin = Bukkit.getServer().getPluginManager().getPlugin("Vault");
         if (vaultPlugin == null || !vaultPlugin.isEnabled()) {

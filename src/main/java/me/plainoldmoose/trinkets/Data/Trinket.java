@@ -1,6 +1,7 @@
 package me.plainoldmoose.trinkets.Data;
 
 import me.plainoldmoose.trinkets.GUI.fetchers.PlayerStatsFetcher;
+import me.plainoldmoose.trinkets.trinket.TrinketType;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,17 +19,17 @@ public class Trinket {
     private final String displayName;
     private final Map<String, Integer> stats;
     private final Map<String, Integer> formattedStats;
-    private final String type;
+    private final TrinketType type;
 
     public void setItem(ItemStack item) {
         this.item = item;
     }
 
-    public String getType() {
+    public TrinketType getType() {
         return type;
     }
 
-    public Trinket(Material material, String identifier, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, String type, int modelID) {
+    public Trinket(Material material, String identifier, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, TrinketType type, int modelID) {
         this.item = new ItemStack(material);
         this.name = identifier;
         this.displayName = displayName;

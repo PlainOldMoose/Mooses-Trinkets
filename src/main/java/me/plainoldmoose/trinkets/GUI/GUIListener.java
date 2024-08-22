@@ -1,10 +1,9 @@
 package me.plainoldmoose.trinkets.GUI;
 
-import me.plainoldmoose.trinkets.Data.TrinketManager;
 import me.plainoldmoose.trinkets.Data.handlers.DataHandler;
 import me.plainoldmoose.trinkets.Data.handlers.Keys;
 import me.plainoldmoose.trinkets.GUI.components.Background;
-import me.plainoldmoose.trinkets.GUI.components.TrinketSlotButton;
+import me.plainoldmoose.trinkets.GUI.components.TrinketSlot;
 import me.plainoldmoose.trinkets.GUI.fetchers.BackgroundFetcher;
 import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.entity.Player;
@@ -46,16 +45,16 @@ public class GUIListener implements Listener {
 
             // Cancel interactions with background tiles
             for (final Background background : BackgroundFetcher.getBackgroundList()) {
-                if (background.getSlot() == event.getSlot()) {
+                if (background.getIndex() == event.getSlot()) {
                     event.setCancelled(true);
                 }
             }
 
             // Handle interactions with buttons
-            for (Map.Entry<Integer, TrinketSlotButton> entry : menu.getButtonMap().entrySet()) {
-                TrinketSlotButton trinketSlotButton = entry.getValue();
-                if (trinketSlotButton.getSlot() == event.getSlot()) {
-                    trinketSlotButton.onClick(eventPlayer);
+            for (Map.Entry<Integer, TrinketSlot> entry : menu.getButtonMap().entrySet()) {
+                TrinketSlot trinketSlot = entry.getValue();
+                if (trinketSlot.getIndex() == event.getSlot()) {
+                    trinketSlot.onClick(eventPlayer);
                     event.setCancelled(true);
                 }
             }
@@ -79,7 +78,6 @@ public class GUIListener implements Listener {
             ItemMeta meta = item.getItemMeta();
             PersistentDataContainer itemContainer = meta.getPersistentDataContainer();
             if (itemContainer.has(Keys.TRINKET)) {
-                TrinketManager manager = Trinkets.getInstance().getManager();
                 trinketList.add(item);
             }
         }

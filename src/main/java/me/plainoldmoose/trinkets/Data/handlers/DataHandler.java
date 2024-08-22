@@ -62,26 +62,22 @@ public class DataHandler {
         }
     }
 
-    public void hookTrinketsDataOntoEco() {
+    public void hookTrinketsDataOntoEco(Player player, boolean add) {
         Map<UUID, List<ItemStack>> equippedTrinkets = DataHandler.getInstance().getEquippedTrinkets();
+        List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
+
+        if (playerTrinkets == null) {
+            return;
+        }
+
         TrinketManager trinketManager = Trinkets.getInstance().getManager();
 
-        for (Map.Entry<UUID, List<ItemStack>> entry : equippedTrinkets.entrySet()) {
-            UUID playerUUID = entry.getKey();
-            Player player = Bukkit.getPlayer(playerUUID);
-
-            List<ItemStack> trinketItems = entry.getValue();
-            for (ItemStack item : trinketItems) {
-
-                Trinket trinket = trinketManager.getTrinket(item);
-
-                Map<String, Integer> trinketStats = trinket.getStats();
-
-                TrinketInteractionHandler.updatePlayerStats(player, trinketStats, true);
-            }
+        for (ItemStack item : playerTrinkets) {
+            Trinket trinket = trinketManager.getTrinket(item);
+            Map<String, Integer> trinketStats = trinket.getStats();
+            TrinketInteractionHandler.updatePlayerStats(player, trinketStats, add);
         }
     }
-
 
     public Map<UUID, List<ItemStack>> getEquippedTrinkets() {
         return equippedTrinkets;

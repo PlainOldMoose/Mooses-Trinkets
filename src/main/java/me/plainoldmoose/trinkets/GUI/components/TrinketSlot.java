@@ -1,57 +1,44 @@
 package me.plainoldmoose.trinkets.GUI.components;
 
+import me.plainoldmoose.trinkets.GUI.interactions.TrinketInteractionHandler;
+import me.plainoldmoose.trinkets.trinket.TrinketType;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Represents different trinket slots in the GUI.
- * Each enum constant corresponds to a specific trinket slot in the inventory.
- */
-public class TrinketSlot {
-    private final String type;
-    private int slot;
-    private ItemStack background;
-    private boolean enabled;
 
-    public String getType() {
-        return type;
-    }
+public class TrinketSlot extends Button {
+    private ItemStack containedTrinket;
+    private TrinketType type;
 
-    /**
-     * Constructs a TrinketSlot with the specified key.
-     *
-     * @param type the type associated with the trinket slot
-     */
-    public TrinketSlot(String type, int slot, ItemStack background, boolean enabled) {
+    public TrinketSlot(ItemStack displayItem, TrinketType type, int inventoryIndex) {
+        super(displayItem, inventoryIndex);
         this.type = type;
-        this.slot = slot;
-        this.background = background;
-        this.enabled = enabled;
     }
 
-    /**
-     * Gets the inventory slot index for this trinket slot.
-     *
-     * @return the inventory slot index
-     */
-    public int getSlot() {
-        return slot;
+    @Override
+    public void onClick(Player player) {
+        TrinketInteractionHandler.handleButtonClick(player, this);
     }
 
-    /**
-     * Gets the background {@link ItemStack} for this trinket slot.
-     *
-     * @return the background ItemStack
-     */
-    public ItemStack getBackground() {
-        return background;
+    public void push(ItemStack trinket) {
+        containedTrinket = trinket;
     }
 
-    /**
-     * Checks if this trinket slot is enabled.
-     *
-     * @return true if the trinket slot is enabled, false otherwise
-     */
-    public boolean isEnabled() {
-        return enabled;
+    public ItemStack pop() {
+        if (containedTrinket == null) {
+            return new ItemStack(Material.AIR);
+        }
+        ItemStack item = containedTrinket;
+        containedTrinket = null;
+        return item;
+    }
+
+    public ItemStack getContainedTrinket() {
+        return containedTrinket;
+    }
+
+    public TrinketType getType() {
+        return type;
     }
 }

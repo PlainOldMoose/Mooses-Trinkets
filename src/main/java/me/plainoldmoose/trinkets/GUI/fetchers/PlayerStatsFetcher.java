@@ -1,13 +1,11 @@
 package me.plainoldmoose.trinkets.GUI.fetchers;
 
-import com.willfp.eco.core.data.PlayerProfile;
-import com.willfp.eco.core.data.keys.PersistentDataKey;
-import com.willfp.eco.core.data.keys.PersistentDataKeyType;
+import com.willfp.ecoskills.api.EcoSkillsAPI;
+import com.willfp.ecoskills.stats.Stats;
 import me.plainoldmoose.trinkets.Data.handlers.IconHandler;
 import me.plainoldmoose.trinkets.Data.handlers.SkillsHandler;
 import me.plainoldmoose.trinkets.GUI.components.StatsIcon;
 import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -25,7 +23,8 @@ public class PlayerStatsFetcher {
 
     public static void createStatsIcons(Player player) {
         // Load the icon list from the IconHandler
-        iconList = IconHandler.getInstance().getIconList();;
+        iconList = IconHandler.getInstance().getIconList();
+        ;
 
         for (StatsIcon icon : iconList) {
             // Fetch the player stats for the current icon
@@ -41,25 +40,20 @@ public class PlayerStatsFetcher {
      * The statistics are retrieved from the player's profile and formatted
      * according to configured skill names and values.
      *
-     * @param player The player whose statistics are to be fetched.
+     * @param player      The player whose statistics are to be fetched.
      * @param listOfStats the list of statistics to be fetched.
      * @return A list of strings representing the player's statistics.
      */
     public static List<String> fetchFormattedPlayerStats(Player player, List<String> listOfStats) {
         List<String> stats = new ArrayList<>();
         stats.add(" ");
-        PlayerProfile profile = PlayerProfile.load(player.getUniqueId());
-
-        if (profile == null) {
-            stats.add(ChatColor.RED + "Profile not found!");
-            return stats;
-        }
 
         Map<String, String> formatNames = SkillsHandler.getInstance().getSkillNameFormat();
 
         if (listOfStats == null) {
             return stats;
         }
+
 
         for (String skill : listOfStats) {
             if (skill.isBlank()) {
@@ -71,13 +65,8 @@ public class PlayerStatsFetcher {
                 displayName = convertToBukkitColor(displayName);
             }
 
-            NamespacedKey key = new NamespacedKey("ecoskills", skill);
-            PersistentDataKey<Integer> intKey = new PersistentDataKey<>(key, PersistentDataKeyType.INT, 0);
-            Integer intValue = profile.read(intKey);
-
-            if (intValue != null) {
-                stats.add(displayName + ChatColor.DARK_GRAY + " » " + ChatColor.WHITE + intValue);
-            }
+            int value = EcoSkillsAPI.getStatLevel(player, Stats.INSTANCE.get(skill));
+            stats.add(displayName + ChatColor.DARK_GRAY + " » " + ChatColor.WHITE + value);
         }
         return stats;
     }
