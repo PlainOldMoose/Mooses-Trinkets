@@ -18,7 +18,7 @@ public class PlayerPrefixBuilder {
         return instance;
     }
 
-    private Chat chat = null;
+    private static Chat chat = null;
 
     public Chat getChat() {
         return chat;
@@ -58,7 +58,7 @@ public class PlayerPrefixBuilder {
      * @param player The player whose prefix is to be retrieved.
      * @return The prefix of the player, or an empty string if chat is not set up.
      */
-    public String getPlayerPrefix(Player player) {
+    public static String getPlayerPrefix(Player player) {
         return chat != null ? chat.getPlayerPrefix(player) : "";
     }
 }

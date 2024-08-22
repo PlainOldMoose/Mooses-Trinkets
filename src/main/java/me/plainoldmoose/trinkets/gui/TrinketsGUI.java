@@ -2,8 +2,7 @@ package me.plainoldmoose.trinkets.gui;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
-import me.plainoldmoose.trinkets.data.trinket.Trinket;
-import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
+import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.IconBuilder;
 import me.plainoldmoose.trinkets.gui.builders.PlayerPrefixBuilder;
@@ -20,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,8 +39,10 @@ public class TrinketsGUI {
     public void displayTo(Player player) {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundBuilder.createBackgroundTiles();
-        TrinketSlotBuilder.createSlotButtons();
-        loadTrinketSaveData(player);
+        if (!loadTrinketSaveData(player)) {
+            TrinketSlotBuilder.createSlotButtons();
+        }
+
         updateGUI(player);
 
         if (player.hasMetadata("TrinketsGUI")) {
@@ -64,26 +66,28 @@ public class TrinketsGUI {
             ItemStack iconItem = icon.getDisplayItem();
             List<String> stats = icon.getStatsList();
 
-            // Update item stack lore to include desired stats
-            ItemFactory.changeItemStackLore(iconItem, stats);
-            icon.setDisplayItem(iconItem);
-
             String iconItemName = iconItem.getItemMeta().getDisplayName();
-            player.sendMessage("Name before > " + iconItemName);
+            // Replace placeholder with player name
+            if (iconItemName.contains("%playername%")) {
+                iconItemName = iconItemName.replace("%playername%", player.getName());
+
+                // If adding player name, also add prefix
+                if (PlayerPrefixBuilder.getInstance().getChat() != null) {
+                    iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getPlayerPrefix(player)) + iconItemName;
+                }
+            }
 
             // If icon is player head, replace with players skin
             if (iconItem.getType() == Material.PLAYER_HEAD) {
                 icon.setDisplayItem(ItemFactory.createPlayerHead(player.getUniqueId()));
             }
 
-            if (iconItemName.contains("%playername%")) {
-                if (PlayerPrefixBuilder.getInstance().getChat() != null) {
-                    iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getInstance().getPlayerPrefix(player)) + iconItemName;
-                }
-            }
+            // Update item stack lore to include desired stats
+            iconItem = icon.getDisplayItem();
+            ItemFactory.changeItemStackLore(iconItem, stats);
+            icon.setDisplayItem(iconItem);
 
             ItemFactory.changeItemStackName(icon.getDisplayItem(), iconItemName);
-            player.sendMessage("Name after > " + iconItem.getItemMeta().getDisplayName());
             inventory.setItem(icon.getIndex(), icon.getDisplayItem());
         }
     }
@@ -98,34 +102,34 @@ public class TrinketsGUI {
         }
     }
 
-    /**
-     * Updates the GUI for the specified player. Sets the background items, button items, and player skull.
-     *
-     * @param player The player whose GUI will be updated.
-     */
     public void updateGUI(Player player) {
         renderBackgrounds();
         renderStatIcons(player);
         renderButtons();
     }
 
-    // TODO - re-implement this to fix duplication
-    private void loadTrinketSaveData(Player player) {
-        Map<UUID, List<ItemStack>> savedTrinkets = PlayerDataLoader.getInstance().getEquippedTrinkets();
-        ;
-        List<ItemStack> playerTrinkets = savedTrinkets.get(player.getUniqueId());
+    private boolean loadTrinketSaveData(Player player) {
+        // Retrieve serialized slots for the player
+        Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
+        List<SerializedTrinketSlot> serializedTrinketSlotList = serialisedSlots.get(player.getUniqueId());
 
-        if (playerTrinkets == null) {
-            return;
+        // Create a map to hold deserialized TrinketSlots
+        Map<Integer, TrinketSlot> deserializedSlots = new HashMap<>();
+
+        boolean loadedData = false;
+
+        // Iterate over the serialized slots and deserialize them, then add to the map
+        for (SerializedTrinketSlot s : serializedTrinketSlotList) {
+
+            // Reconstruct TrinketSlot and add to map
+            TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
+            deserializedSlots.put(trinketSlot.getIndex(), trinketSlot);
+
+            // If any serialized slots were found, must override default slot creation
+            loadedData = true;
         }
 
-        for (TrinketSlot b : TrinketSlotBuilder.getTrinketSlotMap().values()) {
-            for (ItemStack t : playerTrinkets) {
-                Trinket trinket = TrinketManager.getInstance().getTrinket(t);
-                if (b.getType().equals(trinket.getType())) {
-                    b.push(t);
-                }
-            }
-        }
+        TrinketSlotBuilder.setTrinketSlotMap(deserializedSlots);
+        return loadedData;
     }
 }
