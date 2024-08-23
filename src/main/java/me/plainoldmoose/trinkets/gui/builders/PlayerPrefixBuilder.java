@@ -14,22 +14,36 @@ import static org.bukkit.Bukkit.getLogger;
 public class PlayerPrefixBuilder {
     private static final PlayerPrefixBuilder instance = new PlayerPrefixBuilder();
 
+    /**
+     * Retrieves the singleton instance of the PlayerPrefixBuilder.
+     *
+     * @return The single instance of PlayerPrefixBuilder.
+     */
     public static PlayerPrefixBuilder getInstance() {
         return instance;
     }
 
     private static Chat chat = null;
 
+    /**
+     * Retrieves the current Vault Chat API instance.
+     *
+     * @return The current chat instance, or {@code null} if not initialized.
+     */
     public Chat getChat() {
         return chat;
     }
 
+    /**
+     * Constructs a new PlayerPrefixBuilder and sets up the chat service.
+     */
     public PlayerPrefixBuilder() {
         setupChat();
     }
 
     /**
      * Sets up the chat service by initializing the Vault Chat API provider.
+     * If Vault is not available, this method will not perform any actions.
      */
     private void setupChat() {
         if (!isVaultAvailable()) {
@@ -42,6 +56,11 @@ public class PlayerPrefixBuilder {
         Bukkit.getLogger().info("[Mooses-Trinkets] Registered Vault chat hook.");
     }
 
+    /**
+     * Checks if the Vault plugin and its Chat service are available on the server.
+     *
+     * @return {@code true} if Vault Chat service is available, {@code false} otherwise.
+     */
     private boolean isVaultAvailable() {
         try {
             Class.forName("net.milkbowl.vault.chat.Chat");

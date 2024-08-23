@@ -7,11 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Manages the creation and storage of TrinketSlot buttons for the GUI.
+ * This class handles the setup of TrinketSlot buttons based on configuration settings and maintains a map of these buttons for easy access.
+ */
 public class TrinketSlotBuilder {
     private static final Map<Integer, TrinketSlot> trinketSlotMap = new HashMap<>();
 
     /**
-     * Creates buttons for each TrinketSlot and adds them to the button map.
+     * Creates TrinketSlot buttons based on configuration settings and adds them to the internal map.
+     * This method retrieves TrinketSlot configurations, initializes them, and stores them in a map where the key is the slot index.
      */
     public static void createSlotButtons() {
         Set<TrinketSlot> trinketSlotSet = TrinketSlotsConfigLoader.getInstance().getTrinketSlotSet();
@@ -22,6 +27,12 @@ public class TrinketSlotBuilder {
         }
     }
 
+    /**
+     * Retrieves the map of TrinketSlot buttons.
+     * The map associates each TrinketSlot index with its corresponding TrinketSlot object.
+     *
+     * @return A map where the key is the TrinketSlot index and the value is the TrinketSlot object.
+     */
     public static Map<Integer, TrinketSlot> getTrinketSlotMap() {
         return trinketSlotMap;
     }

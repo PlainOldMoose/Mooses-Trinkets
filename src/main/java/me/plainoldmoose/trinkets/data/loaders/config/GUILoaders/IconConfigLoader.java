@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Handles the loading of stat icons from a configuration file.
+ * This class provides functionality to retrieve, construct and store a list of stat icons
+ * used in the GUI.
+ */
 public class IconConfigLoader {
     private static final IconConfigLoader instance = new IconConfigLoader();
     private final List<StatsIcon> iconList = new ArrayList<>();

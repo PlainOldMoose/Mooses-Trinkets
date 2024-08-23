@@ -17,11 +17,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Manages the creation, loading, and processing of trinket configuration files.
+ * This class handles the initialization of trinket directories, the recursive loading
+ * of trinket YAML files, and the creation of Trinket objects from these files.
+ */
 public class TrinketsLoader {
     private static final TrinketsLoader instance = new TrinketsLoader();
 
-    //TODO - refactor this entire class
-
+    /**
+     * Creates the trinkets directory and example configuration file if they do not exist.
+     */
     public void createTrinketsDir() {
         Trinkets plugin = Trinkets.getInstance();
         File dir = new File(plugin.getDataFolder(), "trinkets");
@@ -38,6 +44,11 @@ public class TrinketsLoader {
         }
     }
 
+    /**
+     * Loads all trinket YAML files from the "trinkets" directory and its subdirectories.
+     * This method initializes the trinket directory if necessary and clears the current trinket list
+     * before loading new configurations.
+     */
     public void loadYMLs() {
         // Get the plugin's data folder (usually plugins/YourPluginName/)
         File dataFolder = Trinkets.getInstance().getDataFolder();
@@ -55,6 +66,11 @@ public class TrinketsLoader {
         loadYMLFilesRecursively(configDir);
     }
 
+    /**
+     * Recursively searches the given directory for YAML files and loads them.
+     *
+     * @param directory The directory to search for YAML files.
+     */
     private void loadYMLFilesRecursively(File directory) {
         // Get all files in the directory
         File[] files = directory.listFiles();
@@ -79,6 +95,11 @@ public class TrinketsLoader {
         }
     }
 
+    /**
+     * Loads a trinket configuration file and adds the trinket to the TrinketManager.
+     *
+     * @param file The YAML configuration file to load.
+     */
     private void loadTrinketsFile(File file) {
         FileConfiguration fileConfig = YamlConfiguration.loadConfiguration(file);
         fileConfig.options().parseComments(true);
@@ -89,6 +110,13 @@ public class TrinketsLoader {
         TrinketManager.getInstance().addTrinket(loadTrinket(key, fileConfig));
     }
 
+    /**
+     * Creates a Trinket object from the given identifier and configuration data.
+     *
+     * @param identifier The unique identifier for the trinket.
+     * @param fileConfig The configuration data from which to create the Trinket.
+     * @return A Trinket object created from the configuration data.
+     */
     private Trinket loadTrinket(String identifier, FileConfiguration fileConfig) {
         String displayName = fileConfig.getString(identifier + ".name");
         String materialName = fileConfig.getString(identifier + ".material");

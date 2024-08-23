@@ -9,6 +9,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.HashMap;
 
+/**
+ * Handles the loading of messages from the "messages.yml" configuration file.
+ * This class is responsible for managing and providing access to various messages
+ * used in the plugin, ensuring they are loaded and colorized appropriately.
+ */
 public class MessageConfigLoader {
     private static final MessageConfigLoader instance = new MessageConfigLoader();
 
@@ -18,6 +23,8 @@ public class MessageConfigLoader {
 
     /**
      * Loads the configuration file and initializes default values.
+     * If the file does not exist, it is copied from the plugin's resources.
+     * This method also handles the colorization of the messages.
      */
     public void loadConfig() {
         configFile = new File(Trinkets.getInstance().getDataFolder(), "messages.yml");
@@ -39,6 +46,8 @@ public class MessageConfigLoader {
 
     /**
      * Loads messages from the configuration file into the messagesMap.
+     * This method reads predefined keys from the configuration and populates the map
+     * with the corresponding message strings.
      */
     private void loadMessages() {
         String[] keys = {"prefix", "invalid_trinket", "trinket_not_found", "unknown_command", "reload", "no_trinkets"};

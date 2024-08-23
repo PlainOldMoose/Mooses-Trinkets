@@ -16,6 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.util.*;
 
+/**
+ * Manages the loading, saving, and interaction of player-specific trinket data.
+ * This class is responsible for handling the serialization and deserialization of trinket slots
+ * as well as hooking trinket data onto the EcoSkills plugin.
+ */
 public class PlayerDataLoader {
     private static final PlayerDataLoader instance = new PlayerDataLoader();
     private File configFile;
@@ -24,6 +29,10 @@ public class PlayerDataLoader {
     private static final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
     private final Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = new HashMap<>();
 
+    /**
+     * Loads player trinket data from the "data.yml" configuration file.
+     * This method reads the file, deserializes trinket slot data for each player, and stores it in memory.
+     */
     public void loadData() {
         configFile = new File(Trinkets.getInstance().getDataFolder(), "data.yml");
 
@@ -47,6 +56,10 @@ public class PlayerDataLoader {
         }
     }
 
+    /**
+     * Saves the current player trinket data to the "data.yml" configuration file.
+     * This method serializes the trinket slots for each player and writes the data to disk.
+     */
     public void saveData() {
         for (Map.Entry<UUID, List<SerializedTrinketSlot>> playerData : serialisedSlots.entrySet()) {
             fileConfig.set(playerData.getKey().toString(), playerData.getValue());
@@ -59,6 +72,13 @@ public class PlayerDataLoader {
         }
     }
 
+    /**
+     * Hooks player trinket data onto the EcoSkills plugin.
+     * This method loads the player's equipped trinkets and updates their stats in the EcoSkills plugin.
+     *
+     * @param player The player whose trinket data is being hooked into EcoSkills.
+     * @param add    Whether to add or remove the trinket stats from the player.
+     */
     public void hookTrinketsDataOntoEco(Player player, boolean add) {
         loadPlayerTrinkets(player);
 
@@ -77,6 +97,12 @@ public class PlayerDataLoader {
         }
     }
 
+    /**
+     * Loads the player's trinkets into the equippedTrinkets map from serialized data.
+     * This method deserializes trinket slots, recreates them, and stores the contained trinkets in memory.
+     *
+     * @param player The player whose trinkets are being loaded.
+     */
     public static void loadPlayerTrinkets(Player player) {
         // Retrieve serialized slots for the player
         Map<UUID, List<SerializedTrinketSlot>> serializedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
@@ -97,14 +123,11 @@ public class PlayerDataLoader {
 
             // Add the contained trinket to the equipped list
             equipped.add(trinketSlot.getContainedTrinket());
-
-            // Send a message to the player
         }
 
         // Update the equipped trinkets map
         equippedTrinkets.put(player.getUniqueId(), equipped);
     }
-
 
     public Map<UUID, List<SerializedTrinketSlot>> getSerialisedSlots() {
         return serialisedSlots;

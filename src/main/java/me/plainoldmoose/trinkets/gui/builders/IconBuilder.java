@@ -19,21 +19,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Provides functionality for fetching and manipulating player statistics,
- * including creating player heads and applying statistics to item metadata.
+ * Handles the creation and customization of statistical icons for the GUI.
+ * This class manages the creation of icons that display player statistics,
+ * including fetching player stats, applying them to item metadata, and updating icon visuals.
  */
 public class IconBuilder {
     private static List<StatsIcon> iconList = new ArrayList<>();
 
+    /**
+     * Creates and customizes statistical icons for the given player.
+     * The icons are fetched from the configuration and updated with player-specific data,
+     * including player stats, names, and item appearance.
+     *
+     * @param player The player whose statistics are to be included in the icons.
+     */
     public static void createStatsIcons(Player player) {
-        // Load the icon list from the IconHandler
+        // Load the icon list from the IconConfigLoader
         iconList = IconConfigLoader.getInstance().getIconList();
 
         for (StatsIcon icon : iconList) {
-            // Fetch the player stats for the current icon
+            // Fetch and set player stats for the current icon
             List<String> fetchedStats = fetchFormattedPlayerStats(player, icon.getRawStatNames());
-
-            // Set the fetched stats list in the icon
             icon.setListOfStats(fetchedStats);
 
             ItemStack iconItem = icon.getDisplayItem();
@@ -44,18 +50,18 @@ public class IconBuilder {
             if (iconItemName.contains("%playername%")) {
                 iconItemName = iconItemName.replace("%playername%", player.getName());
 
-                // If adding player name, also add prefix
+                // Add player prefix if available
                 if (PlayerPrefixBuilder.getInstance().getChat() != null) {
                     iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getPlayerPrefix(player)) + iconItemName;
                 }
             }
 
-            // If icon is player head, replace with players skin
+            // Replace player head with the player's skin if applicable
             if (iconItem.getType() == Material.PLAYER_HEAD) {
                 icon.setDisplayItem(ItemFactory.createPlayerHead(player.getUniqueId()));
             }
 
-            // Update item stack lore to include desired stats
+            // Update the icon item stack with the new lore and name
             iconItem = icon.getDisplayItem();
             ItemFactory.changeItemStackLore(iconItem, stats);
             icon.setDisplayItem(iconItem);
@@ -65,13 +71,12 @@ public class IconBuilder {
     }
 
     /**
-     * Fetches and returns a list of player statistics as strings.
-     * The statistics are retrieved from the player's profile and formatted
-     * according to configured skill names and values.
+     * Fetches and formats a list of player statistics as strings.
+     * The statistics are retrieved from the player's profile and formatted according to the configured skill names and values.
      *
      * @param player      The player whose statistics are to be fetched.
-     * @param listOfStats the list of statistics to be fetched.
-     * @return A list of strings representing the player's statistics.
+     * @param listOfStats The list of statistics to be fetched.
+     * @return A list of strings representing the formatted player statistics.
      */
     public static List<String> fetchFormattedPlayerStats(Player player, List<String> listOfStats) {
         List<String> stats = new ArrayList<>();
@@ -83,10 +88,9 @@ public class IconBuilder {
             return stats;
         }
 
-
         for (String skill : listOfStats) {
             if (skill.isBlank()) {
-                continue; // Use continue to skip empty skill names instead of break
+                continue; // Skip empty skill names
             }
 
             String displayName = formatNames.get(skill);
@@ -101,9 +105,8 @@ public class IconBuilder {
     }
 
     /**
-     * This is a chatGPT method, it works, don't touch it.
      * Converts a color code from hexadecimal format to Bukkit color code format.
-     * The hexadecimal color code is converted to the Bukkit color format used in chat and item names.
+     * This method transforms hexadecimal color codes into the Bukkit format used in chat and item names.
      *
      * @param text The text containing hexadecimal color codes.
      * @return The text with hexadecimal color codes converted to Bukkit color codes.
@@ -127,6 +130,11 @@ public class IconBuilder {
         return result.toString();
     }
 
+    /**
+     * Gets the list of statistical icons.
+     *
+     * @return A list of {@link StatsIcon} objects representing the available statistical icons.
+     */
     public static List<StatsIcon> getIconList() {
         return iconList;
     }

@@ -15,7 +15,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Handles interactions with TrinketSlot buttons in the GUI.
+ * Manages the logic for equipping or removing trinkets from a TrinketSlot.
+ */
 public class TrinketInteractionHandler {
+
+    /**
+     * Handles the button click event for a TrinketSlot.
+     * Determines whether the cursor is empty or contains an item and processes the click accordingly.
+     *
+     * @param player      The player who clicked the button.
+     * @param trinketSlot The TrinketSlot that was clicked.
+     */
     public static void handleButtonClick(Player player, TrinketSlot trinketSlot) {
         ItemStack itemOnCursor = player.getItemOnCursor();
 
@@ -26,6 +38,13 @@ public class TrinketInteractionHandler {
         }
     }
 
+    /**
+     * Handles the click event when the player's cursor is empty.
+     * Moves the trinket from the TrinketSlot to the player's cursor and updates the player's stats.
+     *
+     * @param player      The player who clicked the button.
+     * @param trinketSlot The TrinketSlot that was clicked.
+     */
     private static void handleEmptyCursorClick(Player player, TrinketSlot trinketSlot) {
         ItemStack buttonItem = trinketSlot.getContainedTrinket();
 
@@ -40,6 +59,14 @@ public class TrinketInteractionHandler {
         }
     }
 
+    /**
+     * Handles the click event when the player's cursor contains an item.
+     * Moves the item from the cursor to the TrinketSlot and updates the player's stats.
+     *
+     * @param itemOnCursor The item currently on the player's cursor.
+     * @param player       The player who clicked the button.
+     * @param trinketSlot  The TrinketSlot that was clicked.
+     */
     private static void handleCursorItemClick(ItemStack itemOnCursor, Player player, TrinketSlot trinketSlot) {
         Trinket trinket = TrinketManager.getInstance().getTrinket(itemOnCursor);
         if (trinket == null) {
@@ -58,9 +85,11 @@ public class TrinketInteractionHandler {
 
     /**
      * Updates the player's stats based on the provided stats map.
+     * Adds or removes stats based on the value of {@code addStats}.
      *
-     * @param stats    the stats to be applied
-     * @param addStats true to add the stats, false to remove the stats
+     * @param player    The player whose stats are to be updated.
+     * @param stats     The stats to be applied or removed.
+     * @param addStats  True to add the stats, false to remove the stats.
      */
     public static void updatePlayerStats(Player player, Map<String, Integer> stats, boolean addStats) {
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
@@ -75,11 +104,25 @@ public class TrinketInteractionHandler {
         }
     }
 
+    /**
+     * Adds a stat modifier to the player's stats.
+     *
+     * @param player    The player to whom the stat modifier is to be added.
+     * @param statName  The name of the stat to be modified.
+     * @param statValue The value of the stat to be added.
+     */
     private static void addStatModifier(Player player, String statName, int statValue) {
         StatModifier modifier = new StatModifier(UUID.randomUUID(), Stats.INSTANCE.get(statName), statValue, ModifierOperation.ADD);
         EcoSkillsAPI.addStatModifier(player, modifier);
     }
 
+    /**
+     * Removes a stat modifier from the player's stats.
+     *
+     * @param player    The player from whom the stat modifier is to be removed.
+     * @param statName  The name of the stat to be removed.
+     * @param statValue The value of the stat to be removed.
+     */
     private static void removeStatModifier(Player player, String statName, int statValue) {
         List<StatModifier> modifiers = EcoSkillsAPI.getStatModifiers(player);
 

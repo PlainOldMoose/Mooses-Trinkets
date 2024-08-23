@@ -10,14 +10,18 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * A utility class for creating and modifying {@link ItemStack} objects.
+ * Provides methods to create items with specific properties and modify their attributes.
+ */
 public class ItemFactory {
 
     /**
-     * Creates an ItemStack with the specified material and name.
+     * Creates an {@link ItemStack} with the specified material and display name.
      *
      * @param material The material of the item.
      * @param name     The display name of the item.
-     * @return The created ItemStack.
+     * @return The created {@link ItemStack} with the specified material and display name.
      */
     public static ItemStack createItemStack(Material material, String name) {
         ItemStack item = new ItemStack(material);
@@ -29,10 +33,10 @@ public class ItemFactory {
     }
 
     /**
-     * Creates an item stack representing the head of the player with the given UUID.
+     * Creates an {@link ItemStack} representing the head of the player with the specified UUID.
      *
      * @param playerUUID The UUID of the player whose head is to be created.
-     * @return An ItemStack representing the player's head.
+     * @return An {@link ItemStack} representing the player's head.
      */
     public static ItemStack createPlayerHead(UUID playerUUID) {
         Player player = Bukkit.getPlayer(playerUUID);
@@ -47,6 +51,13 @@ public class ItemFactory {
         return skull;
     }
 
+    /**
+     * Changes the display name of the given {@link ItemStack}.
+     *
+     * @param item     The {@link ItemStack} to modify.
+     * @param newName  The new display name to set for the item.
+     * @return The modified {@link ItemStack} with the new display name.
+     */
     public static ItemStack changeItemStackName(ItemStack item, String newName) {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(newName);
@@ -55,6 +66,13 @@ public class ItemFactory {
         return item;
     }
 
+    /**
+     * Changes the lore of the given {@link ItemStack}.
+     *
+     * @param item     The {@link ItemStack} to modify.
+     * @param lore     The new lore to set for the item.
+     * @return The modified {@link ItemStack} with the new lore.
+     */
     public static ItemStack changeItemStackLore(ItemStack item, List<String> lore) {
         ItemMeta meta = item.getItemMeta();
         meta.setLore(lore);

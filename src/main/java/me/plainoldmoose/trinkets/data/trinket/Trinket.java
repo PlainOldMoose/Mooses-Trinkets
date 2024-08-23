@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a trinket in the game with an ID, an item, a name, and an enchantment status.
+ * Represents a trinket in the game with its associated properties, such as the item, display name, stats, and type.
+ * A trinket is an in-game item with specific attributes and metadata.
  */
 public class Trinket {
     private ItemStack item;
@@ -20,14 +21,17 @@ public class Trinket {
     private final Map<String, Integer> formattedStats;
     private final TrinketType type;
 
-    public void setItem(ItemStack item) {
-        this.item = item;
-    }
-
-    public TrinketType getType() {
-        return type;
-    }
-
+    /**
+     * Constructs a Trinket with the specified properties.
+     *
+     * @param material The material type of the trinket.
+     * @param identifier The unique identifier for the trinket.
+     * @param displayName The display name of the trinket.
+     * @param stats A map of stat names to their values for the trinket.
+     * @param formattedStats A map of formatted stat names to their values.
+     * @param type The type of the trinket, indicating its usage or category.
+     * @param modelID The custom model data ID for the trinket's item.
+     */
     public Trinket(Material material, String identifier, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, TrinketType type, int modelID) {
         this.item = new ItemStack(material);
         this.name = identifier;
@@ -43,6 +47,12 @@ public class Trinket {
         applyItemMeta(displayName, modelID, lore);
     }
 
+    /**
+     * Generates a list of lore lines for the trinket's item based on its formatted stats.
+     *
+     * @param formattedStats A map of formatted stat names to their values.
+     * @return A list of lore lines to be displayed on the trinket's item.
+     */
     private List<String> generateLore(Map<String, Integer> formattedStats) {
         List<String> lore = new ArrayList<>();
         lore.add(" ");
@@ -55,6 +65,13 @@ public class Trinket {
         return lore;
     }
 
+    /**
+     * Applies metadata to the trinket's item, including display name, lore, and custom model data.
+     *
+     * @param displayName The display name of the trinket.
+     * @param modelID The custom model data ID for the item.
+     * @param lore A list of lore lines to be displayed on the item.
+     */
     private void applyItemMeta(String displayName, int modelID, List<String> lore) {
         ItemMeta meta = this.item.getItemMeta();
         if (meta != null) {
@@ -65,19 +82,57 @@ public class Trinket {
         }
     }
 
+    /**
+     * Retrieves a clone of the trinket's ItemStack.
+     *
+     * @return A clone of the trinket's ItemStack.
+     */
     public ItemStack getTrinketItem() {
         return item.clone();
     }
 
+    /**
+     * Gets the unique name identifier of the trinket.
+     *
+     * @return The name of the trinket.
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Gets the display name of the trinket.
+     *
+     * @return The display name of the trinket.
+     */
     public String getDisplayName() {
         return displayName;
     }
 
+    /**
+     * Gets the map of stats associated with the trinket.
+     *
+     * @return A map of stat names to their values for the trinket.
+     */
     public Map<String, Integer> getStats() {
         return stats;
+    }
+
+    /**
+     * Sets the ItemStack for the trinket.
+     *
+     * @param item The new ItemStack for the trinket.
+     */
+    public void setItem(ItemStack item) {
+        this.item = item;
+    }
+
+    /**
+     * Gets the type of the trinket.
+     *
+     * @return The type of the trinket.
+     */
+    public TrinketType getType() {
+        return type;
     }
 }

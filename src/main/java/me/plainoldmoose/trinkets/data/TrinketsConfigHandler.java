@@ -15,16 +15,28 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 
 /**
- * Manages the loading and storing of trinket data from a configuration file.
+ * Handles the configuration loading and management for the Trinkets plugin.
+ * This includes loading player data, trinket definitions, and various configuration settings.
  */
 public class TrinketsConfigHandler {
     private static TrinketsConfigHandler instance = new TrinketsConfigHandler();
     private FileConfiguration fileConfig = loadConfigFile();
 
+    /**
+     * Gets the singleton instance of the TrinketsConfigHandler.
+     *
+     * @return The singleton instance of TrinketsConfigHandler.
+     */
     public static TrinketsConfigHandler getInstance() {
         return instance;
     }
 
+    /**
+     * Loads the configuration file for the plugin. If the file does not exist,
+     * it will be created from the default resource.
+     *
+     * @return The loaded FileConfiguration.
+     */
     private FileConfiguration loadConfigFile() {
         File configFile = new File(Trinkets.getInstance().getDataFolder(), "config.yml");
 
@@ -38,6 +50,10 @@ public class TrinketsConfigHandler {
         return fileConfig;
     }
 
+    /**
+     * Loads all configurations and data necessary for the plugin.
+     * This includes player data, skills, messages, trinkets, and GUI configurations.
+     */
     public void loadConfig() {
         PlayerDataLoader.getInstance().loadData(); // Loads player data
         SkillsHandler.getInstance().loadConfig(); // Loads skills from eco
@@ -50,6 +66,7 @@ public class TrinketsConfigHandler {
 
     /**
      * Reloads the configuration file and updates the in-memory data.
+     * This method also triggers a command executor update.
      */
     public void reloadConfig() {
         loadConfigFile();

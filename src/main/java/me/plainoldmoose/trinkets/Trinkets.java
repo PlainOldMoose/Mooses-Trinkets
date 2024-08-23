@@ -21,15 +21,23 @@ public final class Trinkets extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Register SerializedTrinketSlot class for configuration serialization
         ConfigurationSerialization.registerClass(SerializedTrinketSlot.class, "SerializedTrinketSlot");
+
+        // Register event listeners
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
         getServer().getPluginManager().registerEvents(new EcoHookListener(), this);
+
+        // Set up the Trinkets command executor
         getCommand("trinkets").setExecutor(commandExecutor);
+
+        // Load the plugin's configuration
         TrinketsConfigHandler.getInstance().loadConfig();
 
         // Update command configurations and load data
         commandExecutor.update();
 
+        // Check if Vault is installed and enabled
         Plugin vaultPlugin = Bukkit.getServer().getPluginManager().getPlugin("Vault");
         if (vaultPlugin == null || !vaultPlugin.isEnabled()) {
             // Vault is not installed or not enabled

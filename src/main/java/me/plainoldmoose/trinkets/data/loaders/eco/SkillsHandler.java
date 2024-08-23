@@ -11,13 +11,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Handles the loading and management of skills from the EcoSkills plugin.
+ * This class is responsible for reading skill files, formatting their names, and providing access
+ * to the loaded skill data.
+ */
 public class SkillsHandler {
     private static final SkillsHandler instance = new SkillsHandler();
 
     private File pluginFolder;
-    private List<String> skillFileNames = new ArrayList<String>();
-    private Map<String, String> skillNameFormat = new HashMap<String, String>();
+    private List<String> skillFileNames = new ArrayList<>();
+    private Map<String, String> skillNameFormat = new HashMap<>();
 
+    /**
+     * Loads the skill configuration by checking the existence of the EcoSkills folder
+     * and then loading the files within it.
+     */
     public void loadConfig() {
         pluginFolder = getEcoSkillsFolder();
 
@@ -26,6 +35,12 @@ public class SkillsHandler {
         }
     }
 
+    /**
+     * Retrieves the EcoSkills folder where skill files are stored.
+     * If the folder does not exist or is not a directory, logs an error.
+     *
+     * @return The directory containing skill files, or null if the directory is invalid.
+     */
     private File getEcoSkillsFolder() {
         pluginFolder = new File("plugins/EcoSkills/stats");
 
@@ -37,6 +52,10 @@ public class SkillsHandler {
         return null;
     }
 
+    /**
+     * Loads skill files from the EcoSkills folder, parsing their configurations
+     * and storing the skill names and their formatted versions.
+     */
     public void loadFiles() {
         File skillsDirectory = getEcoSkillsFolder();
 

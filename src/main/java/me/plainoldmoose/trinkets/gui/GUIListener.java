@@ -19,8 +19,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Listener for handling GUI interactions related to Trinkets.
+ * This includes handling clicks within the Trinkets GUI and saving player data when the GUI is closed.
+ */
 public class GUIListener implements Listener {
 
+    /**
+     * Handles inventory click events within the Trinkets GUI.
+     * Determines if the clicked item is a background item or a TrinketSlot and processes the interaction accordingly.
+     *
+     * @param event The InventoryClickEvent to handle.
+     */
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         final Player eventPlayer = (Player) event.getWhoClicked();
@@ -28,12 +38,7 @@ public class GUIListener implements Listener {
         Inventory topInv = eventPlayer.getOpenInventory().getTopInventory();
 
         // Check if the clicked inventory is the Trinkets GUI
-
-        if (clickedInv == null) {
-            return;
-        }
-
-        if (!clickedInv.equals(topInv)) {
+        if (clickedInv == null || !clickedInv.equals(topInv)) {
             return;
         }
 
@@ -48,7 +53,7 @@ public class GUIListener implements Listener {
                 }
             }
 
-            // Handle interactions with buttons
+            // Handle interactions with TrinketSlots
             for (Map.Entry<Integer, TrinketSlot> entry : TrinketSlotBuilder.getTrinketSlotMap().entrySet()) {
                 TrinketSlot trinketSlot = entry.getValue();
                 if (trinketSlot.getIndex() == event.getSlot()) {
@@ -56,10 +61,18 @@ public class GUIListener implements Listener {
                     event.setCancelled(true);
                 }
             }
+
+            // Update the GUI for the player
             menu.updateGUI(eventPlayer);
         }
     }
 
+    /**
+     * Handles inventory close events for the Trinkets GUI.
+     * Saves the state of TrinketSlots for the player when the inventory is closed and removes the TrinketsGUI metadata.
+     *
+     * @param event The InventoryCloseEvent to handle.
+     */
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         final Player eventPlayer = (Player) event.getPlayer();
