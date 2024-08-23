@@ -2,20 +2,17 @@ package me.plainoldmoose.trinkets.gui;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
-import me.plainoldmoose.trinkets.data.trinket.Key;
+import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
+import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
 import me.plainoldmoose.trinkets.gui.components.Background;
 import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
-import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +56,6 @@ public class GUIListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-
             menu.updateGUI(eventPlayer);
         }
     }
@@ -72,20 +68,15 @@ public class GUIListener implements Listener {
             return;
         }
 
-        Inventory inventory = event.getInventory();
-        List<ItemStack> trinketList = new ArrayList<ItemStack>();
-
-        for (ItemStack item : inventory.getContents()) {
-            ItemMeta meta = item.getItemMeta();
-            PersistentDataContainer itemContainer = meta.getPersistentDataContainer();
-            if (itemContainer.has(Key.TRINKET)) {
-                trinketList.add(item);
+        List<SerializedTrinketSlot> serializedTrinketSlotList = new ArrayList<>();
+        for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
+            if (trinketSlot.getContainedTrinket() != null) {
+                serializedTrinketSlotList.add(new SerializedTrinketSlot(trinketSlot.serialize()));
             }
         }
 
         UUID playerUUID = eventPlayer.getUniqueId();
-
-        PlayerDataLoader.getInstance().getEquippedTrinkets().put(playerUUID, trinketList);
+        PlayerDataLoader.getInstance().getSerialisedSlots().put(playerUUID, serializedTrinketSlotList);
         PlayerDataLoader.getInstance().saveData();
 
         eventPlayer.removeMetadata("TrinketsGUI", Trinkets.getInstance());

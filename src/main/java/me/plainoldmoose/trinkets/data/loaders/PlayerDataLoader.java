@@ -1,9 +1,12 @@
 package me.plainoldmoose.trinkets.data.loaders;
 
+import me.plainoldmoose.trinkets.Trinkets;
+import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.data.trinket.Trinket;
 import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
+import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
+import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
 import me.plainoldmoose.trinkets.gui.interactions.TrinketInteractionHandler;
-import me.plainoldmoose.trinkets.Trinkets;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,17 +14,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerDataLoader {
     private static final PlayerDataLoader instance = new PlayerDataLoader();
     private File configFile;
     private FileConfiguration fileConfig;
 
-    private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<UUID, List<ItemStack>>();
+    private static final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
+    private final Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = new HashMap<>();
 
     public void loadData() {
         configFile = new File(Trinkets.getInstance().getDataFolder(), "data.yml");
@@ -41,17 +42,13 @@ public class PlayerDataLoader {
 
         for (String key : fileConfig.getKeys(false)) {
             UUID playerUUID = UUID.fromString(key);
-            List<ItemStack> trinketsList;
-
-            ItemStack[] items = ((List<ItemStack>) fileConfig.get(key)).toArray(new ItemStack[0]);
-            trinketsList = List.of(items);
-            System.out.println(">>>>> Loaded " + playerUUID + " > " + trinketsList.size() + " trinkets");
-            equippedTrinkets.put(playerUUID, trinketsList);
+            List<SerializedTrinketSlot> serializedTrinketSlotList = (List<SerializedTrinketSlot>) fileConfig.get(playerUUID.toString());
+            serialisedSlots.put(playerUUID, serializedTrinketSlotList);
         }
     }
 
     public void saveData() {
-        for (Map.Entry<UUID, List<ItemStack>> playerData : equippedTrinkets.entrySet()) {
+        for (Map.Entry<UUID, List<SerializedTrinketSlot>> playerData : serialisedSlots.entrySet()) {
             fileConfig.set(playerData.getKey().toString(), playerData.getValue());
         }
 
@@ -63,7 +60,8 @@ public class PlayerDataLoader {
     }
 
     public void hookTrinketsDataOntoEco(Player player, boolean add) {
-        Map<UUID, List<ItemStack>> equippedTrinkets = PlayerDataLoader.getInstance().getEquippedTrinkets();
+        loadPlayerTrinkets(player);
+
         List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
 
         if (playerTrinkets == null) {
@@ -79,8 +77,37 @@ public class PlayerDataLoader {
         }
     }
 
-    public Map<UUID, List<ItemStack>> getEquippedTrinkets() {
-        return equippedTrinkets;
+    public static void loadPlayerTrinkets(Player player) {
+        // Retrieve serialized slots for the player
+        Map<UUID, List<SerializedTrinketSlot>> serializedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
+        List<SerializedTrinketSlot> serializedTrinketSlotList = serializedSlots.get(player.getUniqueId());
+
+        if (serializedTrinketSlotList == null) {
+            return;
+        }
+
+        // Prepare a list to store equipped trinkets
+        List<ItemStack> equipped = new ArrayList<>();
+
+        // Iterate over the serialized slots
+        for (SerializedTrinketSlot s : serializedTrinketSlotList) {
+            // Reconstruct TrinketSlot and add to the map
+            TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
+            TrinketSlotBuilder.getTrinketSlotMap().put(trinketSlot.getIndex(), trinketSlot);
+
+            // Add the contained trinket to the equipped list
+            equipped.add(trinketSlot.getContainedTrinket());
+
+            // Send a message to the player
+        }
+
+        // Update the equipped trinkets map
+        equippedTrinkets.put(player.getUniqueId(), equipped);
+    }
+
+
+    public Map<UUID, List<SerializedTrinketSlot>> getSerialisedSlots() {
+        return serialisedSlots;
     }
 
     public static PlayerDataLoader getInstance() {

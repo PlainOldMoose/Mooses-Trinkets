@@ -11,7 +11,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TrinketInteractionHandler {
     public static void handleButtonClick(Player player, TrinketSlot trinketSlot) {
@@ -52,7 +54,6 @@ public class TrinketInteractionHandler {
 
         player.setItemOnCursor(trinketSlot.pop());
         trinketSlot.push(itemOnCursor);
-
     }
 
     /**
@@ -66,11 +67,27 @@ public class TrinketInteractionHandler {
             String statName = entry.getKey();
             int statValue = entry.getValue();
 
-            double ecoValue = EcoSkillsAPI.getStatLevel(player, Stats.INSTANCE.get(statName));
-            double adjustment = addStats ? ecoValue + statValue : ecoValue - statValue;
+            if (addStats) {
+                addStatModifier(player, statName, statValue);
+            } else {
+                removeStatModifier(player, statName, statValue);
+            }
+        }
+    }
 
-            StatModifier modifier = new StatModifier(player.getUniqueId(), Stats.INSTANCE.get(statName), adjustment, ModifierOperation.ADD);
-            EcoSkillsAPI.addStatModifier(player, modifier);
+    private static void addStatModifier(Player player, String statName, int statValue) {
+        StatModifier modifier = new StatModifier(UUID.randomUUID(), Stats.INSTANCE.get(statName), statValue, ModifierOperation.ADD);
+        EcoSkillsAPI.addStatModifier(player, modifier);
+    }
+
+    private static void removeStatModifier(Player player, String statName, int statValue) {
+        List<StatModifier> modifiers = EcoSkillsAPI.getStatModifiers(player);
+
+        for (StatModifier mod : modifiers) {
+            if (mod.getStat().getName().toLowerCase().contains(statName) && (int) mod.getModifier() == statValue) {
+                EcoSkillsAPI.removeStatModifier(player, mod.getUuid());
+                break;
+            }
         }
     }
 }

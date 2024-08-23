@@ -2,8 +2,6 @@ package me.plainoldmoose.trinkets.gui;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
-import me.plainoldmoose.trinkets.data.trinket.Trinket;
-import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
 import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.IconBuilder;
 import me.plainoldmoose.trinkets.gui.builders.PlayerPrefixBuilder;
@@ -22,7 +20,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class TrinketsGUI {
     private final int size = 54; // Inventory size
@@ -40,7 +37,8 @@ public class TrinketsGUI {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundBuilder.createBackgroundTiles();
         TrinketSlotBuilder.createSlotButtons();
-        loadTrinketSaveData(player);
+        PlayerDataLoader.loadPlayerTrinkets(player);
+
         updateGUI(player);
 
         if (player.hasMetadata("TrinketsGUI")) {
@@ -57,6 +55,7 @@ public class TrinketsGUI {
         }
     }
 
+    // TODO - Extract this to builder
     private void renderStatIcons(Player player) {
         IconBuilder.createStatsIcons(player);
 
@@ -64,68 +63,47 @@ public class TrinketsGUI {
             ItemStack iconItem = icon.getDisplayItem();
             List<String> stats = icon.getStatsList();
 
-            // Update item stack lore to include desired stats
-            ItemFactory.changeItemStackLore(iconItem, stats);
-            icon.setDisplayItem(iconItem);
-
             String iconItemName = iconItem.getItemMeta().getDisplayName();
-            player.sendMessage("Name before > " + iconItemName);
+            // Replace placeholder with player name
+            if (iconItemName.contains("%playername%")) {
+                iconItemName = iconItemName.replace("%playername%", player.getName());
+
+                // If adding player name, also add prefix
+                if (PlayerPrefixBuilder.getInstance().getChat() != null) {
+                    iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getPlayerPrefix(player)) + iconItemName;
+                }
+            }
 
             // If icon is player head, replace with players skin
             if (iconItem.getType() == Material.PLAYER_HEAD) {
                 icon.setDisplayItem(ItemFactory.createPlayerHead(player.getUniqueId()));
             }
 
-            if (iconItemName.contains("%playername%")) {
-                if (PlayerPrefixBuilder.getInstance().getChat() != null) {
-                    iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getInstance().getPlayerPrefix(player)) + iconItemName;
-                }
-            }
+            // Update item stack lore to include desired stats
+            iconItem = icon.getDisplayItem();
+            ItemFactory.changeItemStackLore(iconItem, stats);
+            icon.setDisplayItem(iconItem);
 
             ItemFactory.changeItemStackName(icon.getDisplayItem(), iconItemName);
-            player.sendMessage("Name after > " + iconItem.getItemMeta().getDisplayName());
             inventory.setItem(icon.getIndex(), icon.getDisplayItem());
         }
     }
-
-
+    
     private void renderButtons() {
         for (Map.Entry<Integer, TrinketSlot> entry : TrinketSlotBuilder.getTrinketSlotMap().entrySet()) {
             TrinketSlot trinketSlot = entry.getValue();
             if (trinketSlot.isEnabled()) {
                 inventory.setItem(trinketSlot.getIndex(), trinketSlot.getContainedTrinket() != null ? trinketSlot.getContainedTrinket() : trinketSlot.getDisplayItem());
+                if (trinketSlot.getContainedTrinket() != null) {
+                    System.out.println(trinketSlot.getContainedTrinket().getItemMeta().getDisplayName());
+                }
             }
         }
     }
 
-    /**
-     * Updates the GUI for the specified player. Sets the background items, button items, and player skull.
-     *
-     * @param player The player whose GUI will be updated.
-     */
     public void updateGUI(Player player) {
         renderBackgrounds();
         renderStatIcons(player);
         renderButtons();
-    }
-
-    // TODO - re-implement this to fix duplication
-    private void loadTrinketSaveData(Player player) {
-        Map<UUID, List<ItemStack>> savedTrinkets = PlayerDataLoader.getInstance().getEquippedTrinkets();
-        ;
-        List<ItemStack> playerTrinkets = savedTrinkets.get(player.getUniqueId());
-
-        if (playerTrinkets == null) {
-            return;
-        }
-
-        for (TrinketSlot b : TrinketSlotBuilder.getTrinketSlotMap().values()) {
-            for (ItemStack t : playerTrinkets) {
-                Trinket trinket = TrinketManager.getInstance().getTrinket(t);
-                if (b.getType().equals(trinket.getType())) {
-                    b.push(t);
-                }
-            }
-        }
     }
 }
