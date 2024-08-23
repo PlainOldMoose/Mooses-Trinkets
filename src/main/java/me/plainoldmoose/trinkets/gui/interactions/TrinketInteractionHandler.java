@@ -11,7 +11,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TrinketInteractionHandler {
     public static void handleButtonClick(Player player, TrinketSlot trinketSlot) {
@@ -52,7 +54,6 @@ public class TrinketInteractionHandler {
 
         player.setItemOnCursor(trinketSlot.pop());
         trinketSlot.push(itemOnCursor);
-
     }
 
     /**
@@ -62,22 +63,31 @@ public class TrinketInteractionHandler {
      * @param addStats true to add the stats, false to remove the stats
      */
     public static void updatePlayerStats(Player player, Map<String, Integer> stats, boolean addStats) {
-        // TODO - Fix this stupid fucking interaction (I hate auxilor)
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
             String statName = entry.getKey();
             int statValue = entry.getValue();
-            player.sendMessage("Stat: " + statName + " Value: " + statValue);
 
-            double ecoValue = EcoSkillsAPI.getStatLevel(player, Stats.INSTANCE.get(statName));
-            double adjustment = addStats ? ecoValue + statValue : ecoValue - statValue;
-
-            player.sendMessage("Setting " + statName + " to " + statValue);
-            StatModifier modifier = new StatModifier(player.getUniqueId(), Stats.INSTANCE.get(statName), statValue, ModifierOperation.ADD);
-            EcoSkillsAPI.addStatModifier(player, modifier);
+            if (addStats) {
+                addStatModifier(player, statName, statValue);
+            } else {
+                removeStatModifier(player, statName, statValue);
+            }
         }
+    }
 
-        for (StatModifier sm : EcoSkillsAPI.getStatModifiers(player)) {
-            player.sendMessage("Found > " + sm.getStat().getName());
+    private static void addStatModifier(Player player, String statName, int statValue) {
+        StatModifier modifier = new StatModifier(UUID.randomUUID(), Stats.INSTANCE.get(statName), statValue, ModifierOperation.ADD);
+        EcoSkillsAPI.addStatModifier(player, modifier);
+    }
+
+    private static void removeStatModifier(Player player, String statName, int statValue) {
+        List<StatModifier> modifiers = EcoSkillsAPI.getStatModifiers(player);
+
+        for (StatModifier mod : modifiers) {
+            if (mod.getStat().getName().toLowerCase().contains(statName) && (int) mod.getModifier() == statValue) {
+                EcoSkillsAPI.removeStatModifier(player, mod.getUuid());
+                break;
+            }
         }
     }
 }

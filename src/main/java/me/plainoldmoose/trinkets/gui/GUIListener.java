@@ -56,7 +56,6 @@ public class GUIListener implements Listener {
                     event.setCancelled(true);
                 }
             }
-
             menu.updateGUI(eventPlayer);
         }
     }
@@ -69,7 +68,6 @@ public class GUIListener implements Listener {
             return;
         }
 
-
         List<SerializedTrinketSlot> serializedTrinketSlotList = new ArrayList<>();
         for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
             if (trinketSlot.getContainedTrinket() != null) {
@@ -77,19 +75,8 @@ public class GUIListener implements Listener {
             }
         }
 
-//        List<ItemStack> trinketList = new ArrayList<>();
-//        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
-//        for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
-//            if (trinketSlot.getContainedTrinket() != null) {
-//                ItemStack item = trinketSlot.getContainedTrinket();
-//                trinketList.add(item);
-//            }
-//        }
-
         UUID playerUUID = eventPlayer.getUniqueId();
         PlayerDataLoader.getInstance().getSerialisedSlots().put(playerUUID, serializedTrinketSlotList);
-//        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
-//        PlayerDataLoader.getInstance().getEquippedTrinkets().put(playerUUID, trinketList);
         PlayerDataLoader.getInstance().saveData();
 
         eventPlayer.removeMetadata("TrinketsGUI", Trinkets.getInstance());

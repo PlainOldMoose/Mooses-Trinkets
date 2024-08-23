@@ -4,6 +4,8 @@ import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.data.trinket.Trinket;
 import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
+import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
+import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
 import me.plainoldmoose.trinkets.gui.interactions.TrinketInteractionHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,17 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerDataLoader {
     private static final PlayerDataLoader instance = new PlayerDataLoader();
     private File configFile;
     private FileConfiguration fileConfig;
 
-    private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
+    private static final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
     private final Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = new HashMap<>();
 
     public void loadData() {
@@ -61,6 +60,8 @@ public class PlayerDataLoader {
     }
 
     public void hookTrinketsDataOntoEco(Player player, boolean add) {
+        loadPlayerTrinkets(player);
+
         List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
 
         if (playerTrinkets == null) {
@@ -76,13 +77,38 @@ public class PlayerDataLoader {
         }
     }
 
+    public static void loadPlayerTrinkets(Player player) {
+        // Retrieve serialized slots for the player
+        Map<UUID, List<SerializedTrinketSlot>> serializedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
+        List<SerializedTrinketSlot> serializedTrinketSlotList = serializedSlots.get(player.getUniqueId());
+
+        if (serializedTrinketSlotList == null) {
+            return;
+        }
+
+        // Prepare a list to store equipped trinkets
+        List<ItemStack> equipped = new ArrayList<>();
+
+        // Iterate over the serialized slots
+        for (SerializedTrinketSlot s : serializedTrinketSlotList) {
+            // Reconstruct TrinketSlot and add to the map
+            TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
+            TrinketSlotBuilder.getTrinketSlotMap().put(trinketSlot.getIndex(), trinketSlot);
+
+            // Add the contained trinket to the equipped list
+            equipped.add(trinketSlot.getContainedTrinket());
+
+            // Send a message to the player
+        }
+
+        // Update the equipped trinkets map
+        equippedTrinkets.put(player.getUniqueId(), equipped);
+    }
+
+
     public Map<UUID, List<SerializedTrinketSlot>> getSerialisedSlots() {
         return serialisedSlots;
     }
-
-//    public Map<UUID, List<ItemStack>> getEquippedTrinkets() {
-//        return equippedTrinkets;
-//    }
 
     public static PlayerDataLoader getInstance() {
         return instance;

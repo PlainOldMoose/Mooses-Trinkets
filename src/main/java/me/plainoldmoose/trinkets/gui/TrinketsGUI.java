@@ -2,7 +2,6 @@ package me.plainoldmoose.trinkets.gui;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
-import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.IconBuilder;
 import me.plainoldmoose.trinkets.gui.builders.PlayerPrefixBuilder;
@@ -21,7 +20,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class TrinketsGUI {
     private final int size = 54; // Inventory size
@@ -39,7 +37,7 @@ public class TrinketsGUI {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundBuilder.createBackgroundTiles();
         TrinketSlotBuilder.createSlotButtons();
-        loadTrinketSaveData(player);
+        PlayerDataLoader.loadPlayerTrinkets(player);
 
         updateGUI(player);
 
@@ -90,8 +88,7 @@ public class TrinketsGUI {
             inventory.setItem(icon.getIndex(), icon.getDisplayItem());
         }
     }
-
-
+    
     private void renderButtons() {
         for (Map.Entry<Integer, TrinketSlot> entry : TrinketSlotBuilder.getTrinketSlotMap().entrySet()) {
             TrinketSlot trinketSlot = entry.getValue();
@@ -108,23 +105,5 @@ public class TrinketsGUI {
         renderBackgrounds();
         renderStatIcons(player);
         renderButtons();
-    }
-
-    private void loadTrinketSaveData(Player player) {
-        // Retrieve serialized slots for the player
-        Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
-        List<SerializedTrinketSlot> serializedTrinketSlotList = serialisedSlots.get(player.getUniqueId());
-
-        if (serializedTrinketSlotList == null) {
-            return;
-        }
-
-        // Iterate over the serialized slots and deserialize them, then add to the map
-        for (SerializedTrinketSlot s : serializedTrinketSlotList) {
-            // Reconstruct TrinketSlot and add to map
-            TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
-            TrinketSlotBuilder.getTrinketSlotMap().put(trinketSlot.getIndex(), trinketSlot);
-            player.sendMessage("Loaded slot >>>>> " +trinketSlot.getContainedTrinket().getItemMeta().getDisplayName());
-        }
     }
 }
