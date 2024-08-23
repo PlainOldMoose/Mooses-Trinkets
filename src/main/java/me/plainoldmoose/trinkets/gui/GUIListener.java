@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,20 +77,19 @@ public class GUIListener implements Listener {
             }
         }
 
-        List<ItemStack> trinketList = new ArrayList<>();
-        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
-        for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
-            if (trinketSlot.getContainedTrinket() != null) {
-                ItemStack item = trinketSlot.getContainedTrinket();
-                trinketList.add(item);
-            }
-        }
+//        List<ItemStack> trinketList = new ArrayList<>();
+//        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
+//        for (TrinketSlot trinketSlot : TrinketSlotBuilder.getTrinketSlotMap().values()) {
+//            if (trinketSlot.getContainedTrinket() != null) {
+//                ItemStack item = trinketSlot.getContainedTrinket();
+//                trinketList.add(item);
+//            }
+//        }
 
         UUID playerUUID = eventPlayer.getUniqueId();
-
         PlayerDataLoader.getInstance().getSerialisedSlots().put(playerUUID, serializedTrinketSlotList);
-        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
-        PlayerDataLoader.getInstance().getEquippedTrinkets().put(playerUUID, trinketList);
+//        // This is exclusively for hooking onto eco, I will consider changing this, but it currently beats de-serializing all slots to retrieve its trinket and then adding those to a list
+//        PlayerDataLoader.getInstance().getEquippedTrinkets().put(playerUUID, trinketList);
         PlayerDataLoader.getInstance().saveData();
 
         eventPlayer.removeMetadata("TrinketsGUI", Trinkets.getInstance());

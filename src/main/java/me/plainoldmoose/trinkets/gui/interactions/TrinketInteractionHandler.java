@@ -62,15 +62,22 @@ public class TrinketInteractionHandler {
      * @param addStats true to add the stats, false to remove the stats
      */
     public static void updatePlayerStats(Player player, Map<String, Integer> stats, boolean addStats) {
+        // TODO - Fix this stupid fucking interaction (I hate auxilor)
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
             String statName = entry.getKey();
             int statValue = entry.getValue();
+            player.sendMessage("Stat: " + statName + " Value: " + statValue);
 
             double ecoValue = EcoSkillsAPI.getStatLevel(player, Stats.INSTANCE.get(statName));
             double adjustment = addStats ? ecoValue + statValue : ecoValue - statValue;
 
-            StatModifier modifier = new StatModifier(player.getUniqueId(), Stats.INSTANCE.get(statName), adjustment, ModifierOperation.ADD);
+            player.sendMessage("Setting " + statName + " to " + statValue);
+            StatModifier modifier = new StatModifier(player.getUniqueId(), Stats.INSTANCE.get(statName), statValue, ModifierOperation.ADD);
             EcoSkillsAPI.addStatModifier(player, modifier);
+        }
+
+        for (StatModifier sm : EcoSkillsAPI.getStatModifiers(player)) {
+            player.sendMessage("Found > " + sm.getStat().getName());
         }
     }
 }

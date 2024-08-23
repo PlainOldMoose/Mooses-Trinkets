@@ -19,7 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,9 +38,8 @@ public class TrinketsGUI {
     public void displayTo(Player player) {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundBuilder.createBackgroundTiles();
-        if (!loadTrinketSaveData(player)) {
-            TrinketSlotBuilder.createSlotButtons();
-        }
+        TrinketSlotBuilder.createSlotButtons();
+        loadTrinketSaveData(player);
 
         updateGUI(player);
 
@@ -98,6 +96,9 @@ public class TrinketsGUI {
             TrinketSlot trinketSlot = entry.getValue();
             if (trinketSlot.isEnabled()) {
                 inventory.setItem(trinketSlot.getIndex(), trinketSlot.getContainedTrinket() != null ? trinketSlot.getContainedTrinket() : trinketSlot.getDisplayItem());
+                if (trinketSlot.getContainedTrinket() != null) {
+                    System.out.println(trinketSlot.getContainedTrinket().getItemMeta().getDisplayName());
+                }
             }
         }
     }
@@ -113,8 +114,10 @@ public class TrinketsGUI {
         Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
         List<SerializedTrinketSlot> serializedTrinketSlotList = serialisedSlots.get(player.getUniqueId());
 
-        // Create a map to hold deserialized TrinketSlots
-        Map<Integer, TrinketSlot> deserializedSlots = new HashMap<>();
+        if (serializedTrinketSlotList == null || serializedTrinketSlotList.isEmpty()) {
+            return false;
+        }
+
 
         boolean loadedData = false;
 
@@ -123,13 +126,14 @@ public class TrinketsGUI {
 
             // Reconstruct TrinketSlot and add to map
             TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
-            deserializedSlots.put(trinketSlot.getIndex(), trinketSlot);
+            TrinketSlotBuilder.getTrinketSlotMap().put(trinketSlot.getIndex(), trinketSlot);
+            player.sendMessage("Loaded slot >>>>> " +trinketSlot.getContainedTrinket().getItemMeta().getDisplayName());
 
             // If any serialized slots were found, must override default slot creation
             loadedData = true;
         }
 
-        TrinketSlotBuilder.setTrinketSlotMap(deserializedSlots);
+//        TrinketSlotBuilder.setTrinketSlotMap(deserializedSlots);
         return loadedData;
     }
 }
