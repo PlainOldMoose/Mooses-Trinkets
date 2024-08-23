@@ -1,6 +1,6 @@
 package me.plainoldmoose.trinkets;
 
-import me.plainoldmoose.trinkets.Command.TrinketsCommand;
+import me.plainoldmoose.trinkets.command.TrinketsCommand;
 import me.plainoldmoose.trinkets.data.TrinketsConfigHandler;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
 import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;

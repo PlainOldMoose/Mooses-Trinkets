@@ -57,7 +57,9 @@ public class GUIListener implements Listener {
             for (Map.Entry<Integer, TrinketSlot> entry : TrinketSlotBuilder.getTrinketSlotMap().entrySet()) {
                 TrinketSlot trinketSlot = entry.getValue();
                 if (trinketSlot.getIndex() == event.getSlot()) {
-                    trinketSlot.onClick(eventPlayer);
+                    if (trinketSlot.isEnabled()) {
+                        trinketSlot.onClick(eventPlayer);
+                    }
                     event.setCancelled(true);
                 }
             }

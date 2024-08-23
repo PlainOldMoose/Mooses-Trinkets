@@ -1,4 +1,4 @@
-package me.plainoldmoose.trinkets.data.loaders.config.GUILoaders;
+package me.plainoldmoose.trinkets.data.loaders.config.gui;
 
 import me.plainoldmoose.trinkets.data.loaders.eco.SkillsHandler;
 import me.plainoldmoose.trinkets.gui.components.StatsIcon;

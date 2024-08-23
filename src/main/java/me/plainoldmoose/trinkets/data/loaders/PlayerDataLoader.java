@@ -84,13 +84,18 @@ public class PlayerDataLoader {
 
         List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
 
-        if (playerTrinkets == null) {
+        if (playerTrinkets == null || playerTrinkets.isEmpty()) {
             return;
         }
 
         TrinketManager trinketManager = TrinketManager.getInstance();
 
         for (ItemStack item : playerTrinkets) {
+            // TODO - Test removing this if, I don't think it's needed
+            if (item == null) {
+                player.sendMessage("Null item!");
+                return;
+            }
             Trinket trinket = trinketManager.getTrinket(item);
             Map<String, Integer> trinketStats = trinket.getStats();
             TrinketInteractionHandler.updatePlayerStats(player, trinketStats, add);
@@ -114,19 +119,40 @@ public class PlayerDataLoader {
 
         // Prepare a list to store equipped trinkets
         List<ItemStack> equipped = new ArrayList<>();
+        TrinketSlotBuilder.createSlotButtons();
 
         // Iterate over the serialized slots
         for (SerializedTrinketSlot s : serializedTrinketSlotList) {
-            // Reconstruct TrinketSlot and add to the map
-            TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
-            TrinketSlotBuilder.getTrinketSlotMap().put(trinketSlot.getIndex(), trinketSlot);
 
+            // Deserialize trinket slot
+            TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
+
+            // If player-loaded trinket slot is not found in config-loaded trinket slot map (i.e. the configuration has been changed since the player data was last loaded)
+            Map<Integer, TrinketSlot> trinketSlotMap = TrinketSlotBuilder.getTrinketSlotMap();
+            if (trinketSlotMap.get(trinketSlot.getIndex()) == null) {
+                handlePlayerDataMismatch(player, trinketSlot);
+            }
+
+            // Add trinketSlot to map
+            trinketSlotMap.put(trinketSlot.getIndex(), trinketSlot);
             // Add the contained trinket to the equipped list
             equipped.add(trinketSlot.getContainedTrinket());
         }
 
         // Update the equipped trinkets map
         equippedTrinkets.put(player.getUniqueId(), equipped);
+    }
+
+    private static void handlePlayerDataMismatch(Player player, TrinketSlot trinketSlot) {
+        // Return item into inventory or drop on floor
+        if (!player.getInventory().addItem(trinketSlot.getContainedTrinket()).isEmpty()) {
+            player.getWorld().dropItem(player.getLocation(), trinketSlot.getContainedTrinket());
+        }
+
+        // Handle updating stats and hiding the slot
+        TrinketInteractionHandler.updatePlayerStats(player, TrinketManager.getInstance().getTrinket(trinketSlot.getContainedTrinket()).getStats(), false);
+        trinketSlot.pop();
+        trinketSlot.setVisibility(false);
     }
 
     public Map<UUID, List<SerializedTrinketSlot>> getSerialisedSlots() {

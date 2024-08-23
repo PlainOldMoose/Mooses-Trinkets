@@ -1,4 +1,4 @@
-package me.plainoldmoose.trinkets.Command;
+package me.plainoldmoose.trinkets.command;
 
 import me.plainoldmoose.trinkets.data.trinket.Trinket;
 import me.plainoldmoose.trinkets.data.trinket.TrinketManager;

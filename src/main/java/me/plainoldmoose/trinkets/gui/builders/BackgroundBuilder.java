@@ -1,6 +1,6 @@
 package me.plainoldmoose.trinkets.gui.builders;
 
-import me.plainoldmoose.trinkets.data.loaders.config.GUILoaders.BackgroundItemConfigLoader;
+import me.plainoldmoose.trinkets.data.loaders.config.gui.BackgroundItemConfigLoader;
 import me.plainoldmoose.trinkets.gui.components.Background;
 import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.Material;

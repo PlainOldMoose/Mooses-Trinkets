@@ -1,6 +1,6 @@
 package me.plainoldmoose.trinkets.gui.builders;
 
-import me.plainoldmoose.trinkets.data.loaders.config.GUILoaders.TrinketSlotsConfigLoader;
+import me.plainoldmoose.trinkets.data.loaders.config.gui.TrinketSlotsConfigLoader;
 import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
 
 import java.util.HashMap;
@@ -19,6 +19,7 @@ public class TrinketSlotBuilder {
      * This method retrieves TrinketSlot configurations, initializes them, and stores them in a map where the key is the slot index.
      */
     public static void createSlotButtons() {
+        trinketSlotMap.clear();
         Set<TrinketSlot> trinketSlotSet = TrinketSlotsConfigLoader.getInstance().getTrinketSlotSet();
 
         for (TrinketSlot ts : trinketSlotSet) {

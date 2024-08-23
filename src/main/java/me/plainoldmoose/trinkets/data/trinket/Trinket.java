@@ -32,6 +32,8 @@ public class Trinket {
      * @param type The type of the trinket, indicating its usage or category.
      * @param modelID The custom model data ID for the trinket's item.
      */
+
+    // TODO - Combine stats/formatted stats, combine material and displayname into ItemStack
     public Trinket(Material material, String identifier, String displayName, Map<String, Integer> stats, Map<String, Integer> formattedStats, TrinketType type, int modelID) {
         this.item = new ItemStack(material);
         this.name = identifier;

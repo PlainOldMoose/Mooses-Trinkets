@@ -2,7 +2,7 @@ package me.plainoldmoose.trinkets.gui.builders;
 
 import com.willfp.ecoskills.api.EcoSkillsAPI;
 import com.willfp.ecoskills.stats.Stats;
-import me.plainoldmoose.trinkets.data.loaders.config.GUILoaders.IconConfigLoader;
+import me.plainoldmoose.trinkets.data.loaders.config.gui.IconConfigLoader;
 import me.plainoldmoose.trinkets.data.loaders.eco.SkillsHandler;
 import me.plainoldmoose.trinkets.gui.components.StatsIcon;
 import me.plainoldmoose.trinkets.utils.ConfigUtils;
