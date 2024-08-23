@@ -17,6 +17,7 @@ public class TrinketSlotBuilder {
         Set<TrinketSlot> trinketSlotSet = TrinketSlotsConfigLoader.getInstance().getTrinketSlotSet();
 
         for (TrinketSlot ts : trinketSlotSet) {
+            ts.pop(); // Reset the contained item when constructing
             trinketSlotMap.put(ts.getIndex(), ts);
         }
     }

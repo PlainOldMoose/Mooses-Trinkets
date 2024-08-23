@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class TrinketSlot extends Button implements ConfigurationSerializable {
     private ItemStack containedTrinket;
-    private TrinketType type;
+    private final TrinketType type;
 
     public TrinketSlot(ItemStack displayItem, TrinketType type, int inventoryIndex) {
         super(displayItem, inventoryIndex);

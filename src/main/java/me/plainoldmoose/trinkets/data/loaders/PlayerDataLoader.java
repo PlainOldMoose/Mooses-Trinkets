@@ -2,9 +2,14 @@ package me.plainoldmoose.trinkets.data.loaders;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
+import me.plainoldmoose.trinkets.data.trinket.Trinket;
+import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
+import me.plainoldmoose.trinkets.gui.interactions.TrinketInteractionHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.HashMap;
@@ -17,7 +22,7 @@ public class PlayerDataLoader {
     private File configFile;
     private FileConfiguration fileConfig;
 
-//    private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
+    private final Map<UUID, List<ItemStack>> equippedTrinkets = new HashMap<>();
     private final Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = new HashMap<>();
 
     public void loadData() {
@@ -55,21 +60,21 @@ public class PlayerDataLoader {
         }
     }
 
-//    public void hookTrinketsDataOntoEco(Player player, boolean add) {
-//        List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
-//
-//        if (playerTrinkets == null) {
-//            return;
-//        }
-//
-//        TrinketManager trinketManager = TrinketManager.getInstance();
-//
-//        for (ItemStack item : playerTrinkets) {
-//            Trinket trinket = trinketManager.getTrinket(item);
-//            Map<String, Integer> trinketStats = trinket.getStats();
-//            TrinketInteractionHandler.updatePlayerStats(player, trinketStats, add);
-//        }
-//    }
+    public void hookTrinketsDataOntoEco(Player player, boolean add) {
+        List<ItemStack> playerTrinkets = equippedTrinkets.get(player.getUniqueId());
+
+        if (playerTrinkets == null) {
+            return;
+        }
+
+        TrinketManager trinketManager = TrinketManager.getInstance();
+
+        for (ItemStack item : playerTrinkets) {
+            Trinket trinket = trinketManager.getTrinket(item);
+            Map<String, Integer> trinketStats = trinket.getStats();
+            TrinketInteractionHandler.updatePlayerStats(player, trinketStats, add);
+        }
+    }
 
     public Map<UUID, List<SerializedTrinketSlot>> getSerialisedSlots() {
         return serialisedSlots;

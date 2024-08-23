@@ -57,6 +57,7 @@ public class TrinketsGUI {
         }
     }
 
+    // TODO - Extract this to builder
     private void renderStatIcons(Player player) {
         IconBuilder.createStatsIcons(player);
 
@@ -109,31 +110,21 @@ public class TrinketsGUI {
         renderButtons();
     }
 
-    private boolean loadTrinketSaveData(Player player) {
+    private void loadTrinketSaveData(Player player) {
         // Retrieve serialized slots for the player
         Map<UUID, List<SerializedTrinketSlot>> serialisedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
         List<SerializedTrinketSlot> serializedTrinketSlotList = serialisedSlots.get(player.getUniqueId());
 
-        if (serializedTrinketSlotList == null || serializedTrinketSlotList.isEmpty()) {
-            return false;
+        if (serializedTrinketSlotList == null) {
+            return;
         }
-
-
-        boolean loadedData = false;
 
         // Iterate over the serialized slots and deserialize them, then add to the map
         for (SerializedTrinketSlot s : serializedTrinketSlotList) {
-
             // Reconstruct TrinketSlot and add to map
             TrinketSlot trinketSlot = TrinketSlot.deserialize(s.getMap());
             TrinketSlotBuilder.getTrinketSlotMap().put(trinketSlot.getIndex(), trinketSlot);
             player.sendMessage("Loaded slot >>>>> " +trinketSlot.getContainedTrinket().getItemMeta().getDisplayName());
-
-            // If any serialized slots were found, must override default slot creation
-            loadedData = true;
         }
-
-//        TrinketSlotBuilder.setTrinketSlotMap(deserializedSlots);
-        return loadedData;
     }
 }
