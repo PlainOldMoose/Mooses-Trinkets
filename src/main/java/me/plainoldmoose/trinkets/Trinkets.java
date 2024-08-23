@@ -3,10 +3,12 @@ package me.plainoldmoose.trinkets;
 import me.plainoldmoose.trinkets.Command.TrinketsCommand;
 import me.plainoldmoose.trinkets.data.TrinketsConfigHandler;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
+import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.gui.GUIListener;
 import me.plainoldmoose.trinkets.gui.builders.PlayerPrefixBuilder;
 import me.plainoldmoose.trinkets.gui.interactions.EcoHookListener;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +21,7 @@ public final class Trinkets extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        ConfigurationSerialization.registerClass(SerializedTrinketSlot.class, "SerializedTrinketSlot");
         getServer().getPluginManager().registerEvents(new GUIListener(), this);
         getServer().getPluginManager().registerEvents(new EcoHookListener(), this);
         getCommand("trinkets").setExecutor(commandExecutor);
