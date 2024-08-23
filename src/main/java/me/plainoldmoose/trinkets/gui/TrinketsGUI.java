@@ -4,21 +4,15 @@ import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
 import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.IconBuilder;
-import me.plainoldmoose.trinkets.gui.builders.PlayerPrefixBuilder;
 import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
 import me.plainoldmoose.trinkets.gui.components.Background;
 import me.plainoldmoose.trinkets.gui.components.StatsIcon;
 import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
-import me.plainoldmoose.trinkets.utils.ConfigUtils;
-import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.List;
 import java.util.Map;
 
 public class TrinketsGUI {
@@ -37,6 +31,7 @@ public class TrinketsGUI {
         inventory = Bukkit.createInventory(player, this.size, this.title);
         BackgroundBuilder.createBackgroundTiles();
         TrinketSlotBuilder.createSlotButtons();
+        IconBuilder.createStatsIcons(player);
         PlayerDataLoader.loadPlayerTrinkets(player);
 
         updateGUI(player);
@@ -55,36 +50,9 @@ public class TrinketsGUI {
         }
     }
 
-    // TODO - Extract this to builder
     private void renderStatIcons(Player player) {
         IconBuilder.createStatsIcons(player);
-
         for (StatsIcon icon : IconBuilder.getIconList()) {
-            ItemStack iconItem = icon.getDisplayItem();
-            List<String> stats = icon.getStatsList();
-
-            String iconItemName = iconItem.getItemMeta().getDisplayName();
-            // Replace placeholder with player name
-            if (iconItemName.contains("%playername%")) {
-                iconItemName = iconItemName.replace("%playername%", player.getName());
-
-                // If adding player name, also add prefix
-                if (PlayerPrefixBuilder.getInstance().getChat() != null) {
-                    iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getPlayerPrefix(player)) + iconItemName;
-                }
-            }
-
-            // If icon is player head, replace with players skin
-            if (iconItem.getType() == Material.PLAYER_HEAD) {
-                icon.setDisplayItem(ItemFactory.createPlayerHead(player.getUniqueId()));
-            }
-
-            // Update item stack lore to include desired stats
-            iconItem = icon.getDisplayItem();
-            ItemFactory.changeItemStackLore(iconItem, stats);
-            icon.setDisplayItem(iconItem);
-
-            ItemFactory.changeItemStackName(icon.getDisplayItem(), iconItemName);
             inventory.setItem(icon.getIndex(), icon.getDisplayItem());
         }
     }
@@ -94,9 +62,6 @@ public class TrinketsGUI {
             TrinketSlot trinketSlot = entry.getValue();
             if (trinketSlot.isEnabled()) {
                 inventory.setItem(trinketSlot.getIndex(), trinketSlot.getContainedTrinket() != null ? trinketSlot.getContainedTrinket() : trinketSlot.getDisplayItem());
-                if (trinketSlot.getContainedTrinket() != null) {
-                    System.out.println(trinketSlot.getContainedTrinket().getItemMeta().getDisplayName());
-                }
             }
         }
     }

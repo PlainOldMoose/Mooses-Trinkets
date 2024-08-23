@@ -30,7 +30,6 @@ public final class Trinkets extends JavaPlugin {
         // Update command configurations and load data
         commandExecutor.update();
 
-
         Plugin vaultPlugin = Bukkit.getServer().getPluginManager().getPlugin("Vault");
         if (vaultPlugin == null || !vaultPlugin.isEnabled()) {
             // Vault is not installed or not enabled

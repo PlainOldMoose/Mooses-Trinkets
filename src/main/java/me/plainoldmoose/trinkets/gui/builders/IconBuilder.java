@@ -5,8 +5,12 @@ import com.willfp.ecoskills.stats.Stats;
 import me.plainoldmoose.trinkets.data.loaders.config.GUILoaders.IconConfigLoader;
 import me.plainoldmoose.trinkets.data.loaders.eco.SkillsHandler;
 import me.plainoldmoose.trinkets.gui.components.StatsIcon;
+import me.plainoldmoose.trinkets.utils.ConfigUtils;
+import me.plainoldmoose.trinkets.utils.ItemFactory;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,32 @@ public class IconBuilder {
 
             // Set the fetched stats list in the icon
             icon.setListOfStats(fetchedStats);
+
+            ItemStack iconItem = icon.getDisplayItem();
+            List<String> stats = icon.getStatsList();
+
+            String iconItemName = iconItem.getItemMeta().getDisplayName();
+            // Replace placeholder with player name
+            if (iconItemName.contains("%playername%")) {
+                iconItemName = iconItemName.replace("%playername%", player.getName());
+
+                // If adding player name, also add prefix
+                if (PlayerPrefixBuilder.getInstance().getChat() != null) {
+                    iconItemName = ConfigUtils.colorizeString(PlayerPrefixBuilder.getPlayerPrefix(player)) + iconItemName;
+                }
+            }
+
+            // If icon is player head, replace with players skin
+            if (iconItem.getType() == Material.PLAYER_HEAD) {
+                icon.setDisplayItem(ItemFactory.createPlayerHead(player.getUniqueId()));
+            }
+
+            // Update item stack lore to include desired stats
+            iconItem = icon.getDisplayItem();
+            ItemFactory.changeItemStackLore(iconItem, stats);
+            icon.setDisplayItem(iconItem);
+
+            ItemFactory.changeItemStackName(icon.getDisplayItem(), iconItemName);
         }
     }
 
