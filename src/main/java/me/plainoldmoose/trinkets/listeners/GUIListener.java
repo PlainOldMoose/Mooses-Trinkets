@@ -1,8 +1,9 @@
-package me.plainoldmoose.trinkets.gui;
+package me.plainoldmoose.trinkets.listeners;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
 import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
+import me.plainoldmoose.trinkets.gui.TrinketsGUI;
 import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
 import me.plainoldmoose.trinkets.gui.components.Background;
@@ -56,6 +57,7 @@ public class GUIListener implements Listener {
             // Handle interactions with TrinketSlots
             for (Map.Entry<Integer, TrinketSlot> entry : TrinketSlotBuilder.getTrinketSlotMap().entrySet()) {
                 TrinketSlot trinketSlot = entry.getValue();
+
                 if (trinketSlot.getIndex() == event.getSlot()) {
                     if (trinketSlot.isEnabled()) {
                         trinketSlot.onClick(eventPlayer);
