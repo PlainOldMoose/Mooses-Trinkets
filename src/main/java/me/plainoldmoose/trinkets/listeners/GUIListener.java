@@ -2,18 +2,23 @@ package me.plainoldmoose.trinkets.listeners;
 
 import me.plainoldmoose.trinkets.Trinkets;
 import me.plainoldmoose.trinkets.data.loaders.PlayerDataLoader;
+import me.plainoldmoose.trinkets.data.trinket.Key;
 import me.plainoldmoose.trinkets.data.trinket.SerializedTrinketSlot;
 import me.plainoldmoose.trinkets.gui.TrinketsGUI;
 import me.plainoldmoose.trinkets.gui.builders.BackgroundBuilder;
 import me.plainoldmoose.trinkets.gui.builders.TrinketSlotBuilder;
 import me.plainoldmoose.trinkets.gui.components.Background;
 import me.plainoldmoose.trinkets.gui.components.TrinketSlot;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +30,25 @@ import java.util.UUID;
  * This includes handling clicks within the Trinkets GUI and saving player data when the GUI is closed.
  */
 public class GUIListener implements Listener {
+
+    private boolean isValidTrinket(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR || !item.hasItemMeta()) {
+            return false;
+        }
+        PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+        return container.has(Key.TRINKET);
+    }
+
+    private void handleTrinketStacking(Player player, ItemStack cursorItem, ItemStack inventoryItem, Inventory clickedInv, int slot) {
+        if (inventoryItem.isSimilar(cursorItem)) {
+            Bukkit.getScheduler().runTaskLater(Trinkets.getInstance(), () -> {
+                player.setItemOnCursor(cursorItem);
+                if (clickedInv != null) {
+                    clickedInv.setItem(slot, inventoryItem);
+                }
+            }, 1L);
+        }
+    }
 
     /**
      * Handles inventory click events within the Trinkets GUI.
@@ -40,6 +64,21 @@ public class GUIListener implements Listener {
 
         // Check if the clicked inventory is the Trinkets GUI
         if (clickedInv == null || !clickedInv.equals(topInv)) {
+            return;
+        }
+
+        int slot = event.getSlot();
+
+        if (slot < 0) {
+            return;
+        }
+
+        ItemStack inventoryItem = clickedInv.getItem(slot);
+        ItemStack cursorItem = eventPlayer.getItemOnCursor();
+
+        if (isValidTrinket(inventoryItem) && isValidTrinket(cursorItem)) {
+            event.setCancelled(true);
+            handleTrinketStacking(eventPlayer, cursorItem, inventoryItem, clickedInv, slot);
             return;
         }
 

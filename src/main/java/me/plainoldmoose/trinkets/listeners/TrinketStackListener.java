@@ -14,6 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 
+
+// TODO - Fix bug where stats are added even when event is cancelled
 public class TrinketStackListener implements Listener {
 
     private boolean isValidTrinket(ItemStack item) {
@@ -37,10 +39,6 @@ public class TrinketStackListener implements Listener {
 
     @EventHandler
     public void onClickEvent(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
         Player eventPlayer = (Player) event.getWhoClicked();
         Inventory clickedInv = event.getClickedInventory();
         int slot = event.getSlot();
