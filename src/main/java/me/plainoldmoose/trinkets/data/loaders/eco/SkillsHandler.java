@@ -57,6 +57,8 @@ public class SkillsHandler {
      * and storing the skill names and their formatted versions.
      */
     public void loadFiles() {
+        skillFileNames.clear();
+        skillNameFormat.clear();
         File skillsDirectory = getEcoSkillsFolder();
 
         File[] files = skillsDirectory.listFiles();

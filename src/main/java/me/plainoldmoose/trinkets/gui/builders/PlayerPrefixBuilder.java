@@ -52,6 +52,10 @@ public class PlayerPrefixBuilder {
 
         RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
 
+        if (rsp == null) {
+            return;
+        }
+
         chat = rsp.getProvider();
         Bukkit.getLogger().info("[Mooses-Trinkets] Registered Vault chat hook.");
     }

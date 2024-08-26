@@ -29,6 +29,8 @@ import java.util.UUID;
  * Listener for handling GUI interactions related to Trinkets.
  * This includes handling clicks within the Trinkets GUI and saving player data when the GUI is closed.
  */
+
+//TODO - refactor
 public class GUIListener implements Listener {
 
     private boolean isValidTrinket(ItemStack item) {

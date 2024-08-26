@@ -34,6 +34,7 @@ public class PlayerDataLoader {
      * This method reads the file, deserializes trinket slot data for each player, and stores it in memory.
      */
     public void loadData() {
+        serialisedSlots.clear();
         configFile = new File(Trinkets.getInstance().getDataFolder(), "data.yml");
 
         if (!configFile.exists()) {
@@ -108,7 +109,9 @@ public class PlayerDataLoader {
      *
      * @param player The player whose trinkets are being loaded.
      */
+    // TODO - If trinket is loaded in GUI, but is not in manager, remove trinket
     public static void loadPlayerTrinkets(Player player) {
+        equippedTrinkets.clear();
         // Retrieve serialized slots for the player
         Map<UUID, List<SerializedTrinketSlot>> serializedSlots = PlayerDataLoader.getInstance().getSerialisedSlots();
         List<SerializedTrinketSlot> serializedTrinketSlotList = serializedSlots.get(player.getUniqueId());

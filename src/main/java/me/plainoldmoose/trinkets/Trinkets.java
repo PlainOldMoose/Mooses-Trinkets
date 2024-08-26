@@ -44,7 +44,7 @@ public final class Trinkets extends JavaPlugin {
         // Update command configurations and load data
         commandExecutor.update();
 
-        createDiamondSwordRecipe();
+//        createDiamondSwordRecipe();
 
         // Check if Vault is installed and enabled
         Plugin vaultPlugin = Bukkit.getServer().getPluginManager().getPlugin("Vault");
@@ -72,6 +72,12 @@ public final class Trinkets extends JavaPlugin {
     private void createDiamondSwordRecipe() {
         // Create a new ItemStack (the result of the recipe)
         ItemStack item = TrinketManager.getInstance().getTrinketItemStack("anvil_of_defense");
+
+        if (item == null) {
+            getLogger().severe("Trinket item stack for 'anvil_of_defense' is null.");
+            return;
+        }
+
         // Create a NamespacedKey for the recipe
         NamespacedKey key = new NamespacedKey(this, "trinket");
         // Create a ShapedRecipe with the NamespacedKey and the result ItemStack

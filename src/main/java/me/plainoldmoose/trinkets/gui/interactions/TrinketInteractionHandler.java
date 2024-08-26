@@ -3,6 +3,7 @@ package me.plainoldmoose.trinkets.gui.interactions;
 import com.willfp.ecoskills.api.EcoSkillsAPI;
 import com.willfp.ecoskills.api.modifiers.ModifierOperation;
 import com.willfp.ecoskills.api.modifiers.StatModifier;
+import com.willfp.ecoskills.stats.Stat;
 import com.willfp.ecoskills.stats.Stats;
 import me.plainoldmoose.trinkets.data.trinket.Trinket;
 import me.plainoldmoose.trinkets.data.trinket.TrinketManager;
@@ -87,9 +88,9 @@ public class TrinketInteractionHandler {
      * Updates the player's stats based on the provided stats map.
      * Adds or removes stats based on the value of {@code addStats}.
      *
-     * @param player    The player whose stats are to be updated.
-     * @param stats     The stats to be applied or removed.
-     * @param addStats  True to add the stats, false to remove the stats.
+     * @param player   The player whose stats are to be updated.
+     * @param stats    The stats to be applied or removed.
+     * @param addStats True to add the stats, false to remove the stats.
      */
     public static void updatePlayerStats(Player player, Map<String, Integer> stats, boolean addStats) {
         for (Map.Entry<String, Integer> entry : stats.entrySet()) {
@@ -112,7 +113,13 @@ public class TrinketInteractionHandler {
      * @param statValue The value of the stat to be added.
      */
     private static void addStatModifier(Player player, String statName, int statValue) {
-        StatModifier modifier = new StatModifier(UUID.randomUUID(), Stats.INSTANCE.get(statName), statValue, ModifierOperation.ADD);
+        Stat stat = Stats.INSTANCE.get(statName);
+
+        if (stat == null) {
+            return;
+        }
+
+        StatModifier modifier = new StatModifier(UUID.randomUUID(), stat, statValue, ModifierOperation.ADD);
         EcoSkillsAPI.addStatModifier(player, modifier);
     }
 

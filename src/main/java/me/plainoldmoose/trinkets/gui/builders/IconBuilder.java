@@ -98,6 +98,13 @@ public class IconBuilder {
                 displayName = convertToBukkitColor(displayName);
             }
 
+//            Stat stat = Stats.INSTANCE.get(skill);
+//
+//            if (stat == null) {
+//                Bukkit.getLogger().severe("[Mooses-Trinkets] There was a problem loading stats from eco");
+//                return new ArrayList<>();
+//            }
+
             int value = EcoSkillsAPI.getStatLevel(player, Stats.INSTANCE.get(skill));
             stats.add(displayName + ChatColor.DARK_GRAY + " » " + ChatColor.WHITE + value);
         }

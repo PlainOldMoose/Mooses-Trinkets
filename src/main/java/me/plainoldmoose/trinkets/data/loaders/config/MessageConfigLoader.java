@@ -50,6 +50,7 @@ public class MessageConfigLoader {
      * with the corresponding message strings.
      */
     private void loadMessages() {
+        messagesMap.clear();
         String[] keys = {"prefix", "invalid_trinket", "trinket_not_found", "unknown_command", "reload", "no_trinkets"};
 
         for (String key : keys) {
