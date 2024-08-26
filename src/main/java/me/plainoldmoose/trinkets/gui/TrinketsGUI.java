@@ -23,7 +23,6 @@ public class TrinketsGUI {
     private final int size = 54; // Size of the inventory (54 slots)
     private final String title = "               Trinkets"; // Title of the GUI
     private Inventory inventory;
-
     /**
      * Displays the Trinkets GUI to the specified player. Sets up the inventory, background, buttons, and updates the GUI.
      * If the player is already viewing a TrinketsGUI, their current inventory is closed.

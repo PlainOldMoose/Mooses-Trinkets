@@ -54,6 +54,6 @@ public class IconConfigLoader {
     }
 
     public List<StatsIcon> getIconList() {
-        return iconList;
+        return new ArrayList<>(iconList);
     }
 }

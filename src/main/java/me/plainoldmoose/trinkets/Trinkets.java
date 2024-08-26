@@ -44,8 +44,6 @@ public final class Trinkets extends JavaPlugin {
         // Update command configurations and load data
         commandExecutor.update();
 
-//        createDiamondSwordRecipe();
-
         // Check if Vault is installed and enabled
         Plugin vaultPlugin = Bukkit.getServer().getPluginManager().getPlugin("Vault");
         if (vaultPlugin == null || !vaultPlugin.isEnabled()) {
