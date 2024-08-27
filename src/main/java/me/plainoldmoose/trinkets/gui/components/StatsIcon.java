@@ -12,7 +12,7 @@ import java.util.List;
  * This button includes a list of raw stat names and can update its display
  * item lore to show formatted statistics.
  */
-public class StatsIcon extends Button {
+public class StatsIcon extends Button implements Cloneable{
     private List<String> rawStatNames = new ArrayList<>();
 
     /**
@@ -69,4 +69,24 @@ public class StatsIcon extends Button {
     public void onClick(Player player) {
         // Define specific behavior on click if needed
     }
+
+    @Override
+    public StatsIcon clone() {
+        try {
+            StatsIcon cloned = (StatsIcon) super.clone(); // Perform a shallow copy
+
+            // Deep copy the mutable fields
+            cloned.rawStatNames = new ArrayList<>(this.rawStatNames);
+
+            // Create a new ItemStack for displayItem to avoid shared references
+            ItemStack originalItem = this.getDisplayItem();
+            ItemStack clonedItem = originalItem.clone();
+            cloned.setDisplayItem(clonedItem);
+
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can't happen, since we are Cloneable
+        }
+    }
+
 }

@@ -23,6 +23,7 @@ public class TrinketsGUI {
     private final int size = 54; // Size of the inventory (54 slots)
     private final String title = "               Trinkets"; // Title of the GUI
     private Inventory inventory;
+    private IconBuilder iconBuilder = new IconBuilder();
     /**
      * Displays the Trinkets GUI to the specified player. Sets up the inventory, background, buttons, and updates the GUI.
      * If the player is already viewing a TrinketsGUI, their current inventory is closed.
@@ -36,7 +37,7 @@ public class TrinketsGUI {
         // Build and render the GUI components
         BackgroundBuilder.createBackgroundTiles();
         TrinketSlotBuilder.createSlotButtons();
-        IconBuilder.createStatsIcons(player);
+        iconBuilder.createStatsIcons(player);
         PlayerDataLoader.loadPlayerTrinkets(player);
 
         // Update the GUI with current data
@@ -70,8 +71,8 @@ public class TrinketsGUI {
      * @param player The player whose stats icons are to be displayed.
      */
     private void renderStatIcons(Player player) {
-        IconBuilder.createStatsIcons(player);
-        for (StatsIcon icon : IconBuilder.getIconList()) {
+//        IconBuilder.createStatsIcons(player);
+        for (StatsIcon icon : iconBuilder.getIconList()) {
             inventory.setItem(icon.getIndex(), icon.getDisplayItem());
         }
     }

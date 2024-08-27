@@ -54,6 +54,7 @@ public class IconConfigLoader {
     }
 
     public List<StatsIcon> getIconList() {
+        System.out.println(iconList.getFirst().getDisplayItem().getItemMeta().getDisplayName());
         return new ArrayList<>(iconList);
     }
 }

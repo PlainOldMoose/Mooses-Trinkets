@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  * including fetching player stats, applying them to item metadata, and updating icon visuals.
  */
 public class IconBuilder {
-    private static List<StatsIcon> iconList = new ArrayList<>();
+    private List<StatsIcon> iconList = new ArrayList<>();
 
     /**
      * Creates and customizes statistical icons for the given player.
@@ -33,11 +33,15 @@ public class IconBuilder {
      *
      * @param player The player whose statistics are to be included in the icons.
      */
-    public static void createStatsIcons(Player player) {
+    // TODO - Even though list is passed by value, references to objects are not, create new objects from list entries, (implement clone on)
+    public void createStatsIcons(Player player) {
         // Load the icon list from the IconConfigLoader
-        iconList = IconConfigLoader.getInstance().getIconList();
+        List<StatsIcon> configIconList = IconConfigLoader.getInstance().getIconList();
 
-        for (StatsIcon icon : iconList) {
+        for (StatsIcon iconFromList : configIconList) {
+            StatsIcon icon = iconFromList.clone();
+
+            player.sendMessage(icon.getDisplayItem().getItemMeta().getDisplayName());
             // Fetch and set player stats for the current icon
             List<String> fetchedStats = fetchFormattedPlayerStats(player, icon.getRawStatNames());
             icon.setListOfStats(fetchedStats);
@@ -67,6 +71,8 @@ public class IconBuilder {
             icon.setDisplayItem(iconItem);
 
             ItemFactory.changeItemStackName(icon.getDisplayItem(), iconItemName);
+
+            iconList.add(icon);
         }
     }
 
@@ -135,7 +141,7 @@ public class IconBuilder {
      *
      * @return A list of {@link StatsIcon} objects representing the available statistical icons.
      */
-    public static List<StatsIcon> getIconList() {
+    public List<StatsIcon> getIconList() {
         return iconList;
     }
 }
